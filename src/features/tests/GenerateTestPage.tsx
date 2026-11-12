@@ -1,0 +1,276 @@
+import {
+  Alert,
+  Button,
+  Collapse,
+  Group,
+  Loader,
+  MultiSelect,
+  NumberInput,
+  Overlay,
+  Paper,
+  SegmentedControl,
+  Select,
+  SimpleGrid,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+  UnstyledButton,
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { useDisclosure } from '@mantine/hooks';
+import { IconChevronDown, IconChevronRight, IconInfoCircle, IconSparkles } from '@tabler/icons-react';
+import { useMemo } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTopicDocuments } from '@/api/documents';
+import { useGenerateTest } from '@/api/tests';
+import { topicPathLabel, useTopicTree } from '@/api/topics';
+import type { TestInput } from '@/api/types';
+import { ANSWER_CARDINALITIES, COVERAGE_MODES, DIFFICULTIES, LANGUAGES } from '@/shared/enums';
+
+interface FormValues {
+  source: 'topics' | 'documents';
+  topicIds: string[];
+  documentTopicId: string | null;
+  documentIds: string[];
+  questionCount: number | string;
+  difficulty: string | null;
+  answerCardinality: string | null;
+  coverageMode: string | null;
+  language: string | null;
+  // advanced
+  generationModel: string;
+  promptTemplateId: string;
+  temperature: number | string;
+  maxOutputTokens: number | string;
+  verificationModel: string;
+}
+
+/** Empty fields are left out, so the server applies its kg.testgen.defaults.* values. */
+function toTestInput(v: FormValues): TestInput {
+  const text = (s: string) => s.trim() || undefined;
+  const num = (n: number | string) => (n === '' || n == null ? undefined : Number(n));
+
+  const generationParams: Record<string, unknown> = {};
+  if (num(v.temperature) != null) generationParams.temperature = num(v.temperature);
+  if (num(v.maxOutputTokens) != null) generationParams.maxOutputTokens = num(v.maxOutputTokens);
+  if (text(v.verificationModel)) generationParams.verificationModel = text(v.verificationModel);
+
+  return {
+    topicIds: v.source === 'topics' ? v.topicIds.map(Number) : undefined,
+    documentIds: v.source === 'documents' ? v.documentIds.map(Number) : undefined,
+    questionCount: num(v.questionCount),
+    difficulty: v.difficulty ?? undefined,
+    answerCardinality: v.answerCardinality ?? undefined,
+    coverageMode: v.coverageMode ?? undefined,
+    language: v.language ?? undefined,
+    generationModel: text(v.generationModel),
+    promptTemplateId: text(v.promptTemplateId),
+    generationParams: Object.keys(generationParams).length ? generationParams : undefined,
+  };
+}
+
+export function GenerateTestPage() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { data: tree } = useTopicTree();
+  const generate = useGenerateTest();
+  const [advancedOpen, { toggle: toggleAdvanced }] = useDisclosure(false);
+
+  const presetTopic = searchParams.get('topicId');
+  const form = useForm<FormValues>({
+    initialValues: {
+      source: 'topics',
+      topicIds: presetTopic ? [presetTopic] : [],
+      documentTopicId: presetTopic,
+      documentIds: [],
+      questionCount: 10,
+      difficulty: 'MEDIUM',
+      answerCardinality: 'SINGLE_CORRECT',
+      coverageMode: 'BALANCED_PER_DOC_CHUNKS',
+      language: 'EN',
+      generationModel: '',
+      promptTemplateId: '',
+      temperature: '',
+      maxOutputTokens: '',
+      verificationModel: '',
+    },
+    validate: {
+      topicIds: (v, values) =>
+        values.source === 'topics' && v.length === 0 ? 'Pick at least one topic' : null,
+      documentIds: (v, values) =>
+        values.source === 'documents' && v.length === 0 ? 'Pick at least one document' : null,
+      questionCount: (v) => (Number(v) >= 1 ? null : 'At least 1 question'),
+    },
+  });
+
+  const topicOptions = useMemo(
+    () =>
+      tree
+        ? [...tree.byId.values()]
+            .map((t) => ({ value: String(t.id), label: topicPathLabel(tree, t.id) }))
+            .sort((a, b) => a.label.localeCompare(b.label))
+        : [],
+    [tree],
+  );
+
+  // Documents of the chosen topic (first 100 is plenty for a picker).
+  const docTopicId = form.values.documentTopicId ? Number(form.values.documentTopicId) : undefined;
+  const { data: docs } = useTopicDocuments(docTopicId, 0, 100);
+  const documentOptions = (docs?.content ?? []).map((d) => ({
+    value: String(d.id),
+    label: `${d.title || d.originalFileName}${d.status === 'INGESTED' ? '' : ` (${d.status?.toLowerCase() ?? 'not ingested'})`}`,
+    disabled: d.status !== 'INGESTED',
+  }));
+
+  // Errors are shown as a notification by the global handler.
+  const submit = form.onSubmit((values) => {
+    generate.mutate(toTestInput(values), { onSuccess: (test) => navigate(`/tests/${test.id}`) });
+  });
+
+  return (
+    <Stack maw={760} pos="relative">
+      <Title order={2}>Generate test</Title>
+      <Text c="dimmed" size="sm">
+        Questions are generated from the ingested content of the selected topics or documents. Only ingested
+        documents are used.
+      </Text>
+
+      <Paper p="lg" radius="md" pos="relative">
+        {generate.isPending && (
+          <Overlay blur={2} backgroundOpacity={0.4} radius="md" center>
+            <Stack align="center" gap="xs">
+              <Loader />
+              <Text fw={500}>Generating questions…</Text>
+              <Text size="sm" c="dimmed">
+                This usually takes one to three minutes. Keep this page open.
+              </Text>
+            </Stack>
+          </Overlay>
+        )}
+
+        <form onSubmit={submit}>
+          <Stack gap="md">
+            <div>
+              <Text size="sm" fw={500} mb={4}>
+                Source
+              </Text>
+              <SegmentedControl
+                data={[
+                  { value: 'topics', label: 'Topics' },
+                  { value: 'documents', label: 'Specific documents' },
+                ]}
+                {...form.getInputProps('source')}
+              />
+            </div>
+
+            {form.values.source === 'topics' ? (
+              <MultiSelect
+                label="Topics"
+                description="Documents of the selected topics and all their sub-topics are used."
+                placeholder="Choose topics"
+                data={topicOptions}
+                searchable
+                clearable
+                {...form.getInputProps('topicIds')}
+              />
+            ) : (
+              <SimpleGrid cols={{ base: 1, sm: 2 }}>
+                <Select
+                  label="Topic"
+                  placeholder="Choose a topic"
+                  data={topicOptions}
+                  searchable
+                  {...form.getInputProps('documentTopicId')}
+                  onChange={(v) => {
+                    form.setFieldValue('documentTopicId', v);
+                    form.setFieldValue('documentIds', []);
+                  }}
+                />
+                <MultiSelect
+                  label="Documents"
+                  placeholder={docTopicId ? 'Choose documents' : 'Choose a topic first'}
+                  data={documentOptions}
+                  disabled={!docTopicId}
+                  searchable
+                  {...form.getInputProps('documentIds')}
+                />
+              </SimpleGrid>
+            )}
+
+            <SimpleGrid cols={{ base: 1, sm: 2 }}>
+              <NumberInput
+                label="Number of questions"
+                min={1}
+                max={50}
+                {...form.getInputProps('questionCount')}
+              />
+              <Select label="Difficulty" data={DIFFICULTIES} {...form.getInputProps('difficulty')} />
+              <Select
+                label="Answers"
+                data={ANSWER_CARDINALITIES}
+                {...form.getInputProps('answerCardinality')}
+              />
+              <Select label="Language" data={LANGUAGES} {...form.getInputProps('language')} />
+              <Select label="Coverage" data={COVERAGE_MODES} {...form.getInputProps('coverageMode')} />
+            </SimpleGrid>
+
+            <UnstyledButton onClick={toggleAdvanced}>
+              <Group gap={4}>
+                {advancedOpen ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
+                <Text size="sm" fw={500}>
+                  Advanced model settings
+                </Text>
+              </Group>
+            </UnstyledButton>
+            <Collapse in={advancedOpen}>
+              <Stack gap="sm">
+                <Alert variant="light" color="gray" icon={<IconInfoCircle size={18} />}>
+                  Leave empty to use the server defaults.
+                </Alert>
+                <SimpleGrid cols={{ base: 1, sm: 2 }}>
+                  <TextInput
+                    label="Generation model"
+                    placeholder="gpt-4.1"
+                    {...form.getInputProps('generationModel')}
+                  />
+                  <TextInput
+                    label="Verification model"
+                    placeholder="server default"
+                    {...form.getInputProps('verificationModel')}
+                  />
+                  <TextInput
+                    label="Prompt template id"
+                    placeholder="mcq-default"
+                    {...form.getInputProps('promptTemplateId')}
+                  />
+                  <NumberInput
+                    label="Temperature"
+                    placeholder="server default"
+                    min={0}
+                    max={2}
+                    step={0.1}
+                    decimalScale={2}
+                    {...form.getInputProps('temperature')}
+                  />
+                  <NumberInput
+                    label="Max output tokens"
+                    placeholder="server default"
+                    min={1}
+                    {...form.getInputProps('maxOutputTokens')}
+                  />
+                </SimpleGrid>
+              </Stack>
+            </Collapse>
+
+            <Group justify="flex-end">
+              <Button type="submit" leftSection={<IconSparkles size={16} />} loading={generate.isPending}>
+                Generate
+              </Button>
+            </Group>
+          </Stack>
+        </form>
+      </Paper>
+    </Stack>
+  );
+}

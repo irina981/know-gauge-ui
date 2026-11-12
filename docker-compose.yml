@@ -1,0 +1,17 @@
+# Runs the UI next to the backend started from know-gauge/local-development/docker-compose.yml.
+# Start the backend stack first; this joins its network and reaches the API as knowgauge-service:8080.
+services:
+  knowgauge-ui:
+    build: .
+    container_name: knowgauge-ui
+    ports:
+      - "3000:80"
+    environment:
+      BACKEND_URL: http://knowgauge-service:8080
+    networks:
+      - knowgauge-network
+
+networks:
+  knowgauge-network:
+    external: true
+    name: local-development_knowgauge-network

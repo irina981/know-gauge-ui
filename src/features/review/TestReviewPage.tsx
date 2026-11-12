@@ -1,0 +1,245 @@
+import {
+  Alert,
+  Anchor,
+  Badge,
+  Group,
+  Loader,
+  Paper,
+  SegmentedControl,
+  Stack,
+  Tabs,
+  Text,
+  Title,
+} from '@mantine/core';
+import { notifications } from '@mantine/notifications';
+import { IconAlertCircle, IconArrowLeft } from '@tabler/icons-react';
+import { useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { ApiError } from '@/api/client';
+import { useAcceptFix, useRegenerateQuestion, useTestQuestions } from '@/api/review';
+import { useTest } from '@/api/tests';
+import { topicPathLabel, useTopicTree } from '@/api/topics';
+import type { TestQuestionDto } from '@/api/types';
+import { EmptyState, ErrorAlert, PageLoader, StatusBadge } from '@/shared/components';
+import { humanize, REVIEWABLE_TEST_STATUSES, testStatus } from '@/shared/enums';
+import { formatDateTime, formatDuration } from '@/shared/format';
+import { CommentActionModal } from './CommentActionModal';
+import { EventTimeline } from './EventTimeline';
+import { GenerationRunsPanel } from './GenerationRunsPanel';
+import { ManualEditModal } from './ManualEditModal';
+import { QuestionCard, type ReviewActionKind } from './QuestionCard';
+import { VersionHistoryDrawer } from './VersionHistoryDrawer';
+
+type Pending = { kind: 'accept-fix' | 'regenerate'; question: TestQuestionDto } | null;
+
+export function TestReviewPage() {
+  const testId = Number(useParams().testId);
+  const { data: test, isLoading, error } = useTest(testId);
+  const { data: questions, isLoading: questionsLoading } = useTestQuestions(testId);
+  const { data: tree } = useTopicTree();
+
+  const acceptFix = useAcceptFix(testId);
+  const regenerate = useRegenerateQuestion(testId);
+
+  const [filter, setFilter] = useState<'all' | 'review'>('all');
+  const [confirm, setConfirm] = useState<Pending>(null);
+  const [editing, setEditing] = useState<TestQuestionDto | null>(null);
+  const [historyOf, setHistoryOf] = useState<TestQuestionDto | null>(null);
+
+  if (isLoading) return <PageLoader />;
+  if (error || !test) {
+    return <ErrorAlert error={error ?? 'Test not found'} title={`Could not load test #${testId}`} />;
+  }
+
+  const canReview = REVIEWABLE_TEST_STATUSES.includes(test.status ?? '');
+  const sorted = [...(questions ?? [])].sort((a, b) => (a.questionIndex ?? 0) - (b.questionIndex ?? 0));
+  const needsReview = sorted.filter((q) => q.status === 'NEEDS_REVIEW');
+  const visible = filter === 'review' ? needsReview : sorted;
+
+  // The id of the question whose accept-fix / regenerate call is running (regenerate takes a while).
+  const busyQuestionId = acceptFix.isPending
+    ? acceptFix.variables?.questionId
+    : regenerate.isPending
+      ? regenerate.variables?.questionId
+      : undefined;
+
+  const handleAction = (kind: ReviewActionKind, question: TestQuestionDto) => {
+    if (kind === 'edit') setEditing(question);
+    else if (kind === 'history') setHistoryOf(question);
+    else setConfirm({ kind, question });
+  };
+
+  const runConfirmed = (comment: string | undefined) => {
+    if (!confirm) return;
+    const { kind, question } = confirm;
+    const vars = { questionId: question.id!, expectedCurrentVersionId: question.currentVersionId!, comment };
+    const mutation = kind === 'accept-fix' ? acceptFix : regenerate;
+    mutation.mutate(vars, {
+      onSuccess: () =>
+        notifications.show({
+          color: 'teal',
+          message: `Question ${(question.questionIndex ?? 0) + 1}: ${kind === 'accept-fix' ? 'fix accepted' : 'regenerated'}`,
+        }),
+      onError: (e) => {
+        if (e instanceof ApiError && e.status === 409) {
+          notifications.show({ color: 'yellow', message: 'The page was refreshed with the latest version.' });
+        }
+      },
+    });
+    setConfirm(null);
+  };
+
+  const source = test.topicIds?.length
+    ? test.topicIds.map((id) => topicPathLabel(tree, id)).join(', ')
+    : `Documents ${test.documentIds?.join(', ')}`;
+
+  return (
+    <Stack gap="lg">
+      <Anchor component={Link} to="/tests" size="sm" c="dimmed">
+        <Group gap={4}>
+          <IconArrowLeft size={14} /> All tests
+        </Group>
+      </Anchor>
+
+      <Paper p="lg" radius="md">
+        <Group justify="space-between" align="flex-start">
+          <div>
+            <Group gap="sm">
+              <Title order={2}>Test #{test.id}</Title>
+              <StatusBadge info={testStatus(test.status)} />
+            </Group>
+            <Text c="dimmed" size="sm" mt={4}>
+              {source}
+            </Text>
+          </div>
+          <Stack gap={2} align="flex-end">
+            <Text size="sm">
+              {formatDateTime(
+                test.generationFinishedAt ?? test.generationFailedAt ?? test.generationStartedAt,
+              )}
+            </Text>
+            <Text size="xs" c="dimmed">
+              {formatDuration(
+                test.generationStartedAt,
+                test.generationFinishedAt ?? test.generationFailedAt,
+              ) &&
+                `took ${formatDuration(test.generationStartedAt, test.generationFinishedAt ?? test.generationFailedAt)}`}
+            </Text>
+          </Stack>
+        </Group>
+        <Group gap={6} mt="md">
+          {[
+            `${test.questionCount} questions`,
+            test.difficulty && humanize(test.difficulty),
+            test.answerCardinality && humanize(test.answerCardinality),
+            test.coverageMode && humanize(test.coverageMode),
+            test.generationModel,
+          ]
+            .filter(Boolean)
+            .map((label) => (
+              <Badge key={label} variant="default" radius="sm" tt="none" fw={400}>
+                {label}
+              </Badge>
+            ))}
+        </Group>
+        {test.status === 'FAILED' && test.generationErrorMessage && (
+          <Alert
+            color="red"
+            variant="light"
+            mt="md"
+            icon={<IconAlertCircle size={18} />}
+            title="Generation failed"
+          >
+            {test.generationErrorMessage}
+          </Alert>
+        )}
+      </Paper>
+
+      <Tabs defaultValue="questions" keepMounted={false}>
+        <Tabs.List>
+          <Tabs.Tab value="questions">
+            Questions {questions && `(${questions.length})`}
+            {needsReview.length > 0 && (
+              <Badge size="xs" color="orange" ml={6} variant="filled">
+                {needsReview.length}
+              </Badge>
+            )}
+          </Tabs.Tab>
+          <Tabs.Tab value="activity">Activity</Tabs.Tab>
+          <Tabs.Tab value="runs">LLM calls</Tabs.Tab>
+        </Tabs.List>
+
+        <Tabs.Panel value="questions" pt="md">
+          <Stack gap="md">
+            <Group justify="space-between">
+              <SegmentedControl
+                size="xs"
+                value={filter}
+                onChange={(v) => setFilter(v as 'all' | 'review')}
+                data={[
+                  { value: 'all', label: 'All' },
+                  { value: 'review', label: `Needs review (${needsReview.length})` },
+                ]}
+              />
+              {!canReview && (
+                <Text size="xs" c="dimmed">
+                  Review actions are available once the test is generated.
+                </Text>
+              )}
+            </Group>
+            {regenerate.isPending && (
+              <Group gap="xs">
+                <Loader size="xs" />
+                <Text size="sm" c="dimmed">
+                  Regenerating question… this can take up to a minute.
+                </Text>
+              </Group>
+            )}
+            {questionsLoading && <PageLoader />}
+            {questions && visible.length === 0 && (
+              <EmptyState title={filter === 'review' ? 'Nothing to review' : 'No questions'} />
+            )}
+            {visible.map((q) => (
+              <QuestionCard
+                key={q.id}
+                question={q}
+                canReview={canReview}
+                busy={busyQuestionId === q.id}
+                onAction={handleAction}
+              />
+            ))}
+          </Stack>
+        </Tabs.Panel>
+
+        <Tabs.Panel value="activity" pt="md">
+          <EventTimeline testId={testId} questions={sorted} />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="runs" pt="md">
+          <GenerationRunsPanel testId={testId} />
+        </Tabs.Panel>
+      </Tabs>
+
+      <CommentActionModal
+        opened={confirm != null}
+        title={confirm?.kind === 'accept-fix' ? 'Accept suggested fix' : 'Regenerate question'}
+        description={
+          confirm?.kind === 'accept-fix'
+            ? 'The flagged options are replaced by the verifier’s suggested texts. This creates a new version.'
+            : 'The AI writes a new question from the same source material. This creates a new version.'
+        }
+        confirmLabel={confirm?.kind === 'accept-fix' ? 'Accept fix' : 'Regenerate'}
+        loading={false}
+        onConfirm={runConfirmed}
+        onClose={() => setConfirm(null)}
+      />
+      <ManualEditModal
+        testId={testId}
+        question={editing}
+        multipleCorrect={test.answerCardinality === 'MULTIPLE_CORRECT'}
+        onClose={() => setEditing(null)}
+      />
+      <VersionHistoryDrawer testId={testId} question={historyOf} onClose={() => setHistoryOf(null)} />
+    </Stack>
+  );
+}
