@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Anchor,
   AppShell,
   Box,
   Burger,
@@ -17,6 +18,7 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import {
   IconBooks,
   IconChecklist,
+  IconInfoCircle,
   IconMoon,
   IconShieldCheck,
   IconSparkles,
@@ -28,6 +30,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 const NAV = [
   { to: '/library', label: 'Library', icon: IconBooks, isActive: (p: string) => p.startsWith('/library') },
   { to: '/tests', label: 'Tests', icon: IconChecklist, isActive: (p: string) => /^\/tests(\/\d+)?$/.test(p) },
+  { to: '/about', label: 'About', icon: IconInfoCircle, isActive: (p: string) => p === '/about' },
 ];
 
 function ColorSchemeToggle() {
@@ -61,7 +64,7 @@ function Brand() {
             KnowGauge
           </Text>
           <Text size="xs" c="needle.3" fw={600} lh={1.2} tt="uppercase" style={{ letterSpacing: '0.08em' }}>
-            AI test studio
+            Assessment studio
           </Text>
         </div>
       </Group>
@@ -145,8 +148,21 @@ export function Layout() {
               </Text>
             </Group>
             <Text size="xs" c="rgba(219,225,255,0.7)" lh={1.5}>
-              Questions are generated from your ingested PDFs, and a second AI pass checks every wrong answer.
+              Questions are written only from your ingested documents, and every wrong answer is independently
+              verified.
             </Text>
+            <Anchor
+              component={Link}
+              to="/about"
+              size="xs"
+              c="needle.3"
+              fw={600}
+              mt={6}
+              display="block"
+              onClick={close}
+            >
+              How KnowGauge works →
+            </Anchor>
           </Box>
 
           <Group justify="space-between" visibleFrom="sm">

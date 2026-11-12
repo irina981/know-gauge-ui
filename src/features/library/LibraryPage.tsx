@@ -64,7 +64,7 @@ export function LibraryPage() {
       <PageHeader
         eyebrow="Knowledge base"
         title="Library"
-        description="Organise your source material in topics. Uploaded PDFs are indexed so the AI can build tests grounded in them."
+        description="Organise your source material in topics. Uploaded PDFs are indexed so every test is grounded in them."
         icon={IconBooks}
         actions={
           <>
@@ -108,7 +108,7 @@ export function LibraryPage() {
               </EmptyState>
             )}
             {tree && tree.roots.length > 0 && (
-              <ScrollArea.Autosize mah="calc(100vh - 220px)">
+              <ScrollArea.Autosize mah="calc(100vh - 220px)" scrollbars="y" className="kg-topic-scroll">
                 <TopicTree roots={tree.roots} selectedId={selectedId} onSelect={select} />
               </ScrollArea.Autosize>
             )}

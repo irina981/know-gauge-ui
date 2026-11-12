@@ -1,0 +1,202 @@
+import { Badge, Group, Image, List, Paper, SimpleGrid, Stack, Text, ThemeIcon, Title } from '@mantine/core';
+import {
+  IconBooks,
+  IconChecklist,
+  IconCloudUpload,
+  IconFileSearch,
+  IconHistory,
+  IconInfoCircle,
+  IconLock,
+  IconShieldCheck,
+  IconSparkles,
+  IconUserCheck,
+} from '@tabler/icons-react';
+import { PageHeader } from '@/shared/components';
+
+/** The steps from a document to a published test. Keep in sync with the backend pipeline. */
+const STEPS = [
+  {
+    icon: IconCloudUpload,
+    title: 'Organise and upload',
+    text: 'Arrange your material in a topic tree and upload the PDFs that define what people should know.',
+  },
+  {
+    icon: IconFileSearch,
+    title: 'Index',
+    text: 'Documents are split into passages and indexed, so the relevant parts can be retrieved for each test.',
+  },
+  {
+    icon: IconSparkles,
+    title: 'Generate',
+    text: 'A language model writes questions, answers and explanations using only the retrieved passages.',
+  },
+  {
+    icon: IconShieldCheck,
+    title: 'Verify',
+    text: 'A separate verification step checks every wrong answer and flags options that could also be correct.',
+  },
+  {
+    icon: IconUserCheck,
+    title: 'Review and publish',
+    text: 'A reviewer accepts fixes, regenerates or edits questions, then publishes the test, which freezes it.',
+  },
+];
+
+const PRINCIPLES = [
+  {
+    icon: IconBooks,
+    color: 'brand',
+    title: 'Grounded in your documentation',
+    text: 'Questions are drawn only from the documents in your library, not from the open internet or a model’s general knowledge. Each question keeps a reference to the passages it was written from.',
+  },
+  {
+    icon: IconShieldCheck,
+    color: 'violet',
+    title: 'Verified before review',
+    text: 'Plausible but wrong answers are the hardest part of a good test. An independent check flags ambiguous options and suggests a clearer alternative.',
+  },
+  {
+    icon: IconHistory,
+    color: 'needle',
+    title: 'People stay in control',
+    text: 'Nothing is final until a reviewer approves it. Every change is versioned with its author and reason, and published tests can no longer be altered.',
+  },
+];
+
+const USE_CASES = [
+  'Employee onboarding and policy training',
+  'Compliance and regulatory knowledge checks',
+  'Technical and product knowledge assessments',
+  'Certification and exam preparation',
+];
+
+/** What KnowGauge is for and how it works. */
+export function AboutPage() {
+  return (
+    <Stack gap="xl" maw={1040}>
+      <PageHeader
+        eyebrow="About"
+        title="KnowGauge"
+        description="Reliable knowledge assessments, built from the documentation you already trust."
+        icon={IconInfoCircle}
+      />
+
+      <Paper p={{ base: 'lg', sm: 'xl' }} className="kg-hero">
+        <Group gap="lg" align="flex-start" wrap="nowrap" style={{ position: 'relative', zIndex: 1 }}>
+          <Image src="/favicon.svg" alt="" w={64} h={64} visibleFrom="sm" />
+          <div>
+            <Title order={2} c="white" fz={{ base: 22, sm: 26 }} lh={1.25}>
+              Measure what people know, against the sources that matter
+            </Title>
+            <Text c="rgba(255,255,255,0.85)" mt="sm" maw={720}>
+              KnowGauge turns an organisation’s own documents into multiple-choice assessments. It is
+              AI-powered, but deliberately bounded: every question, answer and explanation is derived from the
+              documentation you provide, then checked and approved before anyone is tested on it.
+            </Text>
+            <Group gap="xs" mt="md">
+              {['Source-grounded', 'Independently verified', 'Human-approved'].map((label) => (
+                <Badge
+                  key={label}
+                  size="lg"
+                  radius="xl"
+                  variant="outline"
+                  tt="none"
+                  fw={600}
+                  style={{
+                    color: '#fff',
+                    background: 'rgba(255, 255, 255, 0.12)',
+                    borderColor: 'rgba(255, 255, 255, 0.22)',
+                  }}
+                >
+                  {label}
+                </Badge>
+              ))}
+            </Group>
+          </div>
+        </Group>
+      </Paper>
+
+      <div>
+        <Title order={2} fz={20} mb={4}>
+          How it works
+        </Title>
+        <Text c="dimmed" size="sm" mb="md">
+          From a folder of documents to a published test in five steps.
+        </Text>
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 5 }} spacing="md">
+          {STEPS.map(({ icon: Icon, title, text }, i) => (
+            <Paper key={title} p="md">
+              <Group justify="space-between" mb="sm">
+                <ThemeIcon variant="gradient" size={40} radius="md">
+                  <Icon size={22} stroke={1.6} />
+                </ThemeIcon>
+                <Text fw={800} c="dimmed" ff="heading">
+                  {String(i + 1).padStart(2, '0')}
+                </Text>
+              </Group>
+              <Text fw={700} mb={4}>
+                {title}
+              </Text>
+              <Text size="sm" c="dimmed">
+                {text}
+              </Text>
+            </Paper>
+          ))}
+        </SimpleGrid>
+      </div>
+
+      <div>
+        <Title order={2} fz={20} mb={4}>
+          Principles
+        </Title>
+        <Text c="dimmed" size="sm" mb="md">
+          What you can rely on in every test KnowGauge produces.
+        </Text>
+        <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md">
+          {PRINCIPLES.map(({ icon: Icon, color, title, text }) => (
+            <Paper key={title} p="lg" className="kg-ai-edge" style={{ overflow: 'hidden' }}>
+              <ThemeIcon variant="light" color={color} size={44} radius="md" mb="sm">
+                <Icon size={24} stroke={1.6} />
+              </ThemeIcon>
+              <Text fw={700} mb={6}>
+                {title}
+              </Text>
+              <Text size="sm" c="dimmed" lh={1.6}>
+                {text}
+              </Text>
+            </Paper>
+          ))}
+        </SimpleGrid>
+      </div>
+
+      <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
+        <Paper p="lg">
+          <Group gap="sm" mb="sm">
+            <ThemeIcon variant="light" size={36} radius="md">
+              <IconChecklist size={20} />
+            </ThemeIcon>
+            <Text fw={700}>Where it fits</Text>
+          </Group>
+          <List spacing={6} size="sm" c="dimmed">
+            {USE_CASES.map((useCase) => (
+              <List.Item key={useCase}>{useCase}</List.Item>
+            ))}
+          </List>
+        </Paper>
+        <Paper p="lg">
+          <Group gap="sm" mb="sm">
+            <ThemeIcon variant="light" color="needle" size={36} radius="md">
+              <IconLock size={20} />
+            </ThemeIcon>
+            <Text fw={700}>Your content stays the source of truth</Text>
+          </Group>
+          <Text size="sm" c="dimmed" lh={1.6}>
+            The language model is used as a writing and checking tool, within the boundaries of your
+            documentation. When your documents change, re-ingest them and generate a new test: the questions
+            follow the material, not the other way round.
+          </Text>
+        </Paper>
+      </SimpleGrid>
+    </Stack>
+  );
+}

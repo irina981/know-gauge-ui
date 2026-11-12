@@ -291,7 +291,7 @@ export function TestReviewPage() {
         description={
           confirm?.kind === 'accept-fix'
             ? 'The flagged options are replaced by the verifier’s suggested texts. This creates a new version.'
-            : 'The AI writes a new question from the same source material. This creates a new version.'
+            : 'A new question is written from the same source material. This creates a new version.'
         }
         confirmLabel={confirm?.kind === 'accept-fix' ? 'Accept fix' : 'Regenerate'}
         loading={false}

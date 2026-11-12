@@ -34,20 +34,21 @@ const needle: MantineColorsTuple = [
 ];
 
 /**
- * Dark mode palette: navy-tinted and lighter than Mantine's default, for better contrast.
+ * Dark mode palette: calm charcoal with only a hint of blue, so it is easy on the eyes. The navy sidebar
+ * and the gradients carry the brand colour; the content area stays neutral.
  * Mantine uses [0] for text, [2] for dimmed text, [4] for borders, [6] for inputs and [7] for the page.
  */
 const dark: MantineColorsTuple = [
-  '#eef0fa',
-  '#d3d8ee',
-  '#a9b0cf',
-  '#7d86ab',
-  '#4f5a86',
-  '#3a4472',
-  '#2c3561',
-  '#222a52',
-  '#1b2246',
-  '#151b3a',
+  '#e6e8ee',
+  '#c4c8d2',
+  '#9ba0ad',
+  '#737885',
+  '#4b4f5a',
+  '#3a3e48',
+  '#2d3039',
+  '#23262e',
+  '#1c1f25',
+  '#16181d',
 ];
 
 export const theme = createTheme({

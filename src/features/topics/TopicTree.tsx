@@ -68,11 +68,14 @@ export function TopicTree({
             ) : (
               <IconFolder size={16} stroke={1.5} />
             )}
+            {/* Long names are cut off with "…"; the full name shows on hover. */}
             <Text
               size="sm"
               fw={selected ? 600 : 400}
               c={selected ? 'var(--mantine-primary-color-light-color)' : undefined}
               truncate
+              title={String(node.label)}
+              style={{ flex: 1, minWidth: 0 }}
             >
               {node.label}
             </Text>

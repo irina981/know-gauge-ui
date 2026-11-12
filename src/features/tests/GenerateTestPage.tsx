@@ -155,20 +155,20 @@ export function GenerateTestPage() {
 
   return (
     <Stack maw={860} pos="relative" gap="lg">
-      {/* Hero: what the AI does with your documents. */}
+      {/* Hero: what happens to your documents. */}
       <Paper p={{ base: 'lg', sm: 'xl' }} className="kg-hero">
         <Group gap="xs" mb="xs">
-          <IconSparkles size={18} color="var(--mantine-color-needle-3)" />
+          <IconShieldCheck size={18} color="var(--mantine-color-needle-3)" />
           <Text size="xs" fw={800} tt="uppercase" c="needle.3" style={{ letterSpacing: '0.12em' }}>
-            AI test generation
+            Grounded in your sources
           </Text>
         </Group>
-        <Title order={1} c="white" fz={{ base: 24, sm: 30 }} lh={1.2} maw={560}>
-          Turn your documents into grounded multiple-choice tests
+        <Title order={1} c="white" fz={{ base: 24, sm: 30 }} lh={1.2} maw={600}>
+          Build reliable multiple-choice tests from your own documents
         </Title>
-        <Text c="rgba(255,255,255,0.8)" size="sm" mt="xs" maw={560}>
-          Only ingested documents are used. Every question is written from passages of your sources and its
-          wrong answers are checked by a second AI pass.
+        <Text c="rgba(255,255,255,0.8)" size="sm" mt="xs" maw={600}>
+          Every question is written from passages of your ingested documents, and every wrong answer is
+          verified before it reaches you for review.
         </Text>
         <Group gap="xs" mt="lg" style={{ position: 'relative', zIndex: 1 }}>
           {PIPELINE.map(({ label, icon: Icon }, i) => (
@@ -176,11 +176,16 @@ export function GenerateTestPage() {
               <Badge
                 size="lg"
                 radius="xl"
-                variant="white"
-                c="brand.8"
+                variant="outline"
                 tt="none"
                 fw={600}
                 leftSection={<Icon size={14} />}
+                // Translucent chips, so the banner stays calm.
+                style={{
+                  color: '#fff',
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  borderColor: 'rgba(255, 255, 255, 0.22)',
+                }}
               >
                 {label}
               </Badge>
@@ -196,7 +201,7 @@ export function GenerateTestPage() {
             <Stack align="center" gap="xs" maw={460} px="md">
               <div className="kg-ai-ring" />
               <Text fw={800} size="lg" mt="sm" className="kg-gradient-text" ff="heading">
-                The AI is writing your questions
+                Writing your questions
               </Text>
               <Text fw={600}>{elapsed}</Text>
               <Text size="sm" c="dimmed" ta="center">
@@ -332,7 +337,7 @@ export function GenerateTestPage() {
                 leftSection={<IconSparkles size={18} />}
                 loading={generate.isPending}
               >
-                Generate with AI
+                Generate test
               </Button>
             </Group>
           </Stack>

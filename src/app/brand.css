@@ -12,12 +12,12 @@ body {
   background-image:
     radial-gradient(
       900px 500px at 100% -10%,
-      light-dark(rgba(76, 110, 245, 0.12), rgba(116, 143, 252, 0.16)),
+      light-dark(rgba(76, 110, 245, 0.12), rgba(116, 143, 252, 0.05)),
       transparent 70%
     ),
     radial-gradient(
       700px 420px at 15% 110%,
-      light-dark(rgba(121, 80, 242, 0.08), rgba(151, 117, 250, 0.12)),
+      light-dark(rgba(121, 80, 242, 0.08), rgba(151, 117, 250, 0.04)),
       transparent 70%
     );
   background-attachment: fixed;
@@ -26,10 +26,10 @@ body {
 /* Cards and papers sit slightly translucent on the background ("glass"). */
 .mantine-Paper-root,
 .mantine-Card-root {
-  /* Dark mode: clearly lighter than the page (dark-7) so cards stand out. */
-  background-color: light-dark(rgba(255, 255, 255, 0.86), rgba(44, 53, 97, 0.78));
+  /* Dark mode: neutral charcoal, a step lighter than the page (dark-7) so cards stand out. */
+  background-color: light-dark(rgba(255, 255, 255, 0.86), rgba(45, 48, 57, 0.92));
   backdrop-filter: blur(8px);
-  border-color: light-dark(rgba(16, 24, 64, 0.08), rgba(255, 255, 255, 0.14));
+  border-color: light-dark(rgba(16, 24, 64, 0.08), rgba(255, 255, 255, 0.09));
 }
 
 /* ---------- Sidebar: always dark navy, in both colour schemes ---------- */
@@ -80,6 +80,25 @@ body {
   color: #fff;
 }
 
+/*
+ * Dark mode: no blue surfaces. The sidebar and top bar become neutral charcoal (slightly darker than the
+ * page); brand colour stays only on the active item, the Generate button and accents.
+ */
+[data-mantine-color-scheme='dark'] .kg-sidebar,
+[data-mantine-color-scheme='dark'] .kg-topbar {
+  background: #16181d;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-mantine-color-scheme='dark'] .kg-sidebar-card {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+[data-mantine-color-scheme='dark'] .kg-nav-link[data-active] {
+  background: rgba(116, 143, 252, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(116, 143, 252, 0.25);
+}
+
 /* ---------- AI accents ---------- */
 
 /* Gradient text, e.g. the small "eyebrow" above page titles. */
@@ -102,9 +121,17 @@ body {
   overflow: hidden;
   color: #fff;
   border: none;
+  /* Muted indigo → violet: brand colours, but calm. The lime glow echoes the logo's needle. */
   background:
-    radial-gradient(600px 240px at 90% 0%, rgba(169, 227, 75, 0.25), transparent 60%),
-    linear-gradient(135deg, #3b5bdb 0%, #5f3dc4 100%);
+    radial-gradient(600px 240px at 90% 0%, rgba(169, 227, 75, 0.14), transparent 60%),
+    linear-gradient(135deg, #3d4a8c 0%, #4e4785 100%);
+}
+
+/* Dark mode: deeper and closer to the neutral charcoal page. */
+[data-mantine-color-scheme='dark'] .kg-hero {
+  background:
+    radial-gradient(600px 240px at 90% 0%, rgba(169, 227, 75, 0.08), transparent 60%),
+    linear-gradient(135deg, #2f3550 0%, #3a3550 100%);
 }
 
 .kg-hero::after {
@@ -172,4 +199,12 @@ body {
 .kg-hover-lift:hover {
   transform: translateY(-1px);
   box-shadow: var(--mantine-shadow-md);
+}
+
+/*
+ * Topic tree: Mantine's ScrollArea lays its content out as a table as wide as the widest row, so long
+ * topic names would be clipped without "…". A block layout keeps rows at the panel width.
+ */
+.kg-topic-scroll .mantine-ScrollArea-viewport > div {
+  display: block !important;
 }

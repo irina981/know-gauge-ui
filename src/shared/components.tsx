@@ -1,5 +1,5 @@
 import { Alert, Badge, Center, Group, Loader, Paper, Stack, Text, ThemeIcon, Title } from '@mantine/core';
-import { IconAlertCircle, IconInbox, IconSparkles, type Icon as TablerIcon } from '@tabler/icons-react';
+import { IconAlertCircle, IconInbox, IconShieldCheck, type Icon as TablerIcon } from '@tabler/icons-react';
 import type { ReactNode } from 'react';
 import type { EnumInfo } from './enums';
 
@@ -23,14 +23,14 @@ export function StatusBadge({ info, busy = false }: { info: EnumInfo; busy?: boo
   );
 }
 
-/** Small gradient "AI" marker for things produced or checked by a model. */
-export function AiBadge({ label = 'AI' }: { label?: string }) {
+/** Small gradient marker for an answer option flagged by the automatic verification step. */
+export function VerifierBadge({ label = 'Verifier' }: { label?: string }) {
   return (
     <Badge
       variant="gradient"
       size="sm"
       tt="none"
-      leftSection={<IconSparkles size={11} />}
+      leftSection={<IconShieldCheck size={11} />}
       style={{ minWidth: 'max-content' }}
     >
       {label}

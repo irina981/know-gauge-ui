@@ -1,7 +1,7 @@
 import { Badge, Group, Paper, Stack, Text, ThemeIcon } from '@mantine/core';
 import { IconAlertTriangle, IconArrowRight, IconCheck } from '@tabler/icons-react';
 import type { TestQuestionOptionDto } from '@/api/types';
-import { AiBadge } from '@/shared/components';
+import { VerifierBadge } from '@/shared/components';
 import { OPTION_LETTERS } from '@/shared/enums';
 
 /** Options A–D of a question version. Correct answers get a green check; flagged options show the verifier's note. */
@@ -47,7 +47,7 @@ export function OptionList({ options }: { options?: Record<string, TestQuestionO
             {option.flagged && (
               <Stack gap={4} mt={6} ml={40}>
                 <Group gap={6} wrap="nowrap" align="flex-start">
-                  <AiBadge label="AI verifier" />
+                  <VerifierBadge />
                   <IconAlertTriangle
                     size={14}
                     color="var(--mantine-color-orange-6)"

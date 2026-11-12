@@ -40,7 +40,7 @@ export function TestsPage() {
       <PageHeader
         eyebrow="Assessments"
         title="Tests"
-        description="Every test generated from your library: review what the AI verifier flagged, then publish."
+        description="Every test generated from your library: review the flagged answers, then publish."
         icon={IconChecklist}
         actions={
           <Button
