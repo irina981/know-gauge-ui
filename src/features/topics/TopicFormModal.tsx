@@ -1,12 +1,13 @@
-import { Button, Group, Modal, Stack, Textarea, TextInput } from '@mantine/core';
+import { Button, Group, Modal, Select, Stack, Textarea, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useEffect } from 'react';
-import { useCreateTopic, useUpdateTopic } from '@/api/topics';
+import { useEffect, useMemo } from 'react';
+import { topicPathLabel, useCreateTopic, useTopicTree, useUpdateTopic } from '@/api/topics';
 import type { TopicNode } from '@/api/types';
 
 /**
  * One dialog for both "new topic" and "rename topic":
- *  - mode "create": parentId undefined = new root topic, otherwise a sub-topic.
+ *  - mode "create": `parent` preselects the parent topic; the user can pick another one or clear it
+ *    (no parent = new root topic).
  *  - mode "edit":   topic is the one being renamed.
  */
 export type TopicFormTarget = { mode: 'create'; parent?: TopicNode } | { mode: 'edit'; topic: TopicNode };
@@ -17,45 +18,77 @@ interface Props {
   onSaved?: (id: number) => void;
 }
 
+interface FormValues {
+  name: string;
+  description: string;
+  parentId: string | null;
+}
+
 export function TopicFormModal({ target, onClose, onSaved }: Props) {
   const create = useCreateTopic();
   const update = useUpdateTopic();
-  const form = useForm({
-    initialValues: { name: '', description: '' },
+  const { data: tree } = useTopicTree();
+  const form = useForm<FormValues>({
+    initialValues: { name: '', description: '', parentId: null },
     validate: { name: (v) => (v.trim() ? null : 'Name is required') },
   });
+
+  // Every topic as "Parent › Child" for the parent picker.
+  const parentOptions = useMemo(
+    () =>
+      tree
+        ? [...tree.byId.values()]
+            .map((t) => ({ value: String(t.id), label: topicPathLabel(tree, t.id) }))
+            .sort((a, b) => a.label.localeCompare(b.label))
+        : [],
+    [tree],
+  );
 
   // Fill the form whenever the dialog opens for a different topic.
   useEffect(() => {
     if (target?.mode === 'edit') {
-      form.setValues({ name: target.topic.name, description: target.topic.description ?? '' });
+      form.setValues({
+        name: target.topic.name,
+        description: target.topic.description ?? '',
+        parentId: null,
+      });
     } else {
-      form.setValues({ name: '', description: '' });
+      form.setValues({
+        name: '',
+        description: '',
+        parentId: target?.parent ? String(target.parent.id) : null,
+      });
     }
     form.resetDirty();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target]);
 
-  const title =
-    target?.mode === 'edit'
-      ? 'Rename topic'
-      : target?.parent
-        ? `New sub-topic of "${target.parent.name}"`
-        : 'New topic';
+  const title = target?.mode === 'edit' ? 'Rename topic' : 'New topic';
 
   // Errors are shown as a notification by the global handler; the dialog stays open.
-  const submit = form.onSubmit(({ name, description }) => {
+  const submit = form.onSubmit(({ name, description, parentId }) => {
     if (!target) return;
     const body = { name: name.trim(), description: description.trim() || undefined };
     const done = { onSuccess: (saved: { id?: number }) => (onSaved?.(saved.id!), onClose()) };
     if (target.mode === 'edit') update.mutate({ id: target.topic.id, ...body }, done);
-    else create.mutate({ ...body, parentId: target.parent?.id }, done);
+    else create.mutate({ ...body, parentId: parentId ? Number(parentId) : undefined }, done);
   });
 
   return (
     <Modal opened={target != null} onClose={onClose} title={title}>
       <form onSubmit={submit}>
         <Stack>
+          {target?.mode === 'create' && (
+            <Select
+              label="Parent topic"
+              description="Leave empty to create a top-level topic."
+              placeholder="None (top-level topic)"
+              data={parentOptions}
+              searchable
+              clearable
+              {...form.getInputProps('parentId')}
+            />
+          )}
           <TextInput label="Name" data-autofocus withAsterisk {...form.getInputProps('name')} />
           <Textarea label="Description" autosize minRows={2} {...form.getInputProps('description')} />
           <Group justify="flex-end">

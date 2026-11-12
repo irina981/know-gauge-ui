@@ -56,7 +56,11 @@ export function LibraryPage() {
           >
             Import tree
           </Button>
-          <Button leftSection={<IconPlus size={16} />} onClick={() => setFormTarget({ mode: 'create' })}>
+          {/* The dialog preselects the selected topic as parent; clear it for a top-level topic. */}
+          <Button
+            leftSection={<IconPlus size={16} />}
+            onClick={() => setFormTarget({ mode: 'create', parent: selected })}
+          >
             New topic
           </Button>
         </Group>
@@ -104,6 +108,13 @@ export function LibraryPage() {
                     )}
                   </div>
                   <Group gap="xs" wrap="nowrap">
+                    <Button
+                      variant="default"
+                      leftSection={<IconFolderPlus size={16} />}
+                      onClick={() => setFormTarget({ mode: 'create', parent: selected })}
+                    >
+                      Add sub-topic
+                    </Button>
                     <Button
                       component={Link}
                       to={`/tests/new?topicId=${selected.id}`}
