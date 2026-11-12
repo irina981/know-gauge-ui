@@ -201,10 +201,76 @@ body {
   box-shadow: var(--mantine-shadow-md);
 }
 
+/* ---------- Library page layout ---------- */
+
 /*
- * Topic tree: Mantine's ScrollArea lays its content out as a table as wide as the widest row, so long
- * topic names would be clipped without "…". A block layout keeps rows at the panel width.
+ * Mantine's ScrollArea lays its content out as a table as wide as the widest row; a block layout keeps
+ * topic rows at the panel width, so long names end in "…" instead of scrolling sideways.
  */
 .kg-topic-scroll .mantine-ScrollArea-viewport > div {
   display: block !important;
+}
+
+.kg-library {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-lg);
+}
+
+.kg-library-tree {
+  display: flex;
+  flex-direction: column;
+  max-height: 60vh;
+}
+
+.kg-topic-scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.kg-library-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-lg);
+}
+
+.kg-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*
+ * Desktop: the page fills the window. Topics on the left, details on the right; both reach the bottom and
+ * scroll inside instead of scrolling the whole page. 100dvh minus the main area's top and bottom padding.
+ */
+@media (min-width: 62em) {
+  .kg-library-page {
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - 2 * var(--mantine-spacing-lg));
+  }
+
+  .kg-library-page > .kg-library {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  }
+
+  .kg-library-tree {
+    max-height: none;
+    min-height: 0;
+  }
+
+  .kg-library-detail {
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  /* The last card (documents, or "Select a topic") stretches to the bottom of the window. */
+  .kg-library-detail > .kg-fill {
+    flex: 1 0 auto;
+  }
 }

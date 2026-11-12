@@ -1,7 +1,6 @@
 import {
   ActionIcon,
   Button,
-  Grid,
   Group,
   Menu,
   Paper,
@@ -60,7 +59,8 @@ export function LibraryPage() {
     });
 
   return (
-    <>
+    // On desktop the page fills the window: both panels reach the bottom and scroll inside (brand.css).
+    <div className="kg-library-page">
       <PageHeader
         eyebrow="Knowledge base"
         title="Library"
@@ -86,38 +86,36 @@ export function LibraryPage() {
         }
       />
 
-      <Grid gutter="lg">
-        <Grid.Col span={{ base: 12, md: 4, lg: 3 }}>
-          <Paper p="sm">
-            <Text
-              size="xs"
-              fw={700}
-              c="dimmed"
-              tt="uppercase"
-              px={6}
-              py={4}
-              style={{ letterSpacing: '0.08em' }}
-            >
-              Topics
-            </Text>
-            {isLoading && <PageLoader />}
-            {error && <ErrorAlert error={error} title="Could not load topics" />}
-            {tree && tree.roots.length === 0 && (
-              <EmptyState title="No topics yet" icon={IconFolders}>
-                Create a topic to start uploading documents.
-              </EmptyState>
-            )}
-            {tree && tree.roots.length > 0 && (
-              <ScrollArea.Autosize mah="calc(100vh - 220px)" scrollbars="y" className="kg-topic-scroll">
-                <TopicTree roots={tree.roots} selectedId={selectedId} onSelect={select} />
-              </ScrollArea.Autosize>
-            )}
-          </Paper>
-        </Grid.Col>
+      <div className="kg-library">
+        <Paper p="sm" className="kg-library-tree">
+          <Text
+            size="xs"
+            fw={700}
+            c="dimmed"
+            tt="uppercase"
+            px={6}
+            py={4}
+            style={{ letterSpacing: '0.08em' }}
+          >
+            Topics
+          </Text>
+          {isLoading && <PageLoader />}
+          {error && <ErrorAlert error={error} title="Could not load topics" />}
+          {tree && tree.roots.length === 0 && (
+            <EmptyState title="No topics yet" icon={IconFolders}>
+              Create a topic to start uploading documents.
+            </EmptyState>
+          )}
+          {tree && tree.roots.length > 0 && (
+            <ScrollArea className="kg-topic-scroll" scrollbars="y" type="auto" offsetScrollbars>
+              <TopicTree roots={tree.roots} selectedId={selectedId} onSelect={select} />
+            </ScrollArea>
+          )}
+        </Paper>
 
-        <Grid.Col span={{ base: 12, md: 8, lg: 9 }}>
+        <div className="kg-library-detail">
           {!selected ? (
-            <Paper p="xl">
+            <Paper p="xl" className="kg-fill kg-center">
               <EmptyState
                 title={selectedId != null && tree ? 'Topic not found' : 'Select a topic'}
                 icon={IconFolders}
@@ -126,7 +124,7 @@ export function LibraryPage() {
               </EmptyState>
             </Paper>
           ) : (
-            <Stack gap="lg">
+            <>
               <Paper p="lg" className="kg-ai-edge" style={{ overflow: 'hidden' }}>
                 <Group justify="space-between" align="flex-start" gap="md">
                   <Group gap="md" align="flex-start" wrap="nowrap">
@@ -196,7 +194,7 @@ export function LibraryPage() {
                 </Group>
               </Paper>
 
-              <Paper p="lg">
+              <Paper p="lg" className="kg-fill">
                 <Title order={3} fz={18}>
                   Documents
                 </Title>
@@ -208,10 +206,10 @@ export function LibraryPage() {
                   <DocumentTable key={selected.id} topicId={selected.id} />
                 </Stack>
               </Paper>
-            </Stack>
+            </>
           )}
-        </Grid.Col>
-      </Grid>
+        </div>
+      </div>
 
       <TopicFormModal
         target={formTarget}
@@ -219,6 +217,6 @@ export function LibraryPage() {
         onSaved={(id) => formTarget?.mode === 'create' && select(id)}
       />
       <ImportTreeModal opened={importOpen} onClose={() => setImportOpen(false)} onCreated={select} />
-    </>
+    </div>
   );
 }

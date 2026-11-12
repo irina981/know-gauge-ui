@@ -82,8 +82,8 @@ export function Layout() {
   return (
     <AppShell
       header={{ height: 60, collapsed: !isMobile }}
-      navbar={{ width: 260, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-      padding={{ base: 'md', sm: 'xl' }}
+      navbar={{ width: 280, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+      padding={{ base: 'md', sm: 'lg' }}
     >
       <AppShell.Header className="kg-topbar" withBorder={false}>
         <Group h="100%" px="md" justify="space-between">
@@ -175,7 +175,8 @@ export function Layout() {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <Box maw={1280} mx="auto">
+        {/* Wide cap so very large screens keep readable line lengths; below it the content uses the full width. */}
+        <Box maw={1800} mx="auto" px={{ base: 0, sm: 'sm' }}>
           <Outlet />
         </Box>
       </AppShell.Main>

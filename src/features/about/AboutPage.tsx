@@ -1,4 +1,16 @@
-import { Badge, Group, Image, List, Paper, SimpleGrid, Stack, Text, ThemeIcon, Title } from '@mantine/core';
+import {
+  Badge,
+  Box,
+  Group,
+  Image,
+  List,
+  Paper,
+  SimpleGrid,
+  Stack,
+  Text,
+  ThemeIcon,
+  Title,
+} from '@mantine/core';
 import {
   IconArrowRight,
   IconBooks,
@@ -10,6 +22,7 @@ import {
   IconShieldCheck,
   IconSparkles,
   IconUserCheck,
+  type Icon as TablerIcon,
 } from '@tabler/icons-react';
 import { PageHeader } from '@/shared/components';
 
@@ -78,30 +91,52 @@ const USE_CASES = [
   'Certification and exam preparation',
 ];
 
+/** One step of the pipeline as a translucent chip on the banner. */
+function PipelineChip({ label, icon: Icon }: { label: string; icon: TablerIcon }) {
+  return (
+    <Badge
+      size="lg"
+      radius="xl"
+      variant="outline"
+      tt="none"
+      fw={600}
+      leftSection={<Icon size={14} />}
+      style={{
+        color: '#fff',
+        background: 'rgba(255, 255, 255, 0.12)',
+        borderColor: 'rgba(255, 255, 255, 0.22)',
+      }}
+    >
+      {label}
+    </Badge>
+  );
+}
+
 /** What KnowGauge is for and how it works. */
 export function AboutPage() {
   return (
-    <>
+    // A centred column reads better than the full window width for this text-heavy page.
+    <Box maw={1200} mx="auto">
       <PageHeader
         eyebrow="About"
         title="KnowGauge"
         description="Reliable knowledge assessments, built from the documentation you already trust."
         media={<Image src="/favicon.svg" alt="KnowGauge logo" w={64} h={64} style={{ flexShrink: 0 }} />}
       />
-      <Stack gap="xl" maw={1040}>
+      <Stack gap="xl">
         <Paper p={{ base: 'lg', sm: 'xl' }} className="kg-hero">
-          <Group gap="lg" align="flex-start" wrap="nowrap" style={{ position: 'relative', zIndex: 1 }}>
-            <div>
+          <Group gap="xl" align="center" wrap="nowrap" style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <Group gap="xs" mb="xs">
                 <IconShieldCheck size={18} color="var(--mantine-color-needle-3)" />
                 <Text size="xs" fw={800} tt="uppercase" c="needle.3" style={{ letterSpacing: '0.12em' }}>
                   Grounded in your sources
                 </Text>
               </Group>
-              <Title order={2} c="white" fz={{ base: 24, sm: 30 }} lh={1.2} maw={640}>
+              <Title order={2} c="white" fz={{ base: 24, sm: 30 }} lh={1.2}>
                 Build reliable multiple-choice tests from your own documents
               </Title>
-              <Text c="rgba(255,255,255,0.85)" mt="sm" maw={720}>
+              <Text c="rgba(255,255,255,0.85)" mt="sm" maw={860}>
                 KnowGauge turns an organisation’s own documents into multiple-choice assessments. It is
                 AI-powered, but deliberately bounded: every question, answer and explanation is derived from
                 the documentation you provide, every wrong answer is verified, and a reviewer approves the
@@ -111,21 +146,7 @@ export function AboutPage() {
               <Group gap="xs" mt="lg">
                 {PIPELINE.map(({ label, icon: Icon }, i) => (
                   <Group key={label} gap={6} wrap="nowrap">
-                    <Badge
-                      size="lg"
-                      radius="xl"
-                      variant="outline"
-                      tt="none"
-                      fw={600}
-                      leftSection={<Icon size={14} />}
-                      style={{
-                        color: '#fff',
-                        background: 'rgba(255, 255, 255, 0.12)',
-                        borderColor: 'rgba(255, 255, 255, 0.22)',
-                      }}
-                    >
-                      {label}
-                    </Badge>
+                    <PipelineChip label={label} icon={Icon} />
                     {i < PIPELINE.length - 1 && <IconArrowRight size={14} color="rgba(255,255,255,0.6)" />}
                   </Group>
                 ))}
@@ -216,6 +237,6 @@ export function AboutPage() {
           </Paper>
         </SimpleGrid>
       </Stack>
-    </>
+    </Box>
   );
 }
