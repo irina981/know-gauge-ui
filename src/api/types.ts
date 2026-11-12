@@ -31,10 +31,14 @@ export interface TopicNode {
   children: TopicNode[];
 }
 
+/** A paged response: Spring Data's PagedModel, with the paging details under `page`. */
 export interface Page<T> {
   content: T[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
-  size: number;
+  page: {
+    size: number;
+    /** 0-based page index */
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
 }

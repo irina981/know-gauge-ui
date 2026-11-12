@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api, unwrap } from './client';
-import type { ManualQuestionInput } from './types';
+import { api, postJson, unwrap } from './client';
+import type { ManualQuestionInput, TestDto } from './types';
 import { testKeys } from './tests';
 
 export function useTestQuestions(testId: number) {
@@ -93,4 +93,18 @@ export function useManualReplace(testId: number) {
         }),
       ),
   );
+}
+
+/**
+ * Publishes the test (backend ADR005): its questions are frozen and it becomes the only kind of test that
+ * accepts attempts. Allowed for GENERATED or REVIEWED tests with no question needing review; 409 otherwise.
+ */
+export function usePublishTest(testId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (comment: string | undefined) =>
+      postJson<TestDto>(`/api/tests/${testId}/publish`, comment ? { comment } : {}),
+    // Status and history change; refresh this test and the tests list.
+    onSettled: () => queryClient.invalidateQueries({ queryKey: testKeys.all }),
+  });
 }

@@ -57,7 +57,24 @@ export async function unwrapVoid(request: Promise<{ error?: unknown; response: R
  * Plain fetch for multipart requests (openapi-fetch is JSON-oriented). Same error handling as `unwrap`.
  */
 export async function postMultipart<T>(url: string, form: FormData): Promise<T> {
-  const response = await fetch(url, { method: 'POST', body: form });
+  return parseResponse<T>(await fetch(url, { method: 'POST', body: form }));
+}
+
+/**
+ * Untyped JSON POST, for an endpoint that is not in `schema.d.ts` yet (the backend wasn't running to
+ * regenerate it). After `npm run gen:api`, prefer `unwrap(api.POST(...))`.
+ */
+export async function postJson<T>(url: string, body: unknown): Promise<T> {
+  return parseResponse<T>(
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  );
+}
+
+async function parseResponse<T>(response: Response): Promise<T> {
   const text = await response.text();
   let body: unknown = text;
   try {

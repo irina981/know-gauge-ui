@@ -26,11 +26,16 @@ export const TEST_STATUSES: Record<string, EnumInfo> = {
   REQUIRES_REVIEW: { label: 'Needs review', color: 'orange' },
   REVIEWED: { label: 'Reviewed', color: 'teal' },
   FAILED: { label: 'Failed', color: 'red' },
+  // Frozen: no review actions; the only status that accepts attempts (backend ADR005).
+  PUBLISHED: { label: 'Published', color: 'violet' },
 };
 export const testStatus = (v?: string | null) => lookup(TEST_STATUSES, v);
 
 /** Review actions are only allowed in these test states. */
 export const REVIEWABLE_TEST_STATUSES = ['GENERATED', 'REQUIRES_REVIEW', 'REVIEWED'];
+
+/** A test can be published from these states, and only when no question needs review. */
+export const PUBLISHABLE_TEST_STATUSES = ['GENERATED', 'REVIEWED'];
 
 export const DOCUMENT_STATUSES: Record<string, EnumInfo> = {
   UPLOADED: { label: 'Uploaded', color: 'gray' },
@@ -60,6 +65,7 @@ export const EVENT_TYPES: Record<string, EnumInfo> = {
   TEST_REQUIRES_REVIEW: { label: 'Test needs review', color: 'orange' },
   TEST_REVIEWED: { label: 'Test reviewed', color: 'teal' },
   TEST_FAILED: { label: 'Test failed', color: 'red' },
+  TEST_PUBLISHED: { label: 'Test published', color: 'violet' },
   QUESTION_GENERATED: { label: 'Question generated', color: 'blue' },
   OPTION_FLAGGED: { label: 'Option flagged', color: 'orange' },
   FIX_ACCEPTED: { label: 'Fix accepted', color: 'teal' },

@@ -2,6 +2,7 @@ import {
   Alert,
   Anchor,
   Badge,
+  Button,
   Group,
   Loader,
   Paper,
@@ -10,19 +11,20 @@ import {
   Tabs,
   Text,
   Title,
+  Tooltip,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconAlertCircle, IconArrowLeft } from '@tabler/icons-react';
+import { IconAlertCircle, IconArrowLeft, IconLock, IconSend } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ApiError } from '@/api/client';
-import { useAcceptFix, useRegenerateQuestion, useTestQuestions } from '@/api/review';
+import { useAcceptFix, usePublishTest, useRegenerateQuestion, useTestQuestions } from '@/api/review';
 import { isGenerating, testKeys, useTest } from '@/api/tests';
 import { topicPathLabel, useTopicTree } from '@/api/topics';
 import type { TestQuestionDto } from '@/api/types';
 import { EmptyState, ErrorAlert, PageLoader, StatusBadge } from '@/shared/components';
-import { humanize, REVIEWABLE_TEST_STATUSES, testStatus } from '@/shared/enums';
+import { humanize, PUBLISHABLE_TEST_STATUSES, REVIEWABLE_TEST_STATUSES, testStatus } from '@/shared/enums';
 import { formatDateTime, formatDuration } from '@/shared/format';
 import { useNow } from '@/shared/useNow';
 import { CommentActionModal } from './CommentActionModal';
@@ -42,6 +44,8 @@ export function TestReviewPage() {
 
   const acceptFix = useAcceptFix(testId);
   const regenerate = useRegenerateQuestion(testId);
+  const publish = usePublishTest(testId);
+  const [publishOpen, setPublishOpen] = useState(false);
 
   const [filter, setFilter] = useState<'all' | 'review'>('all');
   const [confirm, setConfirm] = useState<Pending>(null);
@@ -66,9 +70,19 @@ export function TestReviewPage() {
   }
 
   const canReview = REVIEWABLE_TEST_STATUSES.includes(test.status ?? '');
+  const published = test.status === 'PUBLISHED';
   const sorted = [...(questions ?? [])].sort((a, b) => (a.questionIndex ?? 0) - (b.questionIndex ?? 0));
   const needsReview = sorted.filter((q) => q.status === 'NEEDS_REVIEW');
   const visible = filter === 'review' ? needsReview : sorted;
+
+  // Same rule as the backend: GENERATED or REVIEWED, with questions and none of them needing review.
+  const publishBlockedReason = !PUBLISHABLE_TEST_STATUSES.includes(test.status ?? '')
+    ? 'Only generated or reviewed tests can be published'
+    : sorted.length === 0
+      ? 'The test has no questions'
+      : needsReview.length > 0
+        ? `Review the ${needsReview.length} flagged question(s) first`
+        : undefined;
 
   // The id of the question whose accept-fix / regenerate call is running (regenerate takes a while).
   const busyQuestionId = acceptFix.isPending
@@ -127,6 +141,23 @@ export function TestReviewPage() {
             </Text>
           </div>
           <Stack gap={2} align="flex-end">
+            {canReview && (
+              <Tooltip label={publishBlockedReason} disabled={!publishBlockedReason}>
+                {/* The wrapper keeps the tooltip working on a disabled button. */}
+                <span>
+                  <Button
+                    color="violet"
+                    leftSection={<IconSend size={16} />}
+                    disabled={!!publishBlockedReason}
+                    loading={publish.isPending}
+                    onClick={() => setPublishOpen(true)}
+                    mb="xs"
+                  >
+                    Publish
+                  </Button>
+                </span>
+              </Tooltip>
+            )}
             <Text size="sm">
               {formatDateTime(
                 test.generationFinishedAt ?? test.generationFailedAt ?? test.generationStartedAt,
@@ -167,6 +198,11 @@ export function TestReviewPage() {
             Running for {formatDuration(test.generationStartedAt, new Date(now).toISOString()) ?? '…'}.
             Questions appear here when generation finishes; this page updates by itself. If the backend was
             restarted meanwhile, the test stays in this state and can be deleted.
+          </Alert>
+        )}
+        {published && (
+          <Alert color="violet" variant="light" mt="md" icon={<IconLock size={18} />} title="Published">
+            The questions are frozen: review actions are disabled. To change this test, create a new one.
           </Alert>
         )}
         {test.status === 'FAILED' && test.generationErrorMessage && (
@@ -210,7 +246,9 @@ export function TestReviewPage() {
               />
               {!canReview && (
                 <Text size="xs" c="dimmed">
-                  Review actions are available once the test is generated.
+                  {published
+                    ? 'Published tests can’t be changed.'
+                    : 'Review actions are available once the test is generated.'}
                 </Text>
               )}
             </Group>
@@ -259,6 +297,20 @@ export function TestReviewPage() {
         loading={false}
         onConfirm={runConfirmed}
         onClose={() => setConfirm(null)}
+      />
+      <CommentActionModal
+        opened={publishOpen}
+        title="Publish test"
+        description="Publishing freezes the questions: accept fix, regenerate and edit are no longer possible, and the test can be used for attempts."
+        confirmLabel="Publish"
+        loading={publish.isPending}
+        onConfirm={(comment) =>
+          publish.mutate(comment, {
+            onSuccess: () => notifications.show({ color: 'violet', message: `Test #${testId} published` }),
+            onSettled: () => setPublishOpen(false),
+          })
+        }
+        onClose={() => setPublishOpen(false)}
       />
       <ManualEditModal
         testId={testId}

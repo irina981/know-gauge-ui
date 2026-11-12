@@ -137,12 +137,17 @@ export function DocumentTable({ topicId }: { topicId: number }) {
           <Table.Tbody>{rows}</Table.Tbody>
         </Table>
       </Table.ScrollContainer>
-      {data.totalPages > 1 && (
+      {data.page.totalPages > 1 && (
         <Group justify="space-between" mt="sm">
           <Text size="sm" c="dimmed">
-            {data.totalElements} documents
+            {data.page.totalElements} documents
           </Text>
-          <Pagination total={data.totalPages} value={page + 1} onChange={(p) => setPage(p - 1)} size="sm" />
+          <Pagination
+            total={data.page.totalPages}
+            value={page + 1}
+            onChange={(p) => setPage(p - 1)}
+            size="sm"
+          />
         </Group>
       )}
       {ingestingIds.length > 0 && (
