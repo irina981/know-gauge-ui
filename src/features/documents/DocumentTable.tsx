@@ -1,7 +1,8 @@
-import { ActionIcon, Badge, Group, Loader, Pagination, Table, Text, Tooltip } from '@mantine/core';
+import { ActionIcon, Group, Pagination, Table, Text, Tooltip } from '@mantine/core';
 import { IconDownload, IconPlayerPlay, IconRefresh, IconTrash } from '@tabler/icons-react';
 import { useState } from 'react';
 import {
+  canStartIngestion,
   documentContentUrl,
   useDeleteDocument,
   useIngestDocument,
@@ -33,9 +34,17 @@ export function DocumentTable({ topicId }: { topicId: number }) {
   // plus the INGESTING status reported by the server.
   const isIngesting = (doc: DocumentDto) => ingestingIds.includes(doc.id!) || doc.status === 'INGESTING';
 
+  const ingestTooltip = (doc: DocumentDto, ingesting: boolean) => {
+    if (ingesting) return 'Ingestion in progress';
+    if (doc.status === 'INGESTED') return 'Already ingested';
+    if (doc.status === 'FAILED') return 'Retry ingestion';
+    return 'Ingest now (otherwise the scheduled job picks it up)';
+  };
+
   const rows = data.content.map((doc) => {
     const ingesting = isIngesting(doc);
-    const ingested = doc.status === 'INGESTED';
+    const failed = doc.status === 'FAILED';
+    const ingestAllowed = !ingesting && canStartIngestion(doc);
     return (
       <Table.Tr key={doc.id}>
         <Table.Td>
@@ -48,9 +57,7 @@ export function DocumentTable({ topicId }: { topicId: number }) {
         </Table.Td>
         <Table.Td style={{ whiteSpace: 'nowrap' }}>
           {ingesting ? (
-            <Badge variant="light" color="blue" leftSection={<Loader size={10} color="blue" />}>
-              Ingesting
-            </Badge>
+            <StatusBadge info={documentStatus('INGESTING')} busy />
           ) : (
             <Tooltip label={doc.errorMessage} disabled={!doc.errorMessage} multiline w={320}>
               <span>
@@ -69,15 +76,18 @@ export function DocumentTable({ topicId }: { topicId: number }) {
         </Table.Td>
         <Table.Td>
           <Group gap={4} justify="flex-end" wrap="nowrap">
-            <Tooltip label={ingested ? 'Re-ingest' : 'Ingest'}>
-              <ActionIcon
-                variant="subtle"
-                disabled={ingesting}
-                onClick={() => ingest.mutate(doc.id!)}
-                aria-label="Ingest"
-              >
-                {ingested ? <IconRefresh size={18} /> : <IconPlayerPlay size={18} />}
-              </ActionIcon>
+            <Tooltip label={ingestTooltip(doc, ingesting)}>
+              {/* The wrapper keeps the tooltip working on a disabled button. */}
+              <span>
+                <ActionIcon
+                  variant="subtle"
+                  disabled={!ingestAllowed}
+                  onClick={() => ingest.mutate(doc.id!)}
+                  aria-label="Ingest"
+                >
+                  {failed ? <IconRefresh size={18} /> : <IconPlayerPlay size={18} />}
+                </ActionIcon>
+              </span>
             </Tooltip>
             <Tooltip label="Download">
               <ActionIcon

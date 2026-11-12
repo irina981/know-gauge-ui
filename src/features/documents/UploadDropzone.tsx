@@ -73,7 +73,8 @@ export function UploadDropzone({ topicId }: { topicId: number }) {
       </Dropzone>
       <Checkbox
         size="xs"
-        label="Ingest automatically after upload"
+        label="Ingest immediately after upload"
+        description="Otherwise the server's scheduled ingestion job picks the document up within a few minutes."
         checked={ingestAfterUpload}
         onChange={(e) => setIngestAfterUpload(e.currentTarget.checked)}
       />

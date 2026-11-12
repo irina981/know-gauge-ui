@@ -14,12 +14,29 @@ export const documentKeys = {
   page: (topicId: number, page: number, size: number) => ['documents', 'topic', topicId, page, size] as const,
 };
 
+/**
+ * Ingestion can only be started for UPLOADED or FAILED documents; the server answers 409 otherwise
+ * (an INGESTING document is already claimed, an INGESTED one is done).
+ */
+export const canStartIngestion = (doc: DocumentDto) => doc.status === 'UPLOADED' || doc.status === 'FAILED';
+
+/**
+ * The server's scheduled job ingests UPLOADED documents in the background, so a document's status can change
+ * without any action in this browser. Refresh quickly while one is INGESTING, slowly while one is waiting.
+ */
+function documentsPollInterval(docs: DocumentDto[] | undefined): number | false {
+  if (docs?.some((d) => d.status === 'INGESTING')) return 5_000;
+  if (docs?.some((d) => d.status === 'UPLOADED')) return 30_000;
+  return false;
+}
+
 /** One page of a topic's documents (page is 0-based, like Spring). */
 export function useTopicDocuments(topicId: number | undefined, page: number, size: number) {
   return useQuery({
     queryKey: documentKeys.page(topicId ?? -1, page, size),
     enabled: topicId != null,
     placeholderData: keepPreviousData,
+    refetchInterval: (query) => documentsPollInterval(query.state.data?.content),
     queryFn: async () => {
       const data = await unwrap(
         api.GET('/api/content/documents/all/{topicId}', {
