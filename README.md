@@ -91,6 +91,7 @@ docker compose up --build    # UI on http://localhost:3000
   native `.node` binary on the dev machine; the WebAssembly build is slightly slower but needs no native code.
   Remove the override if your machine allows native modules.
 - Ingestion, test generation and question regeneration are synchronous on the server and can take minutes.
-  The UI shows a waiting state; the proxies (Vite and nginx) allow up to 10 minutes.
+  The UI shows how long it has been running and lets you continue in the background (the Tests list and test
+  page refresh themselves while a test is generating). The proxies (Vite and nginx) allow up to 30 minutes.
 - There is no login yet: the backend uses a fixed tenant and user in the `dev`/`docker` profiles.
 - Test attempts and scoring are not part of the UI yet.

@@ -8,7 +8,13 @@ const TITLES: Record<number, string> = {
   409: 'Conflict',
   502: 'AI provider error',
   503: 'Service unavailable',
+  504: 'Timed out',
 };
+
+/** The proxy gave up (504) or the connection broke (no HTTP status): the server may still be working. */
+function isConnectionLost(error: Error): boolean {
+  return error instanceof ApiError ? error.status === 504 : true;
+}
 
 /**
  * Every failed mutation (create, upload, ingest, review action, ...) shows a notification with the
@@ -23,13 +29,18 @@ export const queryClient = new QueryClient({
     },
   },
   mutationCache: new MutationCache({
-    onError: (error) => {
+    onError: (error, _variables, _context, mutation) => {
       const status = error instanceof ApiError ? error.status : undefined;
+      let message = error.message;
+      if (mutation.meta?.generationRequest && isConnectionLost(error)) {
+        message +=
+          ' The connection was lost, but generation may still be running on the server. Check the Tests page.';
+      }
       notifications.show({
         color: 'red',
         title: (status && TITLES[status]) ?? 'Request failed',
-        message: error.message,
-        autoClose: 8000,
+        message,
+        autoClose: 12000,
       });
     },
   }),

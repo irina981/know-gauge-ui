@@ -20,7 +20,8 @@ export function humanize(value: string): string {
 }
 
 export const TEST_STATUSES: Record<string, EnumInfo> = {
-  CREATED: { label: 'Created', color: 'gray' },
+  // A test stays CREATED while its generation is running on the server.
+  CREATED: { label: 'Generating', color: 'cyan' },
   GENERATED: { label: 'Generated', color: 'blue' },
   REQUIRES_REVIEW: { label: 'Needs review', color: 'orange' },
   REVIEWED: { label: 'Reviewed', color: 'teal' },

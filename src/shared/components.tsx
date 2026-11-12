@@ -5,9 +5,17 @@ import type { EnumInfo } from './enums';
 
 /** Small reusable building blocks used across pages. */
 
-export function StatusBadge({ info }: { info: EnumInfo }) {
+/** Coloured status label. `busy` adds a small spinner, e.g. for a test that is still generating. */
+export function StatusBadge({ info, busy = false }: { info: EnumInfo; busy?: boolean }) {
   return (
-    <Badge color={info.color} variant="light" radius="sm" tt="none" style={{ minWidth: 'max-content' }}>
+    <Badge
+      color={info.color}
+      variant="light"
+      radius="sm"
+      tt="none"
+      style={{ minWidth: 'max-content' }}
+      leftSection={busy ? <Loader size={10} color={info.color} /> : undefined}
+    >
       {info.label}
     </Badge>
   );

@@ -1,12 +1,13 @@
 import { ActionIcon, Button, Chip, Group, Paper, Table, Text, Title, Tooltip } from '@mantine/core';
 import { IconPlus, IconTrash } from '@tabler/icons-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useDeleteTest, useTests } from '@/api/tests';
+import { isGenerating, useDeleteTest, useTests } from '@/api/tests';
 import { topicPathLabel, useTopicTree } from '@/api/topics';
 import { EmptyState, ErrorAlert, PageLoader, StatusBadge } from '@/shared/components';
 import { confirmDelete } from '@/shared/confirm';
 import { humanize, TEST_STATUSES, testStatus } from '@/shared/enums';
 import { formatDateTime, formatDuration } from '@/shared/format';
+import { useNow } from '@/shared/useNow';
 
 /** All tests, newest first, filterable by status. The filter lives in the URL (?status=...). */
 export function TestsPage() {
@@ -18,6 +19,8 @@ export function TestsPage() {
   const navigate = useNavigate();
 
   const sorted = [...(tests ?? [])].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+  // Ticks every second while a test is generating, for the "running 2m 10s" label.
+  const now = useNow(sorted.some(isGenerating));
 
   return (
     <>
@@ -86,7 +89,7 @@ export function TestsPage() {
                       </Text>
                     </Table.Td>
                     <Table.Td>
-                      <StatusBadge info={testStatus(t.status)} />
+                      <StatusBadge info={testStatus(t.status)} busy={isGenerating(t)} />
                     </Table.Td>
                     <Table.Td>
                       <Text size="sm">{t.questionCount}</Text>
@@ -106,10 +109,12 @@ export function TestsPage() {
                         )}
                       </Text>
                       <Text size="xs" c="dimmed">
-                        {formatDuration(
-                          t.generationStartedAt,
-                          t.generationFinishedAt ?? t.generationFailedAt,
-                        )}
+                        {isGenerating(t)
+                          ? `running ${formatDuration(t.generationStartedAt, new Date(now).toISOString()) ?? ''}`
+                          : formatDuration(
+                              t.generationStartedAt,
+                              t.generationFinishedAt ?? t.generationFailedAt,
+                            )}
                       </Text>
                     </Table.Td>
                     <Table.Td onClick={(e) => e.stopPropagation()}>

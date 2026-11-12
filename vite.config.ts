@@ -21,8 +21,8 @@ export default defineConfig({
         target: backendUrl,
         changeOrigin: true,
         // Ingestion and test generation are synchronous and can take minutes.
-        timeout: 10 * 60 * 1000,
-        proxyTimeout: 10 * 60 * 1000,
+        timeout: 30 * 60 * 1000,
+        proxyTimeout: 30 * 60 * 1000,
       },
     },
   },

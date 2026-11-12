@@ -13,16 +13,18 @@ import {
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle, IconArrowLeft } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ApiError } from '@/api/client';
 import { useAcceptFix, useRegenerateQuestion, useTestQuestions } from '@/api/review';
-import { useTest } from '@/api/tests';
+import { isGenerating, testKeys, useTest } from '@/api/tests';
 import { topicPathLabel, useTopicTree } from '@/api/topics';
 import type { TestQuestionDto } from '@/api/types';
 import { EmptyState, ErrorAlert, PageLoader, StatusBadge } from '@/shared/components';
 import { humanize, REVIEWABLE_TEST_STATUSES, testStatus } from '@/shared/enums';
 import { formatDateTime, formatDuration } from '@/shared/format';
+import { useNow } from '@/shared/useNow';
 import { CommentActionModal } from './CommentActionModal';
 import { EventTimeline } from './EventTimeline';
 import { GenerationRunsPanel } from './GenerationRunsPanel';
@@ -45,6 +47,18 @@ export function TestReviewPage() {
   const [confirm, setConfirm] = useState<Pending>(null);
   const [editing, setEditing] = useState<TestQuestionDto | null>(null);
   const [historyOf, setHistoryOf] = useState<TestQuestionDto | null>(null);
+
+  // While the test is generating, useTest polls it. When generation ends, load its questions and history.
+  const generating = isGenerating(test);
+  const now = useNow(generating);
+  const queryClient = useQueryClient();
+  const wasGenerating = useRef(generating);
+  useEffect(() => {
+    if (wasGenerating.current && !generating) {
+      queryClient.invalidateQueries({ queryKey: testKeys.detail(testId) });
+    }
+    wasGenerating.current = generating;
+  }, [generating, queryClient, testId]);
 
   if (isLoading) return <PageLoader />;
   if (error || !test) {
@@ -106,7 +120,7 @@ export function TestReviewPage() {
           <div>
             <Group gap="sm">
               <Title order={2}>Test #{test.id}</Title>
-              <StatusBadge info={testStatus(test.status)} />
+              <StatusBadge info={testStatus(test.status)} busy={generating} />
             </Group>
             <Text c="dimmed" size="sm" mt={4}>
               {source}
@@ -142,6 +156,19 @@ export function TestReviewPage() {
               </Badge>
             ))}
         </Group>
+        {generating && (
+          <Alert
+            color="cyan"
+            variant="light"
+            mt="md"
+            icon={<Loader size={16} color="cyan" />}
+            title="Generating"
+          >
+            Running for {formatDuration(test.generationStartedAt, new Date(now).toISOString()) ?? '…'}.
+            Questions appear here when generation finishes; this page updates by itself. If the backend was
+            restarted meanwhile, the test stays in this state and can be deleted.
+          </Alert>
+        )}
         {test.status === 'FAILED' && test.generationErrorMessage && (
           <Alert
             color="red"
@@ -196,7 +223,7 @@ export function TestReviewPage() {
               </Group>
             )}
             {questionsLoading && <PageLoader />}
-            {questions && visible.length === 0 && (
+            {questions && visible.length === 0 && !generating && (
               <EmptyState title={filter === 'review' ? 'Nothing to review' : 'No questions'} />
             )}
             {visible.map((q) => (

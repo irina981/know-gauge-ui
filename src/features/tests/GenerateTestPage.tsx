@@ -27,6 +27,8 @@ import { useGenerateTest } from '@/api/tests';
 import { topicPathLabel, useTopicTree } from '@/api/topics';
 import type { TestInput } from '@/api/types';
 import { ANSWER_CARDINALITIES, COVERAGE_MODES, DIFFICULTIES, LANGUAGES } from '@/shared/enums';
+import { formatDuration } from '@/shared/format';
+import { useNow } from '@/shared/useNow';
 
 interface FormValues {
   source: 'topics' | 'documents';
@@ -123,6 +125,12 @@ export function GenerateTestPage() {
     disabled: d.status !== 'INGESTED',
   }));
 
+  // "Running for 2m 10s" while the request is pending.
+  const now = useNow(generate.isPending);
+  const elapsed = generate.isPending
+    ? formatDuration(new Date(generate.submittedAt).toISOString(), new Date(now).toISOString())
+    : '';
+
   // Errors are shown as a notification by the global handler.
   const submit = form.onSubmit((values) => {
     generate.mutate(toTestInput(values), { onSuccess: (test) => navigate(`/tests/${test.id}`) });
@@ -139,12 +147,16 @@ export function GenerateTestPage() {
       <Paper p="lg" radius="md" pos="relative">
         {generate.isPending && (
           <Overlay blur={2} backgroundOpacity={0.4} radius="md" center>
-            <Stack align="center" gap="xs">
+            <Stack align="center" gap="xs" maw={440} px="md">
               <Loader />
-              <Text fw={500}>Generating questions…</Text>
-              <Text size="sm" c="dimmed">
-                This usually takes one to three minutes. Keep this page open.
+              <Text fw={500}>Generating questions… {elapsed}</Text>
+              <Text size="sm" c="dimmed" ta="center">
+                This can take several minutes, especially when a local model checks the answers. The test
+                keeps generating on the server if you leave this page.
               </Text>
+              <Button variant="default" size="xs" mt="xs" onClick={() => navigate('/tests')}>
+                Continue in background
+              </Button>
             </Stack>
           </Overlay>
         )}
