@@ -106,7 +106,7 @@ export function TestsPage() {
               <Table.Thead>
                 <Table.Tr>
                   <Table.Th>#</Table.Th>
-                  <Table.Th>Source</Table.Th>
+                  <Table.Th>Test</Table.Th>
                   <Table.Th>Status</Table.Th>
                   <Table.Th>Questions</Table.Th>
                   <Table.Th>Settings</Table.Th>
@@ -126,8 +126,12 @@ export function TestsPage() {
                         {t.id}
                       </Text>
                     </Table.Td>
-                    <Table.Td maw={280}>
-                      <Text size="sm" truncate>
+                    <Table.Td maw={360}>
+                      {/* Name first; the source underneath. Older tests have no name. */}
+                      <Text size="sm" fw={600} truncate title={t.name}>
+                        {t.name || `Test #${t.id}`}
+                      </Text>
+                      <Text size="xs" c="dimmed" truncate>
                         {t.topicIds?.length
                           ? t.topicIds.map((id) => topicPathLabel(tree, id)).join(', ')
                           : `${t.documentIds?.length ?? 0} document(s)`}

@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Alert,
   Button,
   Collapse,
@@ -12,24 +13,59 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  Textarea,
   TextInput,
+  Tooltip,
   UnstyledButton,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { IconChevronDown, IconChevronRight, IconInfoCircle, IconSparkles } from '@tabler/icons-react';
-import { useMemo } from 'react';
+import {
+  IconChevronDown,
+  IconChevronRight,
+  IconInfoCircle,
+  IconRestore,
+  IconSparkles,
+} from '@tabler/icons-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTopicDocuments } from '@/api/documents';
 import { useGenerateTest } from '@/api/tests';
-import { topicPathLabel, useTopicTree } from '@/api/topics';
-import type { TestInput } from '@/api/types';
+import { topicPathLabel, useTopicTree, type TopicTree } from '@/api/topics';
+import type { DocumentDto, TestInput } from '@/api/types';
 import { ANSWER_CARDINALITIES, COVERAGE_MODES, DIFFICULTIES, LANGUAGES } from '@/shared/enums';
 import { PageHeader } from '@/shared/components';
 import { formatDuration } from '@/shared/format';
 import { useNow } from '@/shared/useNow';
 
+/** "A", "A & B" or "A, B +3 more". */
+function joinNames(names: string[]): string {
+  if (names.length <= 2) return names.join(' & ');
+  return `${names.slice(0, 2).join(', ')} +${names.length - 2} more`;
+}
+
+/**
+ * Default test name, e.g. "Core Java & Multithreading – Medium (10 questions)".
+ * The backend requires a name but doesn't invent one; the user can overwrite this suggestion.
+ */
+function suggestTestName(v: FormValues, tree: TopicTree | undefined, docs: DocumentDto[]): string {
+  const sourceNames =
+    v.source === 'topics'
+      ? v.topicIds.map((id) => tree?.byId.get(Number(id))?.name).filter((n): n is string => !!n)
+      : v.documentIds
+          .map((id) => docs.find((d) => String(d.id) === id))
+          .map((d) => d?.title || d?.originalFileName)
+          .filter((n): n is string => !!n);
+  const source = sourceNames.length ? joinNames(sourceNames) : 'New test';
+  const difficulty = DIFFICULTIES.find((d) => d.value === v.difficulty)?.label;
+  const count = Number(v.questionCount);
+  const details = [difficulty, count >= 1 ? `(${count} questions)` : undefined].filter(Boolean).join(' ');
+  return details ? `${source} – ${details}` : source;
+}
+
 interface FormValues {
+  name: string;
+  description: string;
   source: 'topics' | 'documents';
   topicIds: string[];
   documentTopicId: string | null;
@@ -58,6 +94,8 @@ function toTestInput(v: FormValues): TestInput {
   if (text(v.verificationModel)) generationParams.verificationModel = text(v.verificationModel);
 
   return {
+    name: v.name.trim(),
+    description: text(v.description),
     topicIds: v.source === 'topics' ? v.topicIds.map(Number) : undefined,
     documentIds: v.source === 'documents' ? v.documentIds.map(Number) : undefined,
     questionCount: num(v.questionCount),
@@ -81,6 +119,8 @@ export function GenerateTestPage() {
   const presetTopic = searchParams.get('topicId');
   const form = useForm<FormValues>({
     initialValues: {
+      name: '',
+      description: '',
       source: 'topics',
       topicIds: presetTopic ? [presetTopic] : [],
       documentTopicId: presetTopic,
@@ -97,6 +137,7 @@ export function GenerateTestPage() {
       verificationModel: '',
     },
     validate: {
+      name: (v) => (v.trim() ? null : 'Enter a name for the test'),
       topicIds: (v, values) =>
         values.source === 'topics' && v.length === 0 ? 'Pick at least one topic' : null,
       documentIds: (v, values) =>
@@ -123,6 +164,18 @@ export function GenerateTestPage() {
     label: `${d.title || d.originalFileName}${d.status === 'INGESTED' ? '' : ` (${d.status?.toLowerCase() ?? 'not ingested'})`}`,
     disabled: d.status !== 'INGESTED',
   }));
+
+  // Test name: suggested from the chosen source and settings until the user types their own.
+  const [nameEdited, setNameEdited] = useState(false);
+  const suggestedName = suggestTestName(form.values, tree, docs?.content ?? []);
+  useEffect(() => {
+    if (!nameEdited) form.setFieldValue('name', suggestedName);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [suggestedName, nameEdited]);
+  const useSuggestedName = () => {
+    setNameEdited(false);
+    form.setFieldValue('name', suggestedName);
+  };
 
   // "Running for 2m 10s" while the request is pending.
   const now = useNow(generate.isPending);
@@ -166,6 +219,44 @@ export function GenerateTestPage() {
 
           <form onSubmit={submit}>
             <Stack gap="md">
+              <TextInput
+                label="Test name"
+                description={
+                  nameEdited
+                    ? 'Your own name. Use the button on the right to go back to the suggested one.'
+                    : 'Suggested from the source and settings below. Type to use your own.'
+                }
+                withAsterisk
+                maxLength={200}
+                {...form.getInputProps('name')}
+                onChange={(e) => {
+                  form.setFieldValue('name', e.currentTarget.value);
+                  setNameEdited(true);
+                }}
+                rightSection={
+                  nameEdited && (
+                    <Tooltip label="Use the suggested name">
+                      <ActionIcon
+                        variant="subtle"
+                        color="gray"
+                        onClick={useSuggestedName}
+                        aria-label="Use the suggested name"
+                      >
+                        <IconRestore size={16} />
+                      </ActionIcon>
+                    </Tooltip>
+                  )
+                }
+              />
+              <Textarea
+                label="Description"
+                description="Optional. For example who the test is for or which chapters it covers."
+                autosize
+                minRows={2}
+                maxLength={2000}
+                {...form.getInputProps('description')}
+              />
+
               <div>
                 <Text size="sm" fw={500} mb={4}>
                   Source

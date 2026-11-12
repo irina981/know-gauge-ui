@@ -131,14 +131,22 @@ export function TestReviewPage() {
 
       <Paper p="lg" className="kg-ai-edge" style={{ overflow: 'hidden' }}>
         <Group justify="space-between" align="flex-start">
-          <div>
-            <Group gap="sm">
-              <Title order={2}>Test #{test.id}</Title>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <Group gap="sm" wrap="nowrap">
+              <Title order={2} style={{ overflowWrap: 'anywhere' }}>
+                {test.name || `Test #${test.id}`}
+              </Title>
               <StatusBadge info={testStatus(test.status)} busy={generating} />
             </Group>
             <Text c="dimmed" size="sm" mt={4}>
+              {test.name ? `Test #${test.id} · ` : ''}
               {source}
             </Text>
+            {test.description && (
+              <Text size="sm" mt="xs" maw={760} style={{ whiteSpace: 'pre-wrap' }}>
+                {test.description}
+              </Text>
+            )}
           </div>
           <Stack gap={2} align="flex-end">
             {canReview && (

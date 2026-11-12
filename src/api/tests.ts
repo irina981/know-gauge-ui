@@ -22,7 +22,7 @@ const GENERATION_POLL_MS = 5000;
 export function useTests(status?: string) {
   return useQuery({
     queryKey: testKeys.list(status),
-    queryFn: () => unwrap(api.GET('/api/tests', { params: { query: { status } } })),
+    queryFn: () => unwrap(api.GET('/api/tests', { params: { query: { status } } })) as Promise<TestDto[]>,
     // Keep refreshing while any test is still generating, so it turns into GENERATED/FAILED by itself.
     refetchInterval: (query) => (query.state.data?.some(isGenerating) ? GENERATION_POLL_MS : false),
   });
@@ -31,7 +31,7 @@ export function useTests(status?: string) {
 export function useTest(id: number) {
   return useQuery({
     queryKey: testKeys.detail(id),
-    queryFn: () => unwrap(api.GET('/api/tests/{id}', { params: { path: { id } } })),
+    queryFn: () => unwrap(api.GET('/api/tests/{id}', { params: { path: { id } } })) as Promise<TestDto>,
     refetchInterval: (query) => (isGenerating(query.state.data) ? GENERATION_POLL_MS : false),
   });
 }
@@ -43,14 +43,18 @@ export function useTest(id: number) {
 export function useGenerateTest() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: TestInput) => unwrap(api.POST('/api/tests', { body: input })),
+    mutationFn: (input: TestInput) => unwrap(api.POST('/api/tests', { body: input })) as Promise<TestDto>,
     meta: { generationRequest: true },
     // The server stores the test as CREATED right away; refresh the list so it shows up as "Generating".
     onMutate: () => {
       setTimeout(() => queryClient.invalidateQueries({ queryKey: testKeys.all }), 2000);
     },
     onSuccess: (test) => {
-      notifications.show({ color: 'teal', title: 'Test generated', message: `Test #${test.id} is ready.` });
+      notifications.show({
+        color: 'teal',
+        title: 'Test generated',
+        message: `${test.name ?? `Test #${test.id}`} is ready.`,
+      });
     },
     // A failed generation still creates a FAILED test, so refresh the list either way.
     onSettled: () => queryClient.invalidateQueries({ queryKey: testKeys.all }),

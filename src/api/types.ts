@@ -13,8 +13,13 @@ export type TopicTreeNodeInput = Schemas['TopicTreeNodeInput'];
 
 export type DocumentDto = Schemas['DocumentDto'];
 
-export type TestDto = Schemas['TestDto'];
-export type TestInput = Schemas['TestInput'];
+/**
+ * Test name and description are new in the backend. They are added here by hand until `schema.d.ts` is
+ * regenerated (`npm run gen:api` with the updated backend running); then the `& {...}` parts can go.
+ */
+type TestNaming = { name?: string; description?: string };
+export type TestDto = Schemas['TestDto'] & TestNaming;
+export type TestInput = Schemas['TestInput'] & TestNaming;
 export type TestQuestionDto = Schemas['TestQuestionDto'];
 export type TestQuestionOptionDto = Schemas['TestQuestionOptionDto'];
 export type TestQuestionVersionDto = Schemas['TestQuestionVersionDto'];
