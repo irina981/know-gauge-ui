@@ -46,7 +46,8 @@ at every place in the UI that no longer matches the API.
 ```
 src/
   main.tsx            entry point (loads Mantine CSS, renders <App/>)
-  app/                App.tsx (providers + routes), Layout.tsx (header/nav), theme.ts, queryClient.ts
+  app/                App.tsx (providers + routes), Layout.tsx (branded sidebar), queryClient.ts,
+                      theme.ts (brand colours, fonts) and brand.css (background, sidebar, AI accents)
   api/                everything that talks to the backend
     schema.d.ts         generated — do not edit
     client.ts           typed fetch client + ApiError

@@ -1,9 +1,16 @@
-import { ActionIcon, Button, Chip, Group, Paper, Table, Text, Title, Tooltip } from '@mantine/core';
-import { IconPlus, IconTrash } from '@tabler/icons-react';
+import { ActionIcon, Button, Chip, Group, Paper, SimpleGrid, Table, Text, Tooltip } from '@mantine/core';
+import {
+  IconAlertTriangle,
+  IconChecklist,
+  IconListCheck,
+  IconSend,
+  IconSparkles,
+  IconTrash,
+} from '@tabler/icons-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { isGenerating, useDeleteTest, useTests } from '@/api/tests';
 import { topicPathLabel, useTopicTree } from '@/api/topics';
-import { EmptyState, ErrorAlert, PageLoader, StatusBadge } from '@/shared/components';
+import { EmptyState, ErrorAlert, PageHeader, PageLoader, StatTile, StatusBadge } from '@/shared/components';
 import { confirmDelete } from '@/shared/confirm';
 import { humanize, TEST_STATUSES, testStatus } from '@/shared/enums';
 import { formatDateTime, formatDuration } from '@/shared/format';
@@ -18,18 +25,56 @@ export function TestsPage() {
   const remove = useDeleteTest();
   const navigate = useNavigate();
 
+  // All tests (not filtered), for the numbers at the top.
+  const { data: allTests } = useTests();
+  const count = (s: string) => allTests?.filter((t) => t.status === s).length ?? 0;
+  const questionTotal =
+    allTests?.filter((t) => t.status !== 'FAILED').reduce((sum, t) => sum + (t.questionCount ?? 0), 0) ?? 0;
+
   const sorted = [...(tests ?? [])].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
   // Ticks every second while a test is generating, for the "running 2m 10s" label.
   const now = useNow(sorted.some(isGenerating));
 
   return (
     <>
-      <Group justify="space-between" mb="lg">
-        <Title order={2}>Tests</Title>
-        <Button component={Link} to="/tests/new" leftSection={<IconPlus size={16} />}>
-          Generate test
-        </Button>
-      </Group>
+      <PageHeader
+        eyebrow="Assessments"
+        title="Tests"
+        description="Every test generated from your library: review what the AI verifier flagged, then publish."
+        icon={IconChecklist}
+        actions={
+          <Button
+            component={Link}
+            to="/tests/new"
+            variant="gradient"
+            leftSection={<IconSparkles size={16} />}
+          >
+            Generate test
+          </Button>
+        }
+      />
+
+      <SimpleGrid cols={{ base: 2, md: 4 }} mb="xl">
+        <StatTile label="Tests" value={allTests?.length ?? '–'} icon={IconChecklist} />
+        <StatTile
+          label="Questions"
+          value={allTests ? questionTotal : '–'}
+          icon={IconListCheck}
+          color="violet"
+        />
+        <StatTile
+          label="Need review"
+          value={allTests ? count('REQUIRES_REVIEW') : '–'}
+          icon={IconAlertTriangle}
+          color="orange"
+        />
+        <StatTile
+          label="Published"
+          value={allTests ? count('PUBLISHED') : '–'}
+          icon={IconSend}
+          color="needle"
+        />
+      </SimpleGrid>
 
       <Chip.Group
         value={status ?? 'ALL'}
@@ -47,11 +92,11 @@ export function TestsPage() {
         </Group>
       </Chip.Group>
 
-      <Paper radius="md">
+      <Paper>
         {isLoading && <PageLoader />}
         {error && <ErrorAlert error={error} title="Could not load tests" />}
         {tests && sorted.length === 0 && (
-          <EmptyState title="No tests">
+          <EmptyState title="No tests" icon={IconChecklist}>
             {status ? 'No tests with this status.' : 'Generate a test from a topic in the Library.'}
           </EmptyState>
         )}

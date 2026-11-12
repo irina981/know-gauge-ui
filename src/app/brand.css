@@ -1,0 +1,175 @@
+/*
+ * KnowGauge look and feel that the Mantine theme (theme.ts) can't express on its own:
+ * app background, branded sidebar, glass cards and AI accents.
+ *
+ * light-dark(a, b) picks `a` in light mode and `b` in dark mode (postcss-preset-mantine).
+ * Colour variables like --mantine-color-brand-6 come from the theme.
+ */
+
+/* ---------- App background: soft brand glows behind the content ---------- */
+body {
+  background-color: light-dark(#f5f6fb, var(--mantine-color-dark-7));
+  background-image:
+    radial-gradient(
+      900px 500px at 100% -10%,
+      light-dark(rgba(76, 110, 245, 0.12), rgba(116, 143, 252, 0.16)),
+      transparent 70%
+    ),
+    radial-gradient(
+      700px 420px at 15% 110%,
+      light-dark(rgba(121, 80, 242, 0.08), rgba(151, 117, 250, 0.12)),
+      transparent 70%
+    );
+  background-attachment: fixed;
+}
+
+/* Cards and papers sit slightly translucent on the background ("glass"). */
+.mantine-Paper-root,
+.mantine-Card-root {
+  /* Dark mode: clearly lighter than the page (dark-7) so cards stand out. */
+  background-color: light-dark(rgba(255, 255, 255, 0.86), rgba(44, 53, 97, 0.78));
+  backdrop-filter: blur(8px);
+  border-color: light-dark(rgba(16, 24, 64, 0.08), rgba(255, 255, 255, 0.14));
+}
+
+/* ---------- Sidebar: always dark navy, in both colour schemes ---------- */
+.kg-sidebar {
+  /* Darker than the dark-mode page, so it stays distinct in both schemes. */
+  background: linear-gradient(180deg, #111739 0%, #151d46 55%, #10163a 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  color: #dbe1ff;
+}
+
+.kg-nav-link {
+  border-radius: var(--mantine-radius-md);
+  color: rgba(219, 225, 255, 0.78);
+  font-weight: 500;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+}
+
+.kg-nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.kg-nav-link[data-active] {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(76, 110, 245, 0.55), rgba(121, 80, 242, 0.45));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 6px 18px rgba(76, 110, 245, 0.25);
+}
+
+.kg-nav-link[data-active] .mantine-NavLink-section {
+  color: var(--mantine-color-needle-4);
+}
+
+.kg-sidebar-card {
+  border-radius: var(--mantine-radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  padding: var(--mantine-spacing-sm);
+}
+
+/* Mobile top bar (the sidebar is hidden behind the burger there). */
+.kg-topbar {
+  background: #0f1533;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+/* ---------- AI accents ---------- */
+
+/* Gradient text, e.g. the small "eyebrow" above page titles. */
+.kg-gradient-text {
+  /* background-image, not the `background` shorthand: the shorthand would reset background-clip. */
+  background-image: linear-gradient(90deg, var(--mantine-color-brand-6), var(--mantine-color-violet-6));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Lighter shades in dark mode so the text stays readable. */
+[data-mantine-color-scheme='dark'] .kg-gradient-text {
+  background-image: linear-gradient(90deg, var(--mantine-color-brand-3), var(--mantine-color-violet-3));
+}
+
+/* Hero banners (Generate page, empty Library). */
+.kg-hero {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  border: none;
+  background:
+    radial-gradient(600px 240px at 90% 0%, rgba(169, 227, 75, 0.25), transparent 60%),
+    linear-gradient(135deg, #3b5bdb 0%, #5f3dc4 100%);
+}
+
+.kg-hero::after {
+  /* faint gauge arcs, echoing the logo */
+  content: '';
+  position: absolute;
+  right: -60px;
+  bottom: -120px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  border: 28px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 40px rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+}
+
+/* Thin gradient bar at the top of a card, marking AI-related content. */
+.kg-ai-edge {
+  position: relative;
+}
+
+.kg-ai-edge::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--mantine-color-brand-6),
+    var(--mantine-color-violet-6),
+    var(--mantine-color-needle-5)
+  );
+}
+
+/* Animated gradient ring used while the AI is working. */
+@keyframes kg-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.kg-ai-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    var(--mantine-color-brand-6),
+    var(--mantine-color-violet-5),
+    var(--mantine-color-needle-4),
+    var(--mantine-color-brand-6)
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+  animation: kg-spin 1.1s linear infinite;
+}
+
+/* Clickable rows and cards lift slightly on hover. */
+.kg-hover-lift {
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.kg-hover-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--mantine-shadow-md);
+}

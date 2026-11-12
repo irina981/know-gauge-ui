@@ -1,9 +1,11 @@
-import { Alert, Badge, Center, Loader, Stack, Text } from '@mantine/core';
-import { IconAlertCircle } from '@tabler/icons-react';
+import { Alert, Badge, Center, Group, Loader, Paper, Stack, Text, ThemeIcon, Title } from '@mantine/core';
+import { IconAlertCircle, IconInbox, IconSparkles, type Icon as TablerIcon } from '@tabler/icons-react';
 import type { ReactNode } from 'react';
 import type { EnumInfo } from './enums';
 
 /** Small reusable building blocks used across pages. */
+
+type IconComponent = TablerIcon;
 
 /** Coloured status label. `busy` adds a small spinner, e.g. for a test that is still generating. */
 export function StatusBadge({ info, busy = false }: { info: EnumInfo; busy?: boolean }) {
@@ -18,6 +20,104 @@ export function StatusBadge({ info, busy = false }: { info: EnumInfo; busy?: boo
     >
       {info.label}
     </Badge>
+  );
+}
+
+/** Small gradient "AI" marker for things produced or checked by a model. */
+export function AiBadge({ label = 'AI' }: { label?: string }) {
+  return (
+    <Badge
+      variant="gradient"
+      size="sm"
+      tt="none"
+      leftSection={<IconSparkles size={11} />}
+      style={{ minWidth: 'max-content' }}
+    >
+      {label}
+    </Badge>
+  );
+}
+
+/**
+ * Title area at the top of every page: small gradient "eyebrow", title, optional description and
+ * action buttons on the right.
+ */
+export function PageHeader({
+  eyebrow,
+  title,
+  description,
+  icon: Icon,
+  actions,
+}: {
+  eyebrow?: string;
+  title: ReactNode;
+  description?: ReactNode;
+  icon?: IconComponent;
+  actions?: ReactNode;
+}) {
+  return (
+    <Group justify="space-between" align="flex-end" mb="xl" gap="md">
+      <Group gap="md" align="center" wrap="nowrap">
+        {Icon && (
+          <ThemeIcon variant="gradient" size={48} radius="md" visibleFrom="xs">
+            <Icon size={26} stroke={1.6} />
+          </ThemeIcon>
+        )}
+        <div>
+          {eyebrow && (
+            <Text
+              size="xs"
+              fw={800}
+              tt="uppercase"
+              className="kg-gradient-text"
+              style={{ letterSpacing: '0.12em' }}
+            >
+              {eyebrow}
+            </Text>
+          )}
+          <Title order={1} fz={{ base: 26, sm: 30 }} lh={1.2}>
+            {title}
+          </Title>
+          {description && (
+            <Text c="dimmed" size="sm" mt={4} maw={640}>
+              {description}
+            </Text>
+          )}
+        </div>
+      </Group>
+      {actions && <Group gap="xs">{actions}</Group>}
+    </Group>
+  );
+}
+
+/** A number with a label, e.g. "12 · Tests". */
+export function StatTile({
+  label,
+  value,
+  icon: Icon,
+  color = 'brand',
+}: {
+  label: string;
+  value: ReactNode;
+  icon: IconComponent;
+  color?: string;
+}) {
+  return (
+    <Paper p="md" miw={0}>
+      <Group gap="md" wrap="nowrap">
+        <ThemeIcon variant="light" color={color} size={42} radius="md" visibleFrom="sm">
+          <Icon size={22} stroke={1.7} />
+        </ThemeIcon>
+        <div style={{ minWidth: 0 }}>
+          <Text fz={24} fw={800} lh={1.1} ff="heading">
+            {value}
+          </Text>
+          <Text size="xs" c="dimmed" fw={600} tt="uppercase" style={{ letterSpacing: '0.06em' }}>
+            {label}
+          </Text>
+        </div>
+      </Group>
+    </Paper>
   );
 }
 
@@ -38,12 +138,23 @@ export function PageLoader() {
   );
 }
 
-export function EmptyState({ title, children }: { title: string; children?: ReactNode }) {
+export function EmptyState({
+  title,
+  children,
+  icon: Icon = IconInbox,
+}: {
+  title: string;
+  children?: ReactNode;
+  icon?: IconComponent;
+}) {
   return (
-    <Stack align="center" gap={4} py="xl">
-      <Text fw={500}>{title}</Text>
+    <Stack align="center" gap={6} py="xl">
+      <ThemeIcon variant="light" size={52} radius="xl" mb={4}>
+        <Icon size={26} stroke={1.5} />
+      </ThemeIcon>
+      <Text fw={600}>{title}</Text>
       {children && (
-        <Text c="dimmed" size="sm" ta="center">
+        <Text c="dimmed" size="sm" ta="center" maw={420}>
           {children}
         </Text>
       )}

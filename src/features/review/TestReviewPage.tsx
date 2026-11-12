@@ -129,7 +129,7 @@ export function TestReviewPage() {
         </Group>
       </Anchor>
 
-      <Paper p="lg" radius="md">
+      <Paper p="lg" className="kg-ai-edge" style={{ overflow: 'hidden' }}>
         <Group justify="space-between" align="flex-start">
           <div>
             <Group gap="sm">

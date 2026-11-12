@@ -1,5 +1,5 @@
 import { Button, Card, Group, Stack, Text, Tooltip } from '@mantine/core';
-import { IconCheck, IconHistory, IconPencil, IconRefresh } from '@tabler/icons-react';
+import { IconCheck, IconHistory, IconPencil, IconSparkles } from '@tabler/icons-react';
 import type { TestQuestionDto } from '@/api/types';
 import { StatusBadge } from '@/shared/components';
 import { questionStatus, versionOrigin } from '@/shared/enums';
@@ -23,7 +23,7 @@ export function QuestionCard({
   const origin = versionOrigin(question.origin);
 
   return (
-    <Card radius="md" padding="lg">
+    <Card padding="lg">
       <Group justify="space-between" align="flex-start" mb="sm">
         <Group gap="xs">
           <Text fw={600}>Question {(question.questionIndex ?? 0) + 1}</Text>
@@ -50,7 +50,8 @@ export function QuestionCard({
           <Button
             size="xs"
             variant="light"
-            leftSection={<IconRefresh size={14} />}
+            color="violet"
+            leftSection={<IconSparkles size={14} />}
             disabled={!canReview || busy}
             onClick={() => onAction('regenerate', question)}
           >

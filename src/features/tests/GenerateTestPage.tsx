@@ -1,9 +1,9 @@
 import {
   Alert,
+  Badge,
   Button,
   Collapse,
   Group,
-  Loader,
   MultiSelect,
   NumberInput,
   Overlay,
@@ -19,7 +19,16 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { IconChevronDown, IconChevronRight, IconInfoCircle, IconSparkles } from '@tabler/icons-react';
+import {
+  IconArrowRight,
+  IconChevronDown,
+  IconChevronRight,
+  IconFileSearch,
+  IconInfoCircle,
+  IconShieldCheck,
+  IconSparkles,
+  IconUserCheck,
+} from '@tabler/icons-react';
 import { useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTopicDocuments } from '@/api/documents';
@@ -29,6 +38,14 @@ import type { TestInput } from '@/api/types';
 import { ANSWER_CARDINALITIES, COVERAGE_MODES, DIFFICULTIES, LANGUAGES } from '@/shared/enums';
 import { formatDuration } from '@/shared/format';
 import { useNow } from '@/shared/useNow';
+
+/** The steps shown in the hero banner, matching the backend's generation pipeline. */
+const PIPELINE = [
+  { label: 'Retrieve passages', icon: IconFileSearch },
+  { label: 'Write questions', icon: IconSparkles },
+  { label: 'Verify answers', icon: IconShieldCheck },
+  { label: 'You review', icon: IconUserCheck },
+];
 
 interface FormValues {
   source: 'topics' | 'documents';
@@ -137,22 +154,54 @@ export function GenerateTestPage() {
   });
 
   return (
-    <Stack maw={760} pos="relative">
-      <Title order={2}>Generate test</Title>
-      <Text c="dimmed" size="sm">
-        Questions are generated from the ingested content of the selected topics or documents. Only ingested
-        documents are used.
-      </Text>
+    <Stack maw={860} pos="relative" gap="lg">
+      {/* Hero: what the AI does with your documents. */}
+      <Paper p={{ base: 'lg', sm: 'xl' }} className="kg-hero">
+        <Group gap="xs" mb="xs">
+          <IconSparkles size={18} color="var(--mantine-color-needle-3)" />
+          <Text size="xs" fw={800} tt="uppercase" c="needle.3" style={{ letterSpacing: '0.12em' }}>
+            AI test generation
+          </Text>
+        </Group>
+        <Title order={1} c="white" fz={{ base: 24, sm: 30 }} lh={1.2} maw={560}>
+          Turn your documents into grounded multiple-choice tests
+        </Title>
+        <Text c="rgba(255,255,255,0.8)" size="sm" mt="xs" maw={560}>
+          Only ingested documents are used. Every question is written from passages of your sources and its
+          wrong answers are checked by a second AI pass.
+        </Text>
+        <Group gap="xs" mt="lg" style={{ position: 'relative', zIndex: 1 }}>
+          {PIPELINE.map(({ label, icon: Icon }, i) => (
+            <Group key={label} gap={6} wrap="nowrap">
+              <Badge
+                size="lg"
+                radius="xl"
+                variant="white"
+                c="brand.8"
+                tt="none"
+                fw={600}
+                leftSection={<Icon size={14} />}
+              >
+                {label}
+              </Badge>
+              {i < PIPELINE.length - 1 && <IconArrowRight size={14} color="rgba(255,255,255,0.6)" />}
+            </Group>
+          ))}
+        </Group>
+      </Paper>
 
-      <Paper p="lg" radius="md" pos="relative">
+      <Paper p="lg" pos="relative">
         {generate.isPending && (
-          <Overlay blur={2} backgroundOpacity={0.4} radius="md" center>
-            <Stack align="center" gap="xs" maw={440} px="md">
-              <Loader />
-              <Text fw={500}>Generating questions… {elapsed}</Text>
+          <Overlay blur={4} backgroundOpacity={0.35} radius="lg" center zIndex={5}>
+            <Stack align="center" gap="xs" maw={460} px="md">
+              <div className="kg-ai-ring" />
+              <Text fw={800} size="lg" mt="sm" className="kg-gradient-text" ff="heading">
+                The AI is writing your questions
+              </Text>
+              <Text fw={600}>{elapsed}</Text>
               <Text size="sm" c="dimmed" ta="center">
-                This can take several minutes, especially when a local model checks the answers. The test
-                keeps generating on the server if you leave this page.
+                Retrieving passages, writing questions and verifying the answers can take several minutes. The
+                test keeps generating on the server if you leave this page.
               </Text>
               <Button variant="default" size="xs" mt="xs" onClick={() => navigate('/tests')}>
                 Continue in background
@@ -276,8 +325,14 @@ export function GenerateTestPage() {
             </Collapse>
 
             <Group justify="flex-end">
-              <Button type="submit" leftSection={<IconSparkles size={16} />} loading={generate.isPending}>
-                Generate
+              <Button
+                type="submit"
+                variant="gradient"
+                size="md"
+                leftSection={<IconSparkles size={18} />}
+                loading={generate.isPending}
+              >
+                Generate with AI
               </Button>
             </Group>
           </Stack>
