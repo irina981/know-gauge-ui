@@ -47,18 +47,22 @@ export function PageHeader({
   title,
   description,
   icon: Icon,
+  media,
   actions,
 }: {
   eyebrow?: string;
   title: ReactNode;
   description?: ReactNode;
   icon?: IconComponent;
+  /** Shown instead of the icon, e.g. the logo on the About page. */
+  media?: ReactNode;
   actions?: ReactNode;
 }) {
   return (
     <Group justify="space-between" align="flex-end" mb="xl" gap="md">
       <Group gap="md" align="center" wrap="nowrap">
-        {Icon && (
+        {media}
+        {!media && Icon && (
           <ThemeIcon variant="gradient" size={48} radius="md" visibleFrom="xs">
             <Icon size={26} stroke={1.6} />
           </ThemeIcon>
