@@ -53,16 +53,19 @@ function ColorSchemeToggle() {
   );
 }
 
-/** Logo mark + wordmark, shown in the sidebar and the mobile top bar. */
-function Brand() {
+/**
+ * Logo mark + wordmark, shown in the sidebar and the mobile top bar. `large` (sidebar) matches the page
+ * headers: a 48 px mark like the page icons, and the wordmark at the page-title size.
+ */
+function Brand({ large = false }: { large?: boolean }) {
   return (
     <Link to="/library" style={{ textDecoration: 'none' }}>
       <Group gap="sm" wrap="nowrap">
         {/* Same mark as the favicon and the backend landing page. */}
-        <Image src="/favicon.svg" alt="" w={36} h={36} />
+        <Image src="/favicon.svg" alt="" w={large ? 48 : 36} h={large ? 48 : 36} />
         <div>
           {/* The sidebar is dark in both colour schemes, so the dark-logo colours are fixed here. */}
-          <Text c="gray.2" size="lg" lh={1.1}>
+          <Text c="gray.2" fz={large ? 30 : 'lg'} lh={1.1}>
             <Wordmark accent="var(--mantine-color-brand-4)" />
           </Text>
           {/* Same size and spacing as the page eyebrows (PageHeader); lighter weight, as the colour is brighter. */}
@@ -101,7 +104,7 @@ export function Layout() {
       <AppShell.Navbar className="kg-sidebar" p="md" withBorder={false}>
         <Stack h="100%" gap="lg">
           <Box visibleFrom="sm" pt={4}>
-            <Brand />
+            <Brand large />
           </Box>
 
           <Button
