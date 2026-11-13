@@ -63,7 +63,8 @@ function Brand() {
           <Text c="white" fw={800} size="lg" lh={1.1} ff="heading">
             KnowGauge
           </Text>
-          <Text size="xs" c="needle.3" fw={600} lh={1.2} tt="uppercase" style={{ letterSpacing: '0.08em' }}>
+          {/* Same size and spacing as the page eyebrows (PageHeader); lighter weight, as the colour is brighter. */}
+          <Text size="xs" c="needle.3" fw={500} lh={1.2} tt="uppercase" style={{ letterSpacing: '0.12em' }}>
             Assessment studio
           </Text>
         </div>
