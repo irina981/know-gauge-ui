@@ -54,8 +54,8 @@ function ColorSchemeToggle() {
 }
 
 /**
- * Logo mark + wordmark, shown in the sidebar and the mobile top bar. `large` (sidebar) matches the page
- * headers: a 44 px mark like the page icons, and the wordmark at the page-title size.
+ * Logo mark + wordmark, shown in the sidebar and the mobile top bar. `large` (sidebar) is a step
+ * above the page headers (PageHeader): a 44 px mark and a 26 px wordmark, vs 40 px icons and 24 px titles.
  */
 function Brand({ large = false }: { large?: boolean }) {
   return (

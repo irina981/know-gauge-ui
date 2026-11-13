@@ -122,7 +122,7 @@ export function AboutPage() {
         title={<Wordmark font="inherit" />}
         description="Reliable knowledge assessments, built from the documentation you already trust."
         media={
-          <Image src="/favicon.svg" alt="KnowGauge logo" w={44} h={44} visibleFrom="xs" style={{ flexShrink: 0 }} />
+          <Image src="/favicon.svg" alt="KnowGauge logo" w={40} h={40} visibleFrom="xs" style={{ flexShrink: 0 }} />
         }
       />
       <Stack gap="xl">
