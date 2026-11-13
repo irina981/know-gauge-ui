@@ -196,12 +196,6 @@ export function LibraryPage() {
                       </Menu.Target>
                       <Menu.Dropdown>
                         <Menu.Item
-                          leftSection={<IconFolderPlus size={16} />}
-                          onClick={() => setFormTarget({ mode: 'create', parent: selected })}
-                        >
-                          Add sub-topic
-                        </Menu.Item>
-                        <Menu.Item
                           leftSection={<IconPencil size={16} />}
                           onClick={() => setFormTarget({ mode: 'edit', topic: selected })}
                         >
