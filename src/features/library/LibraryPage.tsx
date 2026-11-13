@@ -127,11 +127,17 @@ export function LibraryPage() {
             <>
               <Paper p="lg" className="kg-ai-edge" style={{ overflow: 'hidden' }}>
                 <Group justify="space-between" align="flex-start" gap="md">
-                  <Group gap="md" align="flex-start" wrap="nowrap">
+                  {/* Takes the free width, so a long path wraps here and the buttons stay beside it. */}
+                  <Group
+                    gap="md"
+                    align="flex-start"
+                    wrap="nowrap"
+                    style={{ flex: '1 1 240px', minWidth: 0 }}
+                  >
                     <ThemeIcon variant="light" size={44} radius="md">
                       <IconFolderOpen size={24} stroke={1.6} />
                     </ThemeIcon>
-                    <div>
+                    <div style={{ minWidth: 0 }}>
                       <Text size="xs" c="dimmed" fw={500}>
                         {topicPathLabel(tree, selected.id)}
                       </Text>
@@ -145,7 +151,7 @@ export function LibraryPage() {
                       )}
                     </div>
                   </Group>
-                  <Group gap="xs">
+                  <Group gap="xs" wrap="nowrap">
                     <Button
                       variant="default"
                       leftSection={<IconFolderPlus size={16} />}

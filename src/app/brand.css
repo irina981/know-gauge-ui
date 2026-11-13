@@ -234,6 +234,11 @@ body {
   gap: var(--mantine-spacing-lg);
 }
 
+/* Cards keep their natural height; only .kg-fill grows. Without this the topic header shrinks and clips. */
+.kg-library-detail > * {
+  flex-shrink: 0;
+}
+
 .kg-center {
   display: flex;
   align-items: center;
