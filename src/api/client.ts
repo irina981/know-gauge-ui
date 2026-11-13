@@ -74,6 +74,11 @@ export async function postJson<T>(url: string, body: unknown): Promise<T> {
   );
 }
 
+/** Untyped JSON GET, for an endpoint that is not in `schema.d.ts` yet. Same error handling as `unwrap`. */
+export async function getJson<T>(url: string): Promise<T> {
+  return parseResponse<T>(await fetch(url));
+}
+
 async function parseResponse<T>(response: Response): Promise<T> {
   const text = await response.text();
   let body: unknown = text;

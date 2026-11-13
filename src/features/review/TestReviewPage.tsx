@@ -14,12 +14,19 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconAlertCircle, IconArrowLeft, IconLock, IconSend } from '@tabler/icons-react';
+import { IconAlertCircle, IconArrowBackUp, IconArrowLeft, IconLock, IconSend } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ApiError } from '@/api/client';
-import { useAcceptFix, usePublishTest, useRegenerateQuestion, useTestQuestions } from '@/api/review';
+import {
+  useAcceptFix,
+  usePublishTest,
+  useRegenerateQuestion,
+  useTestHasAttempts,
+  useTestQuestions,
+  useUnpublishTest,
+} from '@/api/review';
 import { isGenerating, testKeys, useTest } from '@/api/tests';
 import { topicPathLabel, useTopicTree } from '@/api/topics';
 import type { TestQuestionDto } from '@/api/types';
@@ -46,6 +53,9 @@ export function TestReviewPage() {
   const regenerate = useRegenerateQuestion(testId);
   const publish = usePublishTest(testId);
   const [publishOpen, setPublishOpen] = useState(false);
+  const unpublish = useUnpublishTest(testId);
+  const [unpublishOpen, setUnpublishOpen] = useState(false);
+  const attempts = useTestHasAttempts(testId, test?.status === 'PUBLISHED');
 
   const [filter, setFilter] = useState<'all' | 'review'>('all');
   const [confirm, setConfirm] = useState<Pending>(null);
@@ -83,6 +93,14 @@ export function TestReviewPage() {
       : needsReview.length > 0
         ? `Review the ${needsReview.length} flagged question(s) first`
         : undefined;
+
+  // Same rule as the backend: only while nobody has taken the test. If the check itself fails, leave the
+  // button enabled; the server checks again and refuses with a message.
+  const unpublishBlockedReason = attempts.isPending
+    ? 'Checking for attempts…'
+    : attempts.data
+      ? 'The test has attempts, so it can no longer be changed'
+      : undefined;
 
   // The id of the question whose accept-fix / regenerate call is running (regenerate takes a while).
   const busyQuestionId = acceptFix.isPending
@@ -166,6 +184,22 @@ export function TestReviewPage() {
                 </span>
               </Tooltip>
             )}
+            {published && (
+              <Tooltip label={unpublishBlockedReason} disabled={!unpublishBlockedReason}>
+                <span>
+                  <Button
+                    variant="default"
+                    leftSection={<IconArrowBackUp size={16} />}
+                    disabled={!!unpublishBlockedReason}
+                    loading={unpublish.isPending}
+                    onClick={() => setUnpublishOpen(true)}
+                    mb="xs"
+                  >
+                    Unpublish
+                  </Button>
+                </span>
+              </Tooltip>
+            )}
             <Text size="sm">
               {formatDateTime(
                 test.generationFinishedAt ?? test.generationFailedAt ?? test.generationStartedAt,
@@ -210,7 +244,8 @@ export function TestReviewPage() {
         )}
         {published && (
           <Alert color="violet" variant="light" mt="md" icon={<IconLock size={18} />} title="Published">
-            The questions are frozen: review actions are disabled. To change this test, create a new one.
+            The questions are frozen: review actions are disabled. To change this test, unpublish it (possible
+            only while nobody has taken it) or create a new one.
           </Alert>
         )}
         {test.status === 'FAILED' && test.generationErrorMessage && (
@@ -319,6 +354,20 @@ export function TestReviewPage() {
           })
         }
         onClose={() => setPublishOpen(false)}
+      />
+      <CommentActionModal
+        opened={unpublishOpen}
+        title="Unpublish test"
+        description="The test goes back to the status it had before publishing, so its questions can be reviewed and changed again. It can't be used for attempts until it is published again."
+        confirmLabel="Unpublish"
+        loading={unpublish.isPending}
+        onConfirm={(comment) =>
+          unpublish.mutate(comment, {
+            onSuccess: () => notifications.show({ message: `Test #${testId} unpublished` }),
+            onSettled: () => setUnpublishOpen(false),
+          })
+        }
+        onClose={() => setUnpublishOpen(false)}
       />
       <ManualEditModal
         testId={testId}

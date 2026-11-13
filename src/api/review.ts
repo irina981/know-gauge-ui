@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api, postJson, unwrap } from './client';
+import { api, getJson, postJson, unwrap } from './client';
 import type { GenerationRunDto, ManualQuestionInput, TestDto } from './types';
 import { testKeys } from './tests';
 
@@ -109,6 +109,28 @@ export function usePublishTest(testId: number) {
     mutationFn: (comment: string | undefined) =>
       postJson<TestDto>(`/api/tests/${testId}/publish`, comment ? { comment } : {}),
     // Status and history change; refresh this test and the tests list.
+    onSettled: () => queryClient.invalidateQueries({ queryKey: testKeys.all }),
+  });
+}
+
+/** Whether any attempt exists for the test. A published test can be unpublished only while there is none. */
+export function useTestHasAttempts(testId: number, enabled: boolean) {
+  return useQuery({
+    queryKey: [...testKeys.detail(testId), 'has-attempts'],
+    enabled,
+    queryFn: () => getJson<boolean>(`/api/tests/${testId}/has-attempts`),
+  });
+}
+
+/**
+ * Unpublishes the test (backend ADR005): it goes back to GENERATED or REVIEWED and can be reviewed again.
+ * The server refuses (409) once the test has attempts.
+ */
+export function useUnpublishTest(testId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (comment: string | undefined) =>
+      postJson<TestDto>(`/api/tests/${testId}/unpublish`, comment ? { comment } : {}),
     onSettled: () => queryClient.invalidateQueries({ queryKey: testKeys.all }),
   });
 }

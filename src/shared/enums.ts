@@ -66,6 +66,7 @@ export const EVENT_TYPES: Record<string, EnumInfo> = {
   TEST_REVIEWED: { label: 'Test reviewed', color: 'teal' },
   TEST_FAILED: { label: 'Test failed', color: 'red' },
   TEST_PUBLISHED: { label: 'Test published', color: 'violet' },
+  TEST_UNPUBLISHED: { label: 'Test unpublished', color: 'gray' },
   QUESTION_GENERATED: { label: 'Question generated', color: 'blue' },
   OPTION_FLAGGED: { label: 'Option flagged', color: 'orange' },
   FIX_ACCEPTED: { label: 'Fix accepted', color: 'teal' },
