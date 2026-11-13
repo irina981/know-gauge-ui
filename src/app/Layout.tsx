@@ -60,8 +60,12 @@ function Brand() {
         {/* Same mark as the favicon and the backend landing page. */}
         <Image src="/favicon.svg" alt="" w={36} h={36} />
         <div>
-          <Text c="white" fw={800} size="lg" lh={1.1} ff="heading">
-            KnowGauge
+          {/* The wordmark as in the backend's logo-dark.svg: Inter 600, "Know" light, "Gauge" in brand blue. */}
+          <Text c="gray.2" fw={600} size="lg" lh={1.1} style={{ letterSpacing: '-0.017em' }}>
+            Know
+            <Text span inherit c="brand.4">
+              Gauge
+            </Text>
           </Text>
           {/* Same size and spacing as the page eyebrows (PageHeader); lighter weight, as the colour is brighter. */}
           <Text size="xs" c="needle.3" fw={500} lh={1.2} tt="uppercase" style={{ letterSpacing: '0.12em' }}>
