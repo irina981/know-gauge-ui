@@ -10,10 +10,11 @@ type IconComponent = TablerIcon;
 /**
  * "KnowGauge" written as in the logo (backend logo.svg / logo-dark.svg): Inter semibold, "Gauge" in the brand
  * blue. It takes its size from the surrounding text. `accent` overrides the blue, e.g. on the always-dark sidebar.
+ * `font="inherit"` keeps the surrounding font and weight (e.g. a page title) and only adds the colours.
  */
-export function Wordmark({ accent }: { accent?: string }) {
+export function Wordmark({ accent, font = 'logo' }: { accent?: string; font?: 'logo' | 'inherit' }) {
   return (
-    <span className="kg-wordmark">
+    <span className={font === 'logo' ? 'kg-wordmark' : undefined}>
       Know
       <span className="kg-wordmark-accent" style={accent ? { color: accent } : undefined}>
         Gauge

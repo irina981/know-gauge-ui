@@ -115,13 +115,15 @@ function PipelineChip({ label, icon: Icon }: { label: string; icon: TablerIcon }
 /** What KnowGauge is for and how it works. */
 export function AboutPage() {
   return (
-    // A centred column reads better than the full window width for this text-heavy page.
-    <Box maw={1200} mx="auto">
+    // A limited width reads better for this text-heavy page; left-aligned like the other pages.
+    <Box maw={1200}>
       <PageHeader
         eyebrow="About"
-        title={<Wordmark />}
+        title={<Wordmark font="inherit" />}
         description="Reliable knowledge assessments, built from the documentation you already trust."
-        media={<Image src="/favicon.svg" alt="KnowGauge logo" w={64} h={64} style={{ flexShrink: 0 }} />}
+        media={
+          <Image src="/favicon.svg" alt="KnowGauge logo" w={48} h={48} visibleFrom="xs" style={{ flexShrink: 0 }} />
+        }
       />
       <Stack gap="xl">
         <Paper p={{ base: 'lg', sm: 'xl' }} className="kg-hero">
