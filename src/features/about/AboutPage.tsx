@@ -24,7 +24,7 @@ import {
   IconUserCheck,
   type Icon as TablerIcon,
 } from '@tabler/icons-react';
-import { PageHeader } from '@/shared/components';
+import { PageHeader, Wordmark } from '@/shared/components';
 
 /** Short version of the pipeline, shown as chips in the hero. */
 const PIPELINE = [
@@ -119,7 +119,7 @@ export function AboutPage() {
     <Box maw={1200} mx="auto">
       <PageHeader
         eyebrow="About"
-        title="KnowGauge"
+        title={<Wordmark />}
         description="Reliable knowledge assessments, built from the documentation you already trust."
         media={<Image src="/favicon.svg" alt="KnowGauge logo" w={64} h={64} style={{ flexShrink: 0 }} />}
       />

@@ -25,6 +25,7 @@ import {
   IconSun,
 } from '@tabler/icons-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Wordmark } from '@/shared/components';
 
 /** Left navigation. `isActive` decides which entry is highlighted for the current URL. */
 const NAV = [
@@ -60,12 +61,9 @@ function Brand() {
         {/* Same mark as the favicon and the backend landing page. */}
         <Image src="/favicon.svg" alt="" w={36} h={36} />
         <div>
-          {/* The wordmark as in the backend's logo-dark.svg: Inter 600, "Know" light, "Gauge" in brand blue. */}
-          <Text c="gray.2" fw={600} size="lg" lh={1.1} style={{ letterSpacing: '-0.017em' }}>
-            Know
-            <Text span inherit c="brand.4">
-              Gauge
-            </Text>
+          {/* The sidebar is dark in both colour schemes, so the dark-logo colours are fixed here. */}
+          <Text c="gray.2" size="lg" lh={1.1}>
+            <Wordmark accent="var(--mantine-color-brand-4)" />
           </Text>
           {/* Same size and spacing as the page eyebrows (PageHeader); lighter weight, as the colour is brighter. */}
           <Text size="xs" c="needle.3" fw={500} lh={1.2} tt="uppercase" style={{ letterSpacing: '0.12em' }}>

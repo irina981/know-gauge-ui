@@ -7,6 +7,21 @@ import type { EnumInfo } from './enums';
 
 type IconComponent = TablerIcon;
 
+/**
+ * "KnowGauge" written as in the logo (backend logo.svg / logo-dark.svg): Inter semibold, "Gauge" in the brand
+ * blue. It takes its size from the surrounding text. `accent` overrides the blue, e.g. on the always-dark sidebar.
+ */
+export function Wordmark({ accent }: { accent?: string }) {
+  return (
+    <span className="kg-wordmark">
+      Know
+      <span className="kg-wordmark-accent" style={accent ? { color: accent } : undefined}>
+        Gauge
+      </span>
+    </span>
+  );
+}
+
 /** Coloured status label. `busy` adds a small spinner, e.g. for a test that is still generating. */
 export function StatusBadge({ info, busy = false }: { info: EnumInfo; busy?: boolean }) {
   return (

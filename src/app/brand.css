@@ -115,6 +115,21 @@ body {
   background-image: linear-gradient(90deg, var(--mantine-color-brand-3), var(--mantine-color-violet-3));
 }
 
+/* The KnowGauge wordmark (shared/components.tsx Wordmark), as in the backend logo SVGs. */
+.kg-wordmark {
+  font-family: var(--mantine-font-family);
+  font-weight: 600;
+  letter-spacing: -0.017em;
+}
+
+.kg-wordmark-accent {
+  color: var(--mantine-color-brand-6);
+}
+
+[data-mantine-color-scheme='dark'] .kg-wordmark-accent {
+  color: var(--mantine-color-brand-4);
+}
+
 /* Hero banners (Generate page, empty Library). */
 .kg-hero {
   position: relative;
