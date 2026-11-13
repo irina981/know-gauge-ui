@@ -76,14 +76,15 @@ export function PageHeader({
 }) {
   return (
     <Group justify="space-between" align="flex-end" mb="xl" gap="md">
-      <Group gap="md" align="center" wrap="nowrap">
+      {/* Takes the free width next to the actions; the description wraps only when it does not fit. */}
+      <Group gap="md" align="center" wrap="nowrap" style={{ flex: '1 1 320px', minWidth: 0 }}>
         {media}
         {!media && Icon && (
           <ThemeIcon variant="gradient" size={40} radius="md" visibleFrom="xs">
             <Icon size={22} stroke={1.6} />
           </ThemeIcon>
         )}
-        <div>
+        <div style={{ minWidth: 0 }}>
           {eyebrow && (
             <Text
               size="xs"
@@ -99,7 +100,7 @@ export function PageHeader({
             {title}
           </Title>
           {description && (
-            <Text c="dimmed" size="sm" mt={4} maw={640}>
+            <Text c="dimmed" size="sm" mt={4}>
               {description}
             </Text>
           )}
