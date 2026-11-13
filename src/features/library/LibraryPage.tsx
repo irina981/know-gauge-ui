@@ -9,6 +9,7 @@ import {
   Text,
   ThemeIcon,
   Title,
+  Tooltip,
 } from '@mantine/core';
 import {
   IconBooks,
@@ -24,6 +25,7 @@ import {
 } from '@tabler/icons-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTopicDocuments } from '@/api/documents';
 import { topicPathLabel, useDeleteTopic, useTopicTree } from '@/api/topics';
 import type { TopicNode } from '@/api/types';
 import { DocumentTable } from '@/features/documents/DocumentTable';
@@ -47,6 +49,11 @@ export function LibraryPage() {
 
   const select = (id: number) => navigate(`/library/topics/${id}`);
   const selected = selectedId != null ? tree?.byId.get(selectedId) : undefined;
+
+  // Generation needs at least one ingested document in the topic. Same query as the generate form, so it
+  // shares its cache and refreshes while documents are being ingested.
+  const { data: topicDocs } = useTopicDocuments(selected?.id, 0, 100);
+  const canGenerate = !!topicDocs?.content?.some((d) => d.status === 'INGESTED');
 
   const handleDelete = (topic: TopicNode) =>
     confirmDelete({
@@ -159,14 +166,27 @@ export function LibraryPage() {
                     >
                       Add sub-topic
                     </Button>
-                    <Button
-                      component={Link}
-                      to={`/tests/new?topicId=${selected.id}`}
-                      variant="gradient"
-                      leftSection={<IconSparkles size={16} />}
-                    >
-                      Generate test
-                    </Button>
+                    {canGenerate ? (
+                      <Button
+                        component={Link}
+                        to={`/tests/new?topicId=${selected.id}`}
+                        variant="gradient"
+                        leftSection={<IconSparkles size={16} />}
+                      >
+                        Generate test
+                      </Button>
+                    ) : (
+                      // data-disabled instead of disabled, so the tooltip still gets hover events.
+                      <Tooltip label="Upload and ingest at least one PDF in this topic first">
+                        <Button
+                          data-disabled
+                          onClick={(event) => event.preventDefault()}
+                          leftSection={<IconSparkles size={16} />}
+                        >
+                          Generate test
+                        </Button>
+                      </Tooltip>
+                    )}
                     <Menu position="bottom-end" withinPortal>
                       <Menu.Target>
                         <ActionIcon variant="default" size="lg" aria-label="Topic actions">
