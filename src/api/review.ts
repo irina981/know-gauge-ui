@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, postJson, unwrap } from './client';
-import type { ManualQuestionInput, TestDto } from './types';
+import type { GenerationRunDto, ManualQuestionInput, TestDto } from './types';
 import { testKeys } from './tests';
 
 export function useTestQuestions(testId: number) {
@@ -33,7 +33,11 @@ export function useTestEvents(testId: number) {
 export function useGenerationRuns(testId: number) {
   return useQuery({
     queryKey: testKeys.runs(testId),
-    queryFn: () => unwrap(api.GET('/api/tests/{testId}/generation-runs', { params: { path: { testId } } })),
+    // Cast: the generated schema does not list prompt and requestParams yet (see GenerationRunDto in types.ts).
+    queryFn: async () =>
+      (await unwrap(
+        api.GET('/api/tests/{testId}/generation-runs', { params: { path: { testId } } }),
+      )) as GenerationRunDto[],
   });
 }
 

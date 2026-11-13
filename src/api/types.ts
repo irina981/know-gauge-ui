@@ -24,7 +24,11 @@ export type TestQuestionDto = Schemas['TestQuestionDto'];
 export type TestQuestionOptionDto = Schemas['TestQuestionOptionDto'];
 export type TestQuestionVersionDto = Schemas['TestQuestionVersionDto'];
 export type TestEventDto = Schemas['TestEventDto'];
-export type GenerationRunDto = Schemas['GenerationRunDto'];
+/**
+ * The prompt and request settings of each LLM call are also new in the backend (same as TestNaming above).
+ */
+type GenerationRunRequest = { prompt?: string; requestParams?: Record<string, unknown> };
+export type GenerationRunDto = Schemas['GenerationRunDto'] & GenerationRunRequest;
 export type ManualQuestionInput = Schemas['ManualQuestionInput'];
 
 /** A topic with its sub-topics, built in the browser from the flat topic lists the API returns. */
