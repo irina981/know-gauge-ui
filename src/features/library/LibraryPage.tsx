@@ -52,8 +52,9 @@ export function LibraryPage() {
 
   // Generation needs at least one ingested document in the topic. Same query as the generate form, so it
   // shares its cache and refreshes while documents are being ingested.
-  const { data: topicDocs } = useTopicDocuments(selected?.id, 0, 100);
-  const canGenerate = !!topicDocs?.content?.some((d) => d.status === 'INGESTED');
+  // While another topic's documents are still shown as placeholder data, keep the button disabled.
+  const { data: topicDocs, isPlaceholderData } = useTopicDocuments(selected?.id, 0, 100);
+  const canGenerate = !isPlaceholderData && !!topicDocs?.content?.some((d) => d.status === 'INGESTED');
 
   const handleDelete = (topic: TopicNode) =>
     confirmDelete({
