@@ -7,6 +7,29 @@ import { OptionList } from './OptionList';
 
 export type ReviewActionKind = 'accept-fix' | 'regenerate' | 'edit' | 'history';
 
+const textKey = (text: string) => text.trim().replace(/\s+/g, ' ').toLowerCase();
+
+/**
+ * Why Accept fix is not possible, or undefined when it is. Same rules as the backend
+ * (TestQuestionVersion.isFixApplicable): every flagged option needs a suggestion, and no suggestion may repeat
+ * an option's text or another suggestion, as that would create duplicate options.
+ */
+function acceptFixBlockedReason(question: TestQuestionDto): string | undefined {
+  const options = Object.values(question.options ?? {});
+  const flagged = options.filter((o) => o.flagged);
+  if (!flagged.length) return 'No flagged options';
+  if (flagged.some((o) => !o.suggestedText?.trim())) return 'No suggested fix for every flagged option';
+  const taken = new Set(options.map((o) => textKey(o.text ?? '')));
+  for (const o of flagged) {
+    const key = textKey(o.suggestedText ?? '');
+    if (taken.has(key)) {
+      return 'The suggested text repeats an existing option. Edit or regenerate the question.';
+    }
+    taken.add(key);
+  }
+  return undefined;
+}
+
 /** One question with its options and the review buttons. The parent page runs the actions. */
 export function QuestionCard({
   question,
@@ -19,7 +42,7 @@ export function QuestionCard({
   busy: boolean;
   onAction: (kind: ReviewActionKind, question: TestQuestionDto) => void;
 }) {
-  const hasSuggestion = Object.values(question.options ?? {}).some((o) => o.flagged && o.suggestedText);
+  const fixBlockedReason = acceptFixBlockedReason(question);
   const origin = versionOrigin(question.origin);
 
   return (
@@ -34,18 +57,21 @@ export function QuestionCard({
         </Group>
         <Group gap={6}>
           <Tooltip
-            label={hasSuggestion ? 'Apply the suggested texts of the flagged options' : 'No suggested fix'}
+            label={fixBlockedReason ?? 'Apply the suggested texts of the flagged options'}
           >
-            <Button
-              size="xs"
-              variant="light"
-              color="teal"
-              leftSection={<IconCheck size={14} />}
-              disabled={!canReview || busy || !hasSuggestion}
-              onClick={() => onAction('accept-fix', question)}
-            >
-              Accept fix
-            </Button>
+            {/* The wrapper keeps the tooltip working on a disabled button. */}
+            <span>
+              <Button
+                size="xs"
+                variant="light"
+                color="teal"
+                leftSection={<IconCheck size={14} />}
+                disabled={!canReview || busy || !!fixBlockedReason}
+                onClick={() => onAction('accept-fix', question)}
+              >
+                Accept fix
+              </Button>
+            </span>
           </Tooltip>
           <Button
             size="xs"
