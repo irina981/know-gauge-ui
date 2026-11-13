@@ -79,8 +79,8 @@ export function PageHeader({
       <Group gap="md" align="center" wrap="nowrap">
         {media}
         {!media && Icon && (
-          <ThemeIcon variant="gradient" size={48} radius="md" visibleFrom="xs">
-            <Icon size={26} stroke={1.6} />
+          <ThemeIcon variant="gradient" size={44} radius="md" visibleFrom="xs">
+            <Icon size={24} stroke={1.6} />
           </ThemeIcon>
         )}
         <div>
@@ -95,7 +95,7 @@ export function PageHeader({
               {eyebrow}
             </Text>
           )}
-          <Title order={1} fz={{ base: 26, sm: 30 }} lh={1.2}>
+          <Title order={1} fz={{ base: 24, sm: 26 }} lh={1.2}>
             {title}
           </Title>
           {description && (
