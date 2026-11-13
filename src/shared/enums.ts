@@ -56,6 +56,7 @@ export const VERSION_ORIGINS: Record<string, EnumInfo> = {
   REGENERATED: { label: 'Regenerated', color: 'grape' },
   FIX_ACCEPTED: { label: 'Fix accepted', color: 'teal' },
   MANUAL: { label: 'Manual', color: 'indigo' },
+  FLAGS_DISMISSED: { label: 'Kept as is', color: 'gray' },
 };
 export const versionOrigin = (v?: string | null) => lookup(VERSION_ORIGINS, v);
 
@@ -73,6 +74,7 @@ export const EVENT_TYPES: Record<string, EnumInfo> = {
   QUESTION_REGENERATED: { label: 'Question regenerated', color: 'grape' },
   REGENERATION_FAILED: { label: 'Regeneration failed', color: 'red' },
   QUESTION_MANUALLY_REPLACED: { label: 'Manually replaced', color: 'indigo' },
+  FLAGS_DISMISSED: { label: 'Kept as is (flags dismissed)', color: 'gray' },
 };
 export const eventType = (v?: string | null) => lookup(EVENT_TYPES, v);
 

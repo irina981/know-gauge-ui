@@ -21,6 +21,7 @@ import { Link, useParams } from 'react-router-dom';
 import { ApiError } from '@/api/client';
 import {
   useAcceptFix,
+  useDismissFlags,
   usePublishTest,
   useRegenerateQuestion,
   useTestHasAttempts,
@@ -41,7 +42,31 @@ import { ManualEditModal } from './ManualEditModal';
 import { QuestionCard, type ReviewActionKind } from './QuestionCard';
 import { VersionHistoryDrawer } from './VersionHistoryDrawer';
 
-type Pending = { kind: 'accept-fix' | 'regenerate'; question: TestQuestionDto } | null;
+type ConfirmKind = 'accept-fix' | 'keep' | 'regenerate';
+type Pending = { kind: ConfirmKind; question: TestQuestionDto } | null;
+
+/** Dialog texts and success message of the confirmed review actions. */
+const CONFIRM_TEXT: Record<ConfirmKind, { title: string; description: string; label: string; done: string }> = {
+  'accept-fix': {
+    title: 'Accept suggested fix',
+    description: 'The flagged options are replaced by the verifier’s suggested texts. This creates a new version.',
+    label: 'Accept fix',
+    done: 'fix accepted',
+  },
+  keep: {
+    title: 'Keep question as is',
+    description:
+      'The question stays exactly as it is and the verifier’s flags are dismissed. This creates a new version. Say why the flags are wrong.',
+    label: 'Keep as is',
+    done: 'kept as is',
+  },
+  regenerate: {
+    title: 'Regenerate question',
+    description: 'A new question is written from the same source material. This creates a new version.',
+    label: 'Regenerate',
+    done: 'regenerated',
+  },
+};
 
 export function TestReviewPage() {
   const testId = Number(useParams().testId);
@@ -50,6 +75,7 @@ export function TestReviewPage() {
   const { data: tree } = useTopicTree();
 
   const acceptFix = useAcceptFix(testId);
+  const dismissFlags = useDismissFlags(testId);
   const regenerate = useRegenerateQuestion(testId);
   const publish = usePublishTest(testId);
   const [publishOpen, setPublishOpen] = useState(false);
@@ -102,10 +128,12 @@ export function TestReviewPage() {
       ? 'Someone has taken this test, so it can no longer be unpublished'
       : undefined;
 
-  // The id of the question whose accept-fix / regenerate call is running (regenerate takes a while).
+  // The id of the question whose accept-fix / keep / regenerate call is running (regenerate takes a while).
   const busyQuestionId = acceptFix.isPending
     ? acceptFix.variables?.questionId
-    : regenerate.isPending
+    : dismissFlags.isPending
+      ? dismissFlags.variables?.questionId
+      : regenerate.isPending
       ? regenerate.variables?.questionId
       : undefined;
 
@@ -119,12 +147,12 @@ export function TestReviewPage() {
     if (!confirm) return;
     const { kind, question } = confirm;
     const vars = { questionId: question.id!, expectedCurrentVersionId: question.currentVersionId!, comment };
-    const mutation = kind === 'accept-fix' ? acceptFix : regenerate;
+    const mutation = kind === 'accept-fix' ? acceptFix : kind === 'keep' ? dismissFlags : regenerate;
     mutation.mutate(vars, {
       onSuccess: () =>
         notifications.show({
           color: 'teal',
-          message: `Question ${(question.questionIndex ?? 0) + 1}: ${kind === 'accept-fix' ? 'fix accepted' : 'regenerated'}`,
+          message: `Question ${(question.questionIndex ?? 0) + 1}: ${CONFIRM_TEXT[kind].done}`,
         }),
       onError: (e) => {
         if (e instanceof ApiError && e.status === 409) {
@@ -329,13 +357,10 @@ export function TestReviewPage() {
 
       <CommentActionModal
         opened={confirm != null}
-        title={confirm?.kind === 'accept-fix' ? 'Accept suggested fix' : 'Regenerate question'}
-        description={
-          confirm?.kind === 'accept-fix'
-            ? 'The flagged options are replaced by the verifier’s suggested texts. This creates a new version.'
-            : 'A new question is written from the same source material. This creates a new version.'
-        }
-        confirmLabel={confirm?.kind === 'accept-fix' ? 'Accept fix' : 'Regenerate'}
+        title={confirm ? CONFIRM_TEXT[confirm.kind].title : ''}
+        description={confirm ? CONFIRM_TEXT[confirm.kind].description : ''}
+        confirmLabel={confirm ? CONFIRM_TEXT[confirm.kind].label : ''}
+        commentRequired={confirm?.kind === 'keep'}
         loading={false}
         onConfirm={runConfirmed}
         onClose={() => setConfirm(null)}

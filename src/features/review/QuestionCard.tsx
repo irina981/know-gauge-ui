@@ -1,11 +1,11 @@
 import { Button, Card, Group, Stack, Text, Tooltip } from '@mantine/core';
-import { IconCheck, IconHistory, IconPencil, IconSparkles } from '@tabler/icons-react';
+import { IconCheck, IconCircleCheck, IconHistory, IconPencil, IconSparkles } from '@tabler/icons-react';
 import type { TestQuestionDto } from '@/api/types';
 import { StatusBadge } from '@/shared/components';
 import { questionStatus, versionOrigin } from '@/shared/enums';
 import { OptionList } from './OptionList';
 
-export type ReviewActionKind = 'accept-fix' | 'regenerate' | 'edit' | 'history';
+export type ReviewActionKind = 'accept-fix' | 'keep' | 'regenerate' | 'edit' | 'history';
 
 const textKey = (text: string) => text.trim().replace(/\s+/g, ' ').toLowerCase();
 
@@ -43,6 +43,7 @@ export function QuestionCard({
   onAction: (kind: ReviewActionKind, question: TestQuestionDto) => void;
 }) {
   const fixBlockedReason = acceptFixBlockedReason(question);
+  const hasFlags = Object.values(question.options ?? {}).some((o) => o.flagged);
   const origin = versionOrigin(question.origin);
 
   return (
@@ -70,6 +71,20 @@ export function QuestionCard({
                 onClick={() => onAction('accept-fix', question)}
               >
                 Accept fix
+              </Button>
+            </span>
+          </Tooltip>
+          <Tooltip label={hasFlags ? 'Keep the question as it is and dismiss the flags' : 'No flagged options'}>
+            <span>
+              <Button
+                size="xs"
+                variant="light"
+                color="blue"
+                leftSection={<IconCircleCheck size={14} />}
+                disabled={!canReview || busy || !hasFlags}
+                onClick={() => onAction('keep', question)}
+              >
+                Keep as is
               </Button>
             </span>
           </Tooltip>

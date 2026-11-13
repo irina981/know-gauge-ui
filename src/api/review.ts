@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, getJson, postJson, unwrap } from './client';
-import type { GenerationRunDto, ManualQuestionInput, TestDto } from './types';
+import type { GenerationRunDto, ManualQuestionInput, TestDto, TestQuestionDto } from './types';
 import { testKeys } from './tests';
 
 export function useTestQuestions(testId: number) {
@@ -72,6 +72,16 @@ export function useAcceptFix(testId: number) {
         body,
       }),
     ),
+  );
+}
+
+/**
+ * Keeps the question as it is and dismisses the verifier's flags (backend ADR008). Creates a new version with
+ * the same content and no flags. The comment is required. Not in `schema.d.ts` yet, hence `postJson`.
+ */
+export function useDismissFlags(testId: number) {
+  return useReviewMutation(testId, ({ questionId, ...body }: ReviewAction) =>
+    postJson<TestQuestionDto>(`/api/tests/${testId}/questions/${questionId}/dismiss-flags`, body),
   );
 }
 

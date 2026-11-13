@@ -2,8 +2,8 @@ import { Button, Group, Modal, Stack, Text, Textarea } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
 /**
- * Confirmation dialog with an optional comment, used for "Accept fix" and "Regenerate".
- * The comment is stored with the review event.
+ * Confirmation dialog with a comment, used for the review actions and for publishing. The comment is stored
+ * with the event. It is optional unless `commentRequired` is set (e.g. "Keep as is").
  */
 export function CommentActionModal({
   opened,
@@ -11,6 +11,7 @@ export function CommentActionModal({
   description,
   confirmLabel,
   loading,
+  commentRequired = false,
   onConfirm,
   onClose,
 }: {
@@ -19,6 +20,7 @@ export function CommentActionModal({
   description: string;
   confirmLabel: string;
   loading: boolean;
+  commentRequired?: boolean;
   onConfirm: (comment: string | undefined) => void;
   onClose: () => void;
 }) {
@@ -32,7 +34,8 @@ export function CommentActionModal({
       <Stack>
         <Text size="sm">{description}</Text>
         <Textarea
-          label="Comment (optional)"
+          label={commentRequired ? 'Comment' : 'Comment (optional)'}
+          withAsterisk={commentRequired}
           maxLength={2000}
           autosize
           minRows={2}
@@ -43,7 +46,11 @@ export function CommentActionModal({
           <Button variant="default" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
-          <Button loading={loading} onClick={() => onConfirm(comment.trim() || undefined)}>
+          <Button
+            loading={loading}
+            disabled={commentRequired && !comment.trim()}
+            onClick={() => onConfirm(comment.trim() || undefined)}
+          >
             {confirmLabel}
           </Button>
         </Group>
