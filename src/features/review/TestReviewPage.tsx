@@ -99,7 +99,7 @@ export function TestReviewPage() {
   const unpublishBlockedReason = attempts.isPending
     ? 'Checking for attempts…'
     : attempts.data
-      ? 'The test has attempts, so it can no longer be changed'
+      ? 'Someone has taken this test, so it can no longer be unpublished'
       : undefined;
 
   // The id of the question whose accept-fix / regenerate call is running (regenerate takes a while).
@@ -244,8 +244,7 @@ export function TestReviewPage() {
         )}
         {published && (
           <Alert color="violet" variant="light" mt="md" icon={<IconLock size={18} />} title="Published">
-            The questions are frozen: review actions are disabled. To change this test, unpublish it (possible
-            only while nobody has taken it) or create a new one.
+            The questions are frozen. To change this test, you can unpublish it if nobody has taken it yet.
           </Alert>
         )}
         {test.status === 'FAILED' && test.generationErrorMessage && (
@@ -358,7 +357,7 @@ export function TestReviewPage() {
       <CommentActionModal
         opened={unpublishOpen}
         title="Unpublish test"
-        description="The test goes back to the status it had before publishing, so its questions can be reviewed and changed again. It can't be used for attempts until it is published again."
+        description="The test goes back to review, so you can change its questions. Publish it again when you are done."
         confirmLabel="Unpublish"
         loading={unpublish.isPending}
         onConfirm={(comment) =>
