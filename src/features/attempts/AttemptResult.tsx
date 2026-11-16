@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom';
 import type { AttemptDetailDto, AttemptQuestionDto } from '@/api/types';
 import { EmptyState } from '@/shared/components';
 import { formatDateTime, formatDuration } from '@/shared/format';
-import { optionLetters, scoreColor, userLabel } from './attemptUtils';
+import { optionLetters, participantLabel, scoreColor } from './attemptUtils';
 
 /** Score summary and a question-by-question review of a scored attempt. */
 export function AttemptResult({ detail }: { detail: AttemptDetailDto }) {
@@ -49,7 +49,7 @@ export function AttemptResult({ detail }: { detail: AttemptDetailDto }) {
               {detail.testName || `Test #${attempt.testId}`}
             </Title>
             <Text size="sm" c="dimmed" mt={4}>
-              Attempt #{attempt.id} · {userLabel(attempt.userId)} · submitted{' '}
+              Attempt #{attempt.id} · {participantLabel(attempt)} · submitted{' '}
               {formatDateTime(attempt.submittedAt)}
               {formatDuration(attempt.startedAt, attempt.submittedAt) &&
                 ` · took ${formatDuration(attempt.startedAt, attempt.submittedAt)}`}
@@ -61,9 +61,6 @@ export function AttemptResult({ detail }: { detail: AttemptDetailDto }) {
             <Group gap="xs" mt="lg">
               <Button component={Link} to={`/attempts?testId=${attempt.testId}`} variant="default">
                 All attempts at this test
-              </Button>
-              <Button component={Link} to={`/tests/${attempt.testId}/take`} variant="light">
-                Take again
               </Button>
             </Group>
           </div>

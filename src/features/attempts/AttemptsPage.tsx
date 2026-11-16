@@ -7,7 +7,7 @@ import { useTests } from '@/api/tests';
 import type { AttemptDto } from '@/api/types';
 import { EmptyState, ErrorAlert, PageHeader, PageLoader } from '@/shared/components';
 import { formatDateTime, formatDuration } from '@/shared/format';
-import { scoreColor, userLabel } from './attemptUtils';
+import { participantLabel, scoreColor } from './attemptUtils';
 
 /**
  * Finished (scored) attempts grouped by test, newest test activity first.
@@ -16,7 +16,7 @@ import { scoreColor, userLabel } from './attemptUtils';
 export function AttemptsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const testFilter = searchParams.get('testId');
-  const userFilter = searchParams.get('userId');
+  const participantFilter = searchParams.get('participant');
   const navigate = useNavigate();
 
   const { data: attempts, isLoading, error } = useAttempts();
@@ -26,14 +26,21 @@ export function AttemptsPage() {
   const finished = useMemo(() => (attempts ?? []).filter((a) => a.status === 'SCORED'), [attempts]);
   const inProgress = (attempts ?? []).length - finished.length;
 
-  const userOptions = useMemo(
-    () =>
-      [...new Set(finished.map((a) => a.userId))]
-        .filter((id): id is number => id != null)
-        .sort((a, b) => a - b)
-        .map((id) => ({ value: String(id), label: userLabel(id) })),
-    [finished],
-  );
+  // A participant is identified by email (ADR009); attempts by an administrator by user id.
+  const participantKey = (a: AttemptDto) => a.participantEmail ?? `user:${a.userId}`;
+  const participantOptions = useMemo(() => {
+    const byKey = new Map<string, string>();
+    for (const a of finished) {
+      if (!byKey.has(participantKey(a)))
+        byKey.set(
+          participantKey(a),
+          a.participantEmail ? `${participantLabel(a)} (${a.participantEmail})` : participantLabel(a),
+        );
+    }
+    return [...byKey.entries()]
+      .map(([value, label]) => ({ value, label }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [finished]);
   const testOptions = useMemo(
     () =>
       [...new Set(finished.map((a) => a.testId))]
@@ -46,7 +53,8 @@ export function AttemptsPage() {
 
   const visible = finished.filter(
     (a) =>
-      (!testFilter || String(a.testId) === testFilter) && (!userFilter || String(a.userId) === userFilter),
+      (!testFilter || String(a.testId) === testFilter) &&
+      (!participantFilter || participantKey(a) === participantFilter),
   );
 
   // Group by test; groups ordered by their most recent attempt (the list is already newest first).
@@ -60,7 +68,7 @@ export function AttemptsPage() {
     return [...byTest.entries()];
   }, [visible]);
 
-  const setFilter = (key: 'testId' | 'userId', value: string | null) => {
+  const setFilter = (key: 'testId' | 'participant', value: string | null) => {
     const next = new URLSearchParams(searchParams);
     if (value) next.set(key, value);
     else next.delete(key);
@@ -78,13 +86,14 @@ export function AttemptsPage() {
 
       <Group gap="sm" mb="lg" align="flex-end">
         <Select
-          label="User"
-          placeholder="All users"
-          data={userOptions}
-          value={userFilter}
-          onChange={(v) => setFilter('userId', v)}
+          label="Participant"
+          placeholder="All participants"
+          data={participantOptions}
+          value={participantFilter}
+          onChange={(v) => setFilter('participant', v)}
           clearable
-          w={220}
+          searchable
+          w={320}
         />
         <Select
           label="Test"
@@ -96,7 +105,7 @@ export function AttemptsPage() {
           searchable
           w={360}
         />
-        {(testFilter || userFilter) && (
+        {(testFilter || participantFilter) && (
           <Button
             variant="subtle"
             leftSection={<IconFilterOff size={16} />}
@@ -112,9 +121,9 @@ export function AttemptsPage() {
       {attempts && groups.length === 0 && (
         <Paper p="xl">
           <EmptyState title="No attempts yet" icon={IconClipboardCheck}>
-            {testFilter || userFilter
+            {testFilter || participantFilter
               ? 'No submitted attempts match these filters.'
-              : 'Publish a test, then use "Take test" on the Tests page.'}
+              : 'Publish a test and share its link from the Share tab of the test.'}
           </EmptyState>
         </Paper>
       )}
@@ -135,8 +144,8 @@ export function AttemptsPage() {
                     {Math.max(...scores)}%
                   </Text>
                 </div>
-                <Button component={Link} to={`/tests/${testId}/take`} variant="light" size="xs">
-                  Take test
+                <Button component={Link} to={`/tests/${testId}`} variant="light" size="xs">
+                  Open test
                 </Button>
               </Group>
               <Table.ScrollContainer minWidth={640}>
@@ -144,7 +153,7 @@ export function AttemptsPage() {
                   <Table.Thead>
                     <Table.Tr>
                       <Table.Th>Attempt</Table.Th>
-                      <Table.Th>User</Table.Th>
+                      <Table.Th>Participant</Table.Th>
                       <Table.Th>Submitted</Table.Th>
                       <Table.Th>Duration</Table.Th>
                       <Table.Th>Correct</Table.Th>
@@ -164,7 +173,13 @@ export function AttemptsPage() {
                           </Text>
                         </Table.Td>
                         <Table.Td>
-                          <Text size="sm">{userLabel(a.userId)}</Text>
+                          <Text size="sm">{participantLabel(a)}</Text>
+                          {a.participantEmail && (
+                            <Text size="xs" c="dimmed">
+                              {a.participantEmail}
+                              {a.invitationId != null && ' · invited'}
+                            </Text>
+                          )}
                         </Table.Td>
                         <Table.Td>
                           <Text size="sm">{formatDateTime(a.submittedAt)}</Text>

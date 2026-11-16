@@ -27,6 +27,12 @@ export type AttemptDetailDto = Schemas['AttemptDetailDto'];
 export type AttemptQuestionDto = Schemas['AttemptQuestionDto'];
 export type SubmitAttemptInput = Schemas['SubmitAttemptInput'];
 
+export type PublicTestDto = Schemas['PublicTestDto'];
+export type PublicAttemptDto = Schemas['PublicAttemptDto'];
+export type PublicInvitationDto = Schemas['PublicInvitationDto'];
+export type TestInvitationDto = Schemas['TestInvitationDto'];
+export type InviteInput = Schemas['InviteInput'];
+
 /** A topic with its sub-topics, built in the browser from the flat topic lists the API returns. */
 export interface TopicNode {
   id: number;

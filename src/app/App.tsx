@@ -6,8 +6,10 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { AboutPage } from '@/features/about/AboutPage';
 import { AttemptPage } from '@/features/attempts/AttemptPage';
 import { AttemptsPage } from '@/features/attempts/AttemptsPage';
-import { TakeTestPage } from '@/features/attempts/TakeTestPage';
 import { LibraryPage } from '@/features/library/LibraryPage';
+import { PublicLayout } from '@/features/public/PublicLayout';
+import { PublicAttemptPage, PublicResultsPage } from '@/features/public/PublicAttemptPage';
+import { InvitationPage, SharedLinkPage } from '@/features/public/StartTestPage';
 import { GenerateTestPage } from '@/features/tests/GenerateTestPage';
 import { TestsPage } from '@/features/tests/TestsPage';
 import { TestReviewPage } from '@/features/review/TestReviewPage';
@@ -17,6 +19,16 @@ import { theme } from './theme';
 
 /** URL -> page. Add new pages here. */
 const router = createBrowserRouter([
+  // Participants (ADR009): no admin navigation. Tokens, never ids.
+  {
+    element: <PublicLayout />,
+    children: [
+      { path: 't/:token', element: <SharedLinkPage /> },
+      { path: 'i/:token', element: <InvitationPage /> },
+      { path: 'a/:token', element: <PublicAttemptPage /> },
+      { path: 'r/:token', element: <PublicResultsPage /> },
+    ],
+  },
   {
     element: <Layout />,
     children: [
@@ -26,7 +38,6 @@ const router = createBrowserRouter([
       { path: 'tests', element: <TestsPage /> },
       { path: 'tests/new', element: <GenerateTestPage /> },
       { path: 'tests/:testId', element: <TestReviewPage /> },
-      { path: 'tests/:testId/take', element: <TakeTestPage /> },
       { path: 'attempts', element: <AttemptsPage /> },
       { path: 'attempts/:attemptId', element: <AttemptPage /> },
       { path: 'about', element: <AboutPage /> },

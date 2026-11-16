@@ -17,7 +17,7 @@ import { notifications } from '@mantine/notifications';
 import { IconAlertCircle, IconArrowBackUp, IconArrowLeft, IconLock, IconSend } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { ApiError } from '@/api/client';
 import {
   useAcceptFix,
@@ -40,6 +40,7 @@ import { EventTimeline } from './EventTimeline';
 import { GenerationRunsPanel } from './GenerationRunsPanel';
 import { ManualEditModal } from './ManualEditModal';
 import { QuestionCard, type ReviewActionKind } from './QuestionCard';
+import { SharePanel } from './SharePanel';
 import { VersionHistoryDrawer } from './VersionHistoryDrawer';
 
 type ConfirmKind = 'accept-fix' | 'keep' | 'regenerate';
@@ -70,8 +71,12 @@ const CONFIRM_TEXT: Record<ConfirmKind, { title: string; description: string; la
     },
   };
 
+const TABS = ['questions', 'share', 'activity', 'runs'];
+
 export function TestReviewPage() {
   const testId = Number(useParams().testId);
+  // The open tab is in the URL (?tab=share), so the Tests list can link straight to sharing.
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: test, isLoading, error } = useTest(testId);
   const { data: questions, isLoading: questionsLoading } = useTestQuestions(testId);
   const { data: tree } = useTopicTree();
@@ -216,7 +221,7 @@ export function TestReviewPage() {
             )}
             {published && (
               <Group gap="xs" mb="xs">
-                {/* No "Take test" here: this page shows the answer key. Tests are taken from the Tests list. */}
+                {/* No "Take test" here: this page shows the answer key. Participants use the links on the Share tab. */}
                 <Button component={Link} to={`/attempts?testId=${testId}`} variant="default">
                   Attempts
                 </Button>
@@ -295,7 +300,15 @@ export function TestReviewPage() {
         )}
       </Paper>
 
-      <Tabs defaultValue="questions" keepMounted={false}>
+      <Tabs
+        value={
+          TABS.includes(searchParams.get('tab') ?? '') && (published || searchParams.get('tab') !== 'share')
+            ? searchParams.get('tab')
+            : 'questions'
+        }
+        onChange={(tab) => setSearchParams(tab && tab !== 'questions' ? { tab } : {}, { replace: true })}
+        keepMounted={false}
+      >
         <Tabs.List>
           <Tabs.Tab value="questions">
             Questions {questions && `(${questions.length})`}
@@ -305,6 +318,7 @@ export function TestReviewPage() {
               </Badge>
             )}
           </Tabs.Tab>
+          {published && <Tabs.Tab value="share">Share</Tabs.Tab>}
           <Tabs.Tab value="activity">Activity</Tabs.Tab>
           <Tabs.Tab value="runs">LLM calls</Tabs.Tab>
         </Tabs.List>
@@ -352,6 +366,12 @@ export function TestReviewPage() {
             ))}
           </Stack>
         </Tabs.Panel>
+
+        {published && (
+          <Tabs.Panel value="share" pt="md">
+            <SharePanel testId={testId} publicToken={test.publicToken} />
+          </Tabs.Panel>
+        )}
 
         <Tabs.Panel value="activity" pt="md">
           <EventTimeline testId={testId} questions={sorted} />

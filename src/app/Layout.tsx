@@ -35,7 +35,7 @@ const NAV = [
     to: '/tests',
     label: 'Tests',
     icon: IconChecklist,
-    isActive: (p: string) => /^\/tests(\/\d+(\/take)?)?$/.test(p),
+    isActive: (p: string) => /^\/tests(\/\d+)?$/.test(p),
   },
   {
     to: '/attempts',

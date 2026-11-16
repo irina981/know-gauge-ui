@@ -69,3 +69,19 @@ export function useDeleteTest() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: testKeys.all }),
   });
 }
+
+/**
+ * Creates the shared link of a published test, or replaces it with a new one: the old link stops working.
+ * Attempts already started can still be finished.
+ */
+export function useCreateSharedLink(testId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => unwrap(api.POST('/api/tests/{testId}/shared-link', { params: { path: { testId } } })),
+    onSuccess: (test) => {
+      queryClient.setQueryData(testKeys.detail(testId), test);
+      queryClient.invalidateQueries({ queryKey: testKeys.events(testId) });
+      queryClient.invalidateQueries({ queryKey: testKeys.all });
+    },
+  });
+}

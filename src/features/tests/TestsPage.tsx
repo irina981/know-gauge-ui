@@ -3,7 +3,7 @@ import {
   IconAlertTriangle,
   IconChecklist,
   IconListCheck,
-  IconPlayerPlay,
+  IconShare,
   IconSend,
   IconSparkles,
   IconTrash,
@@ -169,16 +169,16 @@ export function TestsPage() {
                     </Table.Td>
                     <Table.Td onClick={(e) => e.stopPropagation()}>
                       <Group gap={4} wrap="nowrap" justify="flex-end">
-                        {/* Only published tests can be taken (backend rule). */}
+                        {/* Only published tests can be taken: the Share tab has the link and the invitations. */}
                         {t.status === 'PUBLISHED' && (
                           <Button
                             component={Link}
-                            to={`/tests/${t.id}/take`}
+                            to={`/tests/${t.id}?tab=share`}
                             size="xs"
                             variant="light"
-                            leftSection={<IconPlayerPlay size={14} />}
+                            leftSection={<IconShare size={14} />}
                           >
-                            Take test
+                            Share
                           </Button>
                         )}
                         <Tooltip label="Delete test">

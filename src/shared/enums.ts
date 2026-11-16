@@ -75,6 +75,8 @@ export const EVENT_TYPES: Record<string, EnumInfo> = {
   REGENERATION_FAILED: { label: 'Regeneration failed', color: 'red' },
   QUESTION_MANUALLY_REPLACED: { label: 'Manually replaced', color: 'indigo' },
   FLAGS_DISMISSED: { label: 'Kept as is (flags dismissed)', color: 'gray' },
+  SHARED_LINK_CREATED: { label: 'Shared link created', color: 'violet' },
+  SHARED_LINK_REGENERATED: { label: 'Shared link regenerated (old link disabled)', color: 'violet' },
 };
 export const eventType = (v?: string | null) => lookup(EVENT_TYPES, v);
 

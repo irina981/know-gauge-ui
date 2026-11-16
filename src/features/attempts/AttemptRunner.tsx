@@ -15,40 +15,50 @@ import {
 import { modals } from '@mantine/modals';
 import { IconSend } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
-import { useSubmitAttempt } from '@/api/attempts';
-import type { AttemptDetailDto } from '@/api/types';
+import type { AttemptQuestionDto, SubmitAttemptInput } from '@/api/types';
 import { optionLetters } from './attemptUtils';
 
 type Answers = Record<number, string[]>;
 
-/** Answers are kept in the browser while the attempt runs, so a page reload doesn't lose them. */
-const storageKey = (attemptId: number) => `kg-attempt-${attemptId}`;
-
-function loadAnswers(attemptId: number): Answers {
+function loadAnswers(storageKey: string): Answers {
   try {
-    return JSON.parse(localStorage.getItem(storageKey(attemptId)) ?? '{}') as Answers;
+    return JSON.parse(localStorage.getItem(storageKey) ?? '{}') as Answers;
   } catch {
     return {};
   }
 }
 
-/** The questions of a running attempt, with Submit at the bottom. */
-export function AttemptRunner({ detail }: { detail: AttemptDetailDto }) {
-  const attemptId = detail.attempt!.id!;
-  const multiple = detail.answerCardinality === 'MULTIPLE_CORRECT';
-  const questions = [...(detail.questions ?? [])].sort(
-    (a, b) => (a.questionIndex ?? 0) - (b.questionIndex ?? 0),
-  );
-  const submit = useSubmitAttempt(attemptId);
+export interface AttemptRunnerProps {
+  testName: string;
+  answerCardinality?: string;
+  questions: AttemptQuestionDto[];
+  /** Answers are kept in the browser under this key while the attempt runs, so a reload doesn't lose them. */
+  storageKey: string;
+  submitting: boolean;
+  /** Sends the answers; call `onDone` once the server accepted them. */
+  onSubmit: (input: SubmitAttemptInput, onDone: () => void) => void;
+}
 
-  const [answers, setAnswers] = useState<Answers>(() => loadAnswers(attemptId));
+/** The questions of a running attempt, with Submit at the bottom. Used by administrators and participants. */
+export function AttemptRunner({
+  testName,
+  answerCardinality,
+  questions: unsorted,
+  storageKey,
+  submitting,
+  onSubmit,
+}: AttemptRunnerProps) {
+  const multiple = answerCardinality === 'MULTIPLE_CORRECT';
+  const questions = [...unsorted].sort((a, b) => (a.questionIndex ?? 0) - (b.questionIndex ?? 0));
+
+  const [answers, setAnswers] = useState<Answers>(() => loadAnswers(storageKey));
   useEffect(() => {
     try {
-      localStorage.setItem(storageKey(attemptId), JSON.stringify(answers));
+      localStorage.setItem(storageKey, JSON.stringify(answers));
     } catch {
       // storage unavailable: answers just aren't kept across reloads
     }
-  }, [attemptId, answers]);
+  }, [storageKey, answers]);
 
   const setAnswer = (questionId: number, letters: string[]) =>
     setAnswers((current) => ({ ...current, [questionId]: letters }));
@@ -57,22 +67,20 @@ export function AttemptRunner({ detail }: { detail: AttemptDetailDto }) {
   const total = questions.length;
 
   const send = () =>
-    submit.mutate(
+    onSubmit(
       {
         answers: questions.map((q) => ({
           questionId: q.questionId!,
           chosenOptions: answers[q.questionId!] ?? [],
         })),
       },
-      {
-        onSuccess: () => {
-          try {
-            localStorage.removeItem(storageKey(attemptId));
-          } catch {
-            // ignore
-          }
-          window.scrollTo({ top: 0 });
-        },
+      () => {
+        try {
+          localStorage.removeItem(storageKey);
+        } catch {
+          // ignore
+        }
+        window.scrollTo({ top: 0 });
       },
     );
 
@@ -104,7 +112,7 @@ export function AttemptRunner({ detail }: { detail: AttemptDetailDto }) {
           Test in progress
         </Text>
         <Title order={1} fz={{ base: 22, sm: 26 }} mt={4}>
-          {detail.testName || `Test #${detail.attempt?.testId}`}
+          {testName}
         </Title>
         <Text size="sm" c="dimmed" mt={4}>
           {multiple
@@ -181,7 +189,7 @@ export function AttemptRunner({ detail }: { detail: AttemptDetailDto }) {
             <Button
               variant="gradient"
               leftSection={<IconSend size={16} />}
-              loading={submit.isPending}
+              loading={submitting}
               onClick={confirmSubmit}
             >
               Submit test
