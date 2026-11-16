@@ -7,6 +7,17 @@ function toTreeData(nodes: TopicNode[]): TreeNodeData[] {
   return nodes.map((n) => ({ value: String(n.id), label: n.name, children: toTreeData(n.children) }));
 }
 
+/** Ids of the topics above `id`, from the root down; empty when `id` is a root or not in the tree. */
+function ancestorIds(nodes: TopicNode[], id: number | undefined, path: number[] = []): number[] {
+  if (id == null) return [];
+  for (const node of nodes) {
+    if (node.id === id) return path;
+    const found = ancestorIds(node.children, id, [...path, node.id]);
+    if (found.length || node.children.some((c) => c.id === id)) return found;
+  }
+  return [];
+}
+
 /** Expandable topic tree. Clicking a topic selects it; the chevron expands/collapses it. */
 export function TopicTree({
   roots,
@@ -18,13 +29,20 @@ export function TopicTree({
   onSelect: (id: number) => void;
 }) {
   const data = useMemo(() => toTreeData(roots), [roots]);
-  const tree = useTree({ initialExpandedState: getTreeExpandedState(data, '*') });
+  // Starts collapsed: only the path to the selected topic is opened.
+  const tree = useTree({ initialExpandedState: getTreeExpandedState(data, []) });
 
-  // Expand newly created topics too.
+  // Keep what the user opened or closed, collapse topics that are new, and open the ancestors of the selected
+  // topic so it is always visible (also right after creating a sub-topic, which selects it).
   useEffect(() => {
-    tree.setExpandedState({ ...getTreeExpandedState(data, '*'), ...tree.expandedState });
+    const next: Record<string, boolean> = {};
+    for (const key of Object.keys(getTreeExpandedState(data, []))) {
+      next[key] = tree.expandedState[key] ?? false;
+    }
+    for (const id of ancestorIds(roots, selectedId)) next[String(id)] = true;
+    tree.setExpandedState(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data, selectedId]);
 
   return (
     <Tree

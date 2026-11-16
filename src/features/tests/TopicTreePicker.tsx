@@ -57,9 +57,9 @@ export function TopicTreePicker({
   const single = mode === 'single';
   const [opened, setOpened] = useState(false);
   const selected = new Set(value.map(Number));
-  // Expand the roots, plus the path to anything already selected.
+  // Start collapsed, except the path to anything already selected (for example a topic preset from the Library).
   const [expanded, setExpanded] = useState<Set<number>>(() => {
-    const open = new Set(tree.roots.map((r) => r.id));
+    const open = new Set<number>();
     for (const id of selected) {
       let node = tree.byId.get(id);
       while (node?.parentId != null) {
