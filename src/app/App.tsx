@@ -4,6 +4,9 @@ import { Notifications } from '@mantine/notifications';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import { AboutPage } from '@/features/about/AboutPage';
+import { AttemptPage } from '@/features/attempts/AttemptPage';
+import { AttemptsPage } from '@/features/attempts/AttemptsPage';
+import { TakeTestPage } from '@/features/attempts/TakeTestPage';
 import { LibraryPage } from '@/features/library/LibraryPage';
 import { GenerateTestPage } from '@/features/tests/GenerateTestPage';
 import { TestsPage } from '@/features/tests/TestsPage';
@@ -23,6 +26,9 @@ const router = createBrowserRouter([
       { path: 'tests', element: <TestsPage /> },
       { path: 'tests/new', element: <GenerateTestPage /> },
       { path: 'tests/:testId', element: <TestReviewPage /> },
+      { path: 'tests/:testId/take', element: <TakeTestPage /> },
+      { path: 'attempts', element: <AttemptsPage /> },
+      { path: 'attempts/:attemptId', element: <AttemptPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: '*', element: <Navigate to="/library" replace /> },
     ],

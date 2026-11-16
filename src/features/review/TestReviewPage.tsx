@@ -46,27 +46,29 @@ type ConfirmKind = 'accept-fix' | 'keep' | 'regenerate';
 type Pending = { kind: ConfirmKind; question: TestQuestionDto } | null;
 
 /** Dialog texts and success message of the confirmed review actions. */
-const CONFIRM_TEXT: Record<ConfirmKind, { title: string; description: string; label: string; done: string }> = {
-  'accept-fix': {
-    title: 'Accept suggested fix',
-    description: 'The flagged options are replaced by the verifier’s suggested texts. This creates a new version.',
-    label: 'Accept fix',
-    done: 'fix accepted',
-  },
-  keep: {
-    title: 'Keep question as is',
-    description:
-      'The question stays exactly as it is and the verifier’s flags are dismissed. This creates a new version. Say why the flags are wrong.',
-    label: 'Keep as is',
-    done: 'kept as is',
-  },
-  regenerate: {
-    title: 'Regenerate question',
-    description: 'A new question is written from the same source material. This creates a new version.',
-    label: 'Regenerate',
-    done: 'regenerated',
-  },
-};
+const CONFIRM_TEXT: Record<ConfirmKind, { title: string; description: string; label: string; done: string }> =
+  {
+    'accept-fix': {
+      title: 'Accept suggested fix',
+      description:
+        'The flagged options are replaced by the verifier’s suggested texts. This creates a new version.',
+      label: 'Accept fix',
+      done: 'fix accepted',
+    },
+    keep: {
+      title: 'Keep question as is',
+      description:
+        'The question stays exactly as it is and the verifier’s flags are dismissed. This creates a new version. Say why the flags are wrong.',
+      label: 'Keep as is',
+      done: 'kept as is',
+    },
+    regenerate: {
+      title: 'Regenerate question',
+      description: 'A new question is written from the same source material. This creates a new version.',
+      label: 'Regenerate',
+      done: 'regenerated',
+    },
+  };
 
 export function TestReviewPage() {
   const testId = Number(useParams().testId);
@@ -134,8 +136,8 @@ export function TestReviewPage() {
     : dismissFlags.isPending
       ? dismissFlags.variables?.questionId
       : regenerate.isPending
-      ? regenerate.variables?.questionId
-      : undefined;
+        ? regenerate.variables?.questionId
+        : undefined;
 
   const handleAction = (kind: ReviewActionKind, question: TestQuestionDto) => {
     if (kind === 'edit') setEditing(question);
@@ -213,20 +215,25 @@ export function TestReviewPage() {
               </Tooltip>
             )}
             {published && (
-              <Tooltip label={unpublishBlockedReason} disabled={!unpublishBlockedReason}>
-                <span>
-                  <Button
-                    variant="default"
-                    leftSection={<IconArrowBackUp size={16} />}
-                    disabled={!!unpublishBlockedReason}
-                    loading={unpublish.isPending}
-                    onClick={() => setUnpublishOpen(true)}
-                    mb="xs"
-                  >
-                    Unpublish
-                  </Button>
-                </span>
-              </Tooltip>
+              <Group gap="xs" mb="xs">
+                {/* No "Take test" here: this page shows the answer key. Tests are taken from the Tests list. */}
+                <Button component={Link} to={`/attempts?testId=${testId}`} variant="default">
+                  Attempts
+                </Button>
+                <Tooltip label={unpublishBlockedReason} disabled={!unpublishBlockedReason}>
+                  <span>
+                    <Button
+                      variant="default"
+                      leftSection={<IconArrowBackUp size={16} />}
+                      disabled={!!unpublishBlockedReason}
+                      loading={unpublish.isPending}
+                      onClick={() => setUnpublishOpen(true)}
+                    >
+                      Unpublish
+                    </Button>
+                  </span>
+                </Tooltip>
+              </Group>
             )}
             <Text size="sm">
               {formatDateTime(

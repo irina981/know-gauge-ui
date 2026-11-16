@@ -3,6 +3,7 @@ import {
   IconAlertTriangle,
   IconChecklist,
   IconListCheck,
+  IconPlayerPlay,
   IconSend,
   IconSparkles,
   IconTrash,
@@ -167,22 +168,36 @@ export function TestsPage() {
                       </Text>
                     </Table.Td>
                     <Table.Td onClick={(e) => e.stopPropagation()}>
-                      <Tooltip label="Delete test">
-                        <ActionIcon
-                          variant="subtle"
-                          color="red"
-                          aria-label="Delete test"
-                          onClick={() =>
-                            confirmDelete({
-                              title: 'Delete test',
-                              message: `Delete test #${t.id} with all its questions and history?`,
-                              onConfirm: () => remove.mutate(t.id!),
-                            })
-                          }
-                        >
-                          <IconTrash size={18} />
-                        </ActionIcon>
-                      </Tooltip>
+                      <Group gap={4} wrap="nowrap" justify="flex-end">
+                        {/* Only published tests can be taken (backend rule). */}
+                        {t.status === 'PUBLISHED' && (
+                          <Button
+                            component={Link}
+                            to={`/tests/${t.id}/take`}
+                            size="xs"
+                            variant="light"
+                            leftSection={<IconPlayerPlay size={14} />}
+                          >
+                            Take test
+                          </Button>
+                        )}
+                        <Tooltip label="Delete test">
+                          <ActionIcon
+                            variant="subtle"
+                            color="red"
+                            aria-label="Delete test"
+                            onClick={() =>
+                              confirmDelete({
+                                title: 'Delete test',
+                                message: `Delete test #${t.id} with all its questions and history?`,
+                                onConfirm: () => remove.mutate(t.id!),
+                              })
+                            }
+                          >
+                            <IconTrash size={18} />
+                          </ActionIcon>
+                        </Tooltip>
+                      </Group>
                     </Table.Td>
                   </Table.Tr>
                 ))}

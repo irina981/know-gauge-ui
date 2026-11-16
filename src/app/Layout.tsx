@@ -18,6 +18,7 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import {
   IconBooks,
   IconChecklist,
+  IconClipboardCheck,
   IconInfoCircle,
   IconMoon,
   IconShieldCheck,
@@ -30,7 +31,18 @@ import { Wordmark } from '@/shared/components';
 /** Left navigation. `isActive` decides which entry is highlighted for the current URL. */
 const NAV = [
   { to: '/library', label: 'Library', icon: IconBooks, isActive: (p: string) => p.startsWith('/library') },
-  { to: '/tests', label: 'Tests', icon: IconChecklist, isActive: (p: string) => /^\/tests(\/\d+)?$/.test(p) },
+  {
+    to: '/tests',
+    label: 'Tests',
+    icon: IconChecklist,
+    isActive: (p: string) => /^\/tests(\/\d+(\/take)?)?$/.test(p),
+  },
+  {
+    to: '/attempts',
+    label: 'Attempts',
+    icon: IconClipboardCheck,
+    isActive: (p: string) => p.startsWith('/attempts'),
+  },
   { to: '/about', label: 'About', icon: IconInfoCircle, isActive: (p: string) => p === '/about' },
 ];
 

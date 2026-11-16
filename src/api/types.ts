@@ -13,23 +13,19 @@ export type TopicTreeNodeInput = Schemas['TopicTreeNodeInput'];
 
 export type DocumentDto = Schemas['DocumentDto'];
 
-/**
- * Test name and description are new in the backend. They are added here by hand until `schema.d.ts` is
- * regenerated (`npm run gen:api` with the updated backend running); then the `& {...}` parts can go.
- */
-type TestNaming = { name?: string; description?: string };
-export type TestDto = Schemas['TestDto'] & TestNaming;
-export type TestInput = Schemas['TestInput'] & TestNaming;
+export type TestDto = Schemas['TestDto'];
+export type TestInput = Schemas['TestInput'];
 export type TestQuestionDto = Schemas['TestQuestionDto'];
 export type TestQuestionOptionDto = Schemas['TestQuestionOptionDto'];
 export type TestQuestionVersionDto = Schemas['TestQuestionVersionDto'];
 export type TestEventDto = Schemas['TestEventDto'];
-/**
- * The prompt and request settings of each LLM call are also new in the backend (same as TestNaming above).
- */
-type GenerationRunRequest = { prompt?: string; requestParams?: Record<string, unknown> };
-export type GenerationRunDto = Schemas['GenerationRunDto'] & GenerationRunRequest;
+export type GenerationRunDto = Schemas['GenerationRunDto'];
 export type ManualQuestionInput = Schemas['ManualQuestionInput'];
+
+export type AttemptDto = Schemas['AttemptDto'];
+export type AttemptDetailDto = Schemas['AttemptDetailDto'];
+export type AttemptQuestionDto = Schemas['AttemptQuestionDto'];
+export type SubmitAttemptInput = Schemas['SubmitAttemptInput'];
 
 /** A topic with its sub-topics, built in the browser from the flat topic lists the API returns. */
 export interface TopicNode {

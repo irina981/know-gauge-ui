@@ -294,3 +294,24 @@ body {
     flex: 1 0 auto;
   }
 }
+
+/* ---------- Taking a test ---------- */
+
+/* Answer options: the whole card is clickable; the chosen one gets the brand colour. */
+.kg-option-card {
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+.kg-option-card[data-checked] {
+  border-color: var(--mantine-primary-color-filled);
+  background-color: var(--mantine-primary-color-light);
+}
+
+/* Submit bar that stays at the bottom of the window while scrolling through the questions. */
+.kg-submit-bar {
+  position: sticky;
+  bottom: var(--mantine-spacing-md);
+  z-index: 10;
+}
