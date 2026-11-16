@@ -39,6 +39,8 @@ export interface TopicNode {
   name: string;
   description?: string;
   parentId?: number;
+  /** Display order among siblings (lowest first); topics without one come after, by name. */
+  position?: number;
   children: TopicNode[];
 }
 

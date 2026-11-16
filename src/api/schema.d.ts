@@ -791,6 +791,12 @@ export interface components {
              * @example /Backend/Spring Boot
              */
             path?: string;
+            /**
+             * Format: int32
+             * @description Display order among sibling topics (lowest first); empty sorts after positioned topics, by name
+             * @example 1
+             */
+            position?: number;
             /** @description Direct child topics */
             children?: components["schemas"]["TopicDto"][];
         };

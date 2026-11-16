@@ -35,6 +35,7 @@ async function fetchTopicTree(): Promise<TopicTree> {
       name: topic.name ?? '',
       description: topic.description ?? undefined,
       parentId: topic.parentId ?? undefined,
+      position: topic.position ?? undefined,
       children: [],
     });
   }
@@ -46,7 +47,10 @@ async function fetchTopicTree(): Promise<TopicTree> {
     else treeRoots.push(node);
   }
 
-  const byName = (a: TopicNode, b: TopicNode) => a.name.localeCompare(b.name);
+  // Position first (lowest first, missing last), then name.
+  const byName = (a: TopicNode, b: TopicNode) =>
+    (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER) ||
+    a.name.localeCompare(b.name);
   for (const node of byId.values()) node.children.sort(byName);
   treeRoots.sort(byName);
 
