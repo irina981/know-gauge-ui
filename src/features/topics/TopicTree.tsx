@@ -7,6 +7,31 @@ function toTreeData(nodes: TopicNode[]): TreeNodeData[] {
   return nodes.map((n) => ({ value: String(n.id), label: n.name, children: toTreeData(n.children) }));
 }
 
+/**
+ * Which Library folders are open, kept in this browser so they stay open after visiting other pages or reloading.
+ * Storage can be unavailable (private mode, blocked site data): the tree then simply starts collapsed.
+ */
+const EXPANDED_KEY = 'kg-library-expanded-topics';
+
+function loadExpanded(): Record<string, boolean> {
+  try {
+    return JSON.parse(localStorage.getItem(EXPANDED_KEY) ?? '{}') as Record<string, boolean>;
+  } catch {
+    return {};
+  }
+}
+
+function rememberExpanded(value: string, expanded: boolean) {
+  try {
+    const state = loadExpanded();
+    if (expanded) state[value] = true;
+    else delete state[value];
+    localStorage.setItem(EXPANDED_KEY, JSON.stringify(state));
+  } catch {
+    // storage unavailable: folders just aren't remembered
+  }
+}
+
 /** Ids of the topics above `id`, from the root down; empty when `id` is a root or not in the tree. */
 function ancestorIds(nodes: TopicNode[], id: number | undefined, path: number[] = []): number[] {
   if (id == null) return [];
@@ -29,15 +54,20 @@ export function TopicTree({
   onSelect: (id: number) => void;
 }) {
   const data = useMemo(() => toTreeData(roots), [roots]);
-  // Starts collapsed: only the path to the selected topic is opened.
-  const tree = useTree({ initialExpandedState: getTreeExpandedState(data, []) });
+  // Starts collapsed, except the folders the user left open last time and the path to the selected topic.
+  const tree = useTree({
+    initialExpandedState: getTreeExpandedState(data, []),
+    onNodeExpand: (value) => rememberExpanded(value, true),
+    onNodeCollapse: (value) => rememberExpanded(value, false),
+  });
 
-  // Keep what the user opened or closed, collapse topics that are new, and open the ancestors of the selected
-  // topic so it is always visible (also right after creating a sub-topic, which selects it).
+  // Restore the remembered folders, collapse topics that are new, and open the ancestors of the selected topic so
+  // it is always visible (also right after creating a sub-topic, which selects it).
   useEffect(() => {
+    const remembered = loadExpanded();
     const next: Record<string, boolean> = {};
     for (const key of Object.keys(getTreeExpandedState(data, []))) {
-      next[key] = tree.expandedState[key] ?? false;
+      next[key] = remembered[key] ?? false;
     }
     for (const id of ancestorIds(roots, selectedId)) next[String(id)] = true;
     tree.setExpandedState(next);
