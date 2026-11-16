@@ -4,6 +4,7 @@ import {
   Button,
   Collapse,
   Group,
+  Loader,
   MultiSelect,
   NumberInput,
   Overlay,
@@ -27,16 +28,17 @@ import {
   IconRestore,
   IconSparkles,
 } from '@tabler/icons-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTopicDocuments } from '@/api/documents';
 import { useGenerateTest } from '@/api/tests';
-import { topicPathLabel, useTopicTree, type TopicTree } from '@/api/topics';
+import { useIngestedDocumentCounts, useTopicTree, type TopicTree } from '@/api/topics';
 import type { DocumentDto, TestInput } from '@/api/types';
 import { ANSWER_CARDINALITIES, COVERAGE_MODES, DIFFICULTIES, LANGUAGES } from '@/shared/enums';
 import { PageHeader } from '@/shared/components';
 import { formatDuration } from '@/shared/format';
 import { useNow } from '@/shared/useNow';
+import { TopicTreePicker } from './TopicTreePicker';
 
 /** "A", "A & B" or "A, B +3 more". */
 function joinNames(names: string[]): string {
@@ -74,6 +76,7 @@ interface FormValues {
   difficulty: string | null;
   answerCardinality: string | null;
   coverageMode: string | null;
+  focusQuery: string;
   language: string | null;
   // advanced
   generationModel: string;
@@ -102,6 +105,7 @@ function toTestInput(v: FormValues): TestInput {
     difficulty: v.difficulty ?? undefined,
     answerCardinality: v.answerCardinality ?? undefined,
     coverageMode: v.coverageMode ?? undefined,
+    focusQuery: v.coverageMode === 'FOCUSED' ? text(v.focusQuery) : undefined,
     language: v.language ?? undefined,
     generationModel: text(v.generationModel),
     promptTemplateId: text(v.promptTemplateId),
@@ -113,6 +117,7 @@ export function GenerateTestPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { data: tree } = useTopicTree();
+  const { data: ingestedCounts } = useIngestedDocumentCounts();
   const generate = useGenerateTest();
   const [advancedOpen, { toggle: toggleAdvanced }] = useDisclosure(false);
 
@@ -129,6 +134,7 @@ export function GenerateTestPage() {
       difficulty: 'MEDIUM',
       answerCardinality: 'SINGLE_CORRECT',
       coverageMode: 'BALANCED_PER_DOC_CHUNKS',
+      focusQuery: '',
       language: 'EN',
       generationModel: '',
       promptTemplateId: '',
@@ -143,18 +149,10 @@ export function GenerateTestPage() {
       documentIds: (v, values) =>
         values.source === 'documents' && v.length === 0 ? 'Pick at least one document' : null,
       questionCount: (v) => (Number(v) >= 1 ? null : 'At least 1 question'),
+      focusQuery: (v, values) =>
+        values.coverageMode === 'FOCUSED' && !v.trim() ? 'Describe what the questions should be about' : null,
     },
   });
-
-  const topicOptions = useMemo(
-    () =>
-      tree
-        ? [...tree.byId.values()]
-            .map((t) => ({ value: String(t.id), label: topicPathLabel(tree, t.id) }))
-            .sort((a, b) => a.label.localeCompare(b.label))
-        : [],
-    [tree],
-  );
 
   // Documents of the chosen topic (first 100 is plenty for a picker).
   const docTopicId = form.values.documentTopicId ? Number(form.values.documentTopicId) : undefined;
@@ -271,28 +269,36 @@ export function GenerateTestPage() {
               </div>
 
               {form.values.source === 'topics' ? (
-                <MultiSelect
-                  label="Topics"
-                  description="Documents of the selected topics and all their sub-topics are used."
-                  placeholder="Choose topics"
-                  data={topicOptions}
-                  searchable
-                  clearable
-                  {...form.getInputProps('topicIds')}
-                />
+                tree && ingestedCounts ? (
+                  <TopicTreePicker
+                    tree={tree}
+                    counts={ingestedCounts}
+                    value={form.values.topicIds}
+                    onChange={(v) => form.setFieldValue('topicIds', v)}
+                    error={form.errors.topicIds}
+                  />
+                ) : (
+                  <Loader size="sm" />
+                )
               ) : (
                 <SimpleGrid cols={{ base: 1, sm: 2 }}>
-                  <Select
-                    label="Topic"
-                    placeholder="Choose a topic"
-                    data={topicOptions}
-                    searchable
-                    {...form.getInputProps('documentTopicId')}
-                    onChange={(v) => {
-                      form.setFieldValue('documentTopicId', v);
-                      form.setFieldValue('documentIds', []);
-                    }}
-                  />
+                  {tree && ingestedCounts ? (
+                    <TopicTreePicker
+                      mode="single"
+                      label="Topic"
+                      description="Its own ingested documents are listed next."
+                      placeholder="Choose a topic"
+                      tree={tree}
+                      counts={ingestedCounts}
+                      value={form.values.documentTopicId ? [form.values.documentTopicId] : []}
+                      onChange={(v) => {
+                        form.setFieldValue('documentTopicId', v[0] ?? null);
+                        form.setFieldValue('documentIds', []);
+                      }}
+                    />
+                  ) : (
+                    <Loader size="sm" />
+                  )}
                   <MultiSelect
                     label="Documents"
                     placeholder={docTopicId ? 'Choose documents' : 'Choose a topic first'}
@@ -320,6 +326,20 @@ export function GenerateTestPage() {
                 <Select label="Language" data={LANGUAGES} {...form.getInputProps('language')} />
                 <Select label="Coverage" data={COVERAGE_MODES} {...form.getInputProps('coverageMode')} />
               </SimpleGrid>
+
+              {form.values.coverageMode === 'FOCUSED' && (
+                <Textarea
+                  label="Focus"
+                  description="What the questions should be about. The passages of the selected material that are most similar to this text are used."
+                  placeholder="For example: thread pools and how to shut down an ExecutorService"
+                  autosize
+                  minRows={2}
+                  maxRows={6}
+                  maxLength={2000}
+                  withAsterisk
+                  {...form.getInputProps('focusQuery')}
+                />
+              )}
 
               <UnstyledButton onClick={toggleAdvanced}>
                 <Group gap={4}>

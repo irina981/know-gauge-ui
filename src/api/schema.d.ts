@@ -606,6 +606,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/content/topics/ingested-document-counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Count ingested documents per topic
+         * @description For each topic that directly holds ingested documents, how many it holds. Topics without any are left out; add up a subtree to know whether a parent topic can be used for test generation.
+         */
+        get: operations["getIngestedDocumentCounts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/content/topics/descendants/{parentId}": {
         parameters: {
             query?: never;
@@ -813,10 +833,15 @@ export interface components {
              */
             avoidRepeats?: boolean;
             /**
-             * @description Coverage strategy
-             * @example BALANCED
+             * @description Coverage strategy: BALANCED_PER_DOC_CHUNKS (default), BALANCED_PER_DOCS or FOCUSED
+             * @example BALANCED_PER_DOC_CHUNKS
              */
             coverageMode?: string;
+            /**
+             * @description Required for FOCUSED (max 2000 characters): what the questions should be about. The chunks most similar to it are used; ignored for the other modes
+             * @example Thread pools and how to shut down an ExecutorService
+             */
+            focusQuery?: string;
             /**
              * Format: int32
              * @description Requested number of questions
@@ -906,9 +931,14 @@ export interface components {
             avoidRepeats?: boolean;
             /**
              * @description Coverage strategy
-             * @example BALANCED
+             * @example BALANCED_PER_DOC_CHUNKS
              */
             coverageMode?: string;
+            /**
+             * @description Text the chunks were matched against, for FOCUSED coverage
+             * @example Thread pools and how to shut down an ExecutorService
+             */
+            focusQuery?: string;
             /**
              * Format: int32
              * @description Requested number of questions
@@ -1791,6 +1821,21 @@ export interface components {
             attemptStatus?: string;
             /** @description Token of the running attempt, to continue it; only while STARTED */
             attemptToken?: string;
+        };
+        /** @description How many ingested documents a topic holds directly (sub-topics are counted separately) */
+        TopicDocumentCountDto: {
+            /**
+             * Format: int64
+             * @description Topic id
+             * @example 9100
+             */
+            topicId?: number;
+            /**
+             * Format: int64
+             * @description Ingested documents directly in this topic
+             * @example 3
+             */
+            ingestedDocuments?: number;
         };
         Pageable: {
             /** Format: int32 */
@@ -3080,6 +3125,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["TopicDto"][];
+                };
+            };
+        };
+    };
+    getIngestedDocumentCounts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TopicDocumentCountDto"][];
                 };
             };
         };

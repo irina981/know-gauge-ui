@@ -269,6 +269,14 @@ export function TestReviewPage() {
               </Badge>
             ))}
         </Group>
+        {test.focusQuery && (
+          <Text size="sm" c="dimmed" mt="xs" style={{ whiteSpace: 'pre-wrap' }}>
+            <Text span fw={600} c="var(--mantine-color-text)">
+              Focus:
+            </Text>{' '}
+            {test.focusQuery}
+          </Text>
+        )}
         {generating && (
           <Alert
             color="cyan"

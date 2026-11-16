@@ -5,6 +5,7 @@ import type { TopicCreateInput, TopicDto, TopicNode, TopicTreeNodeInput, TopicUp
 export const topicKeys = {
   all: ['topics'] as const,
   tree: ['topics', 'tree'] as const,
+  ingestedCounts: ['topics', 'ingested-counts'] as const,
 };
 
 export interface TopicTree {
@@ -100,4 +101,25 @@ export function useDeleteTopic() {
       unwrapVoid(api.DELETE('/api/content/topics/{id}', { params: { path: { id } }, parseAs: 'text' })),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: topicKeys.all }),
   });
+}
+
+/**
+ * Ingested documents per topic id, counting each topic's own documents only. Use `subtreeCount` for a topic
+ * together with its sub-topics, which is what test generation uses.
+ */
+export function useIngestedDocumentCounts() {
+  return useQuery({
+    queryKey: topicKeys.ingestedCounts,
+    // Documents are ingested in the background too, so always refresh when a page opens.
+    staleTime: 0,
+    queryFn: async () => {
+      const rows = await unwrap(api.GET('/api/content/topics/ingested-document-counts'));
+      return new Map(rows.map((r) => [r.topicId!, r.ingestedDocuments ?? 0]));
+    },
+  });
+}
+
+/** Ingested documents of a topic and all its sub-topics. */
+export function subtreeCount(node: TopicNode, counts: Map<number, number>): number {
+  return node.children.reduce((sum, child) => sum + subtreeCount(child, counts), counts.get(node.id) ?? 0);
 }

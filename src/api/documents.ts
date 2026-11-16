@@ -6,6 +6,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { api, postMultipart, unwrap, unwrapVoid } from './client';
+import { topicKeys } from './topics';
 import type { DocumentDto, Page } from './types';
 
 export const documentKeys = {
@@ -80,7 +81,10 @@ export function useIngestDocument() {
         api.POST('/api/content/documents/ingestion/{id}', { params: { path: { id } }, parseAs: 'text' }),
       ),
     // Refresh even on failure: the document status is FAILED then.
-    onSettled: () => queryClient.invalidateQueries({ queryKey: documentKeys.all }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: documentKeys.all });
+      queryClient.invalidateQueries({ queryKey: topicKeys.ingestedCounts });
+    },
   });
 }
 
@@ -97,6 +101,9 @@ export function useDeleteDocument() {
   return useMutation({
     mutationFn: (id: number) =>
       unwrapVoid(api.DELETE('/api/content/documents/{id}', { params: { path: { id } }, parseAs: 'text' })),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: documentKeys.all }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: documentKeys.all });
+      queryClient.invalidateQueries({ queryKey: topicKeys.ingestedCounts });
+    },
   });
 }

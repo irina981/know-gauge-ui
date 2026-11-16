@@ -98,10 +98,11 @@ export const ANSWER_CARDINALITIES = [
   { value: 'MULTIPLE_CORRECT', label: 'Multiple correct answers' },
 ];
 
-// FOCUSED exists in the backend but is not implemented yet.
 export const COVERAGE_MODES = [
   { value: 'BALANCED_PER_DOC_CHUNKS', label: 'Balanced across document chunks' },
   { value: 'BALANCED_PER_DOCS', label: 'Balanced across documents' },
+  // Similarity search for the focus text entered in the form.
+  { value: 'FOCUSED', label: 'Focused on a subject' },
 ];
 
 export const LANGUAGES = [

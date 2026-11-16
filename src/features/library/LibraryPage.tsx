@@ -25,8 +25,13 @@ import {
 } from '@tabler/icons-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useTopicDocuments } from '@/api/documents';
-import { topicPathLabel, useDeleteTopic, useTopicTree } from '@/api/topics';
+import {
+  subtreeCount,
+  topicPathLabel,
+  useDeleteTopic,
+  useIngestedDocumentCounts,
+  useTopicTree,
+} from '@/api/topics';
 import type { TopicNode } from '@/api/types';
 import { DocumentTable } from '@/features/documents/DocumentTable';
 import { UploadDropzone } from '@/features/documents/UploadDropzone';
@@ -50,11 +55,10 @@ export function LibraryPage() {
   const select = (id: number) => navigate(`/library/topics/${id}`);
   const selected = selectedId != null ? tree?.byId.get(selectedId) : undefined;
 
-  // Generation needs at least one ingested document in the topic. Same query as the generate form, so it
-  // shares its cache and refreshes while documents are being ingested.
-  // While another topic's documents are still shown as placeholder data, keep the button disabled.
-  const { data: topicDocs, isPlaceholderData } = useTopicDocuments(selected?.id, 0, 100);
-  const canGenerate = !isPlaceholderData && !!topicDocs?.content?.some((d) => d.status === 'INGESTED');
+  // A topic stands for its whole subtree in test generation, so a parent topic without documents of its own can
+  // be used as long as an ingested document exists somewhere below it. The counts refresh after ingestion.
+  const { data: ingestedCounts } = useIngestedDocumentCounts();
+  const canGenerate = !!selected && !!ingestedCounts && subtreeCount(selected, ingestedCounts) > 0;
 
   const handleDelete = (topic: TopicNode) =>
     confirmDelete({
@@ -136,12 +140,7 @@ export function LibraryPage() {
               <Paper p="lg" className="kg-ai-edge" style={{ overflow: 'hidden' }}>
                 <Group justify="space-between" align="flex-start" gap="md">
                   {/* Takes the free width, so a long path wraps here and the buttons stay beside it. */}
-                  <Group
-                    gap="md"
-                    align="flex-start"
-                    wrap="nowrap"
-                    style={{ flex: '1 1 240px', minWidth: 0 }}
-                  >
+                  <Group gap="md" align="flex-start" wrap="nowrap" style={{ flex: '1 1 240px', minWidth: 0 }}>
                     <ThemeIcon variant="light" size={44} radius="md">
                       <IconFolderOpen size={24} stroke={1.6} />
                     </ThemeIcon>
@@ -178,7 +177,7 @@ export function LibraryPage() {
                       </Button>
                     ) : (
                       // data-disabled instead of disabled, so the tooltip still gets hover events.
-                      <Tooltip label="Upload and ingest at least one PDF in this topic first">
+                      <Tooltip label="Upload and ingest at least one PDF in this topic or one of its sub-topics first">
                         <Button
                           data-disabled
                           onClick={(event) => event.preventDefault()}
