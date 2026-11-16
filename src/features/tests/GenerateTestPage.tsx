@@ -32,7 +32,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTopicDocuments } from '@/api/documents';
 import { useGenerateTest } from '@/api/tests';
-import { useIngestedDocumentCounts, useTopicTree, type TopicTree } from '@/api/topics';
+import {
+  focusSuggestionsFor,
+  useDevFocusSuggestions,
+  useIngestedDocumentCounts,
+  useTopicTree,
+  type TopicTree,
+} from '@/api/topics';
 import type { DocumentDto, TestInput } from '@/api/types';
 import { ANSWER_CARDINALITIES, COVERAGE_MODES, DIFFICULTIES, LANGUAGES } from '@/shared/enums';
 import { PageHeader } from '@/shared/components';
@@ -118,6 +124,7 @@ export function GenerateTestPage() {
   const navigate = useNavigate();
   const { data: tree } = useTopicTree();
   const { data: ingestedCounts } = useIngestedDocumentCounts();
+  const { data: devSuggestions } = useDevFocusSuggestions();
   const generate = useGenerateTest();
   const [advancedOpen, { toggle: toggleAdvanced }] = useDisclosure(false);
 
@@ -156,6 +163,20 @@ export function GenerateTestPage() {
 
   // Documents of the chosen topic (first 100 is plenty for a picker).
   const docTopicId = form.values.documentTopicId ? Number(form.values.documentTopicId) : undefined;
+
+  // Focus suggestions of the chosen topics (with their parents and sub-topics), for FOCUSED coverage. Only the
+  // dev-seeded demo topics have any.
+  const focusSuggestions = tree
+    ? focusSuggestionsFor(
+        tree,
+        devSuggestions ?? new Map(),
+        form.values.source === 'topics'
+          ? form.values.topicIds.map(Number)
+          : docTopicId != null
+            ? [docTopicId]
+            : [],
+      )
+    : [];
   const { data: docs } = useTopicDocuments(docTopicId, 0, 100);
   const documentOptions = (docs?.content ?? []).map((d) => ({
     value: String(d.id),
@@ -328,17 +349,41 @@ export function GenerateTestPage() {
               </SimpleGrid>
 
               {form.values.coverageMode === 'FOCUSED' && (
-                <Textarea
-                  label="Focus"
-                  description="What the questions should be about. The passages of the selected material that are most similar to this text are used."
-                  placeholder="For example: thread pools and how to shut down an ExecutorService"
-                  autosize
-                  minRows={2}
-                  maxRows={6}
-                  maxLength={2000}
-                  withAsterisk
-                  {...form.getInputProps('focusQuery')}
-                />
+                <Stack gap={6}>
+                  <Textarea
+                    label="Focus"
+                    description="The subject of the questions. Passages are matched by meaning, not exact words."
+                    placeholder="For example: thread pools and how to shut down an ExecutorService"
+                    autosize
+                    minRows={2}
+                    maxRows={6}
+                    maxLength={2000}
+                    withAsterisk
+                    {...form.getInputProps('focusQuery')}
+                  />
+                  {/* Suggestions stored with the selected topics; a click puts one in the field. */}
+                  {focusSuggestions.length > 0 && (
+                    <Group gap={6}>
+                      <Text size="xs" c="dimmed">
+                        Suggestions:
+                      </Text>
+                      {focusSuggestions.map((s) => (
+                        <Button
+                          key={s}
+                          size="compact-xs"
+                          radius="xl"
+                          variant={form.values.focusQuery === s ? 'filled' : 'light'}
+                          onClick={() => form.setFieldValue('focusQuery', s)}
+                          styles={{ label: { whiteSpace: 'normal', textAlign: 'left' } }}
+                          h="auto"
+                          py={2}
+                        >
+                          {s}
+                        </Button>
+                      ))}
+                    </Group>
+                  )}
+                </Stack>
               )}
 
               <UnstyledButton onClick={toggleAdvanced}>

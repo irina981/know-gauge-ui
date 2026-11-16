@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api, unwrap, unwrapVoid } from './client';
+import { api, getJson, unwrap, unwrapVoid } from './client';
 import type { TopicCreateInput, TopicDto, TopicNode, TopicTreeNodeInput, TopicUpdateInput } from './types';
 
 export const topicKeys = {
@@ -126,4 +126,51 @@ export function useIngestedDocumentCounts() {
 /** Ingested documents of a topic and all its sub-topics. */
 export function subtreeCount(node: TopicNode, counts: Map<number, number>): number {
   return node.children.reduce((sum, child) => sum + subtreeCount(child, counts), counts.get(node.id) ?? 0);
+}
+
+/**
+ * Focus suggestions for the dev-seeded demo topics, keyed by topic id. They come from a dev-only endpoint that exists
+ * only when the backend seeds the demo content; elsewhere it answers 404 and there are simply no suggestions.
+ */
+export function useDevFocusSuggestions() {
+  return useQuery({
+    queryKey: [...topicKeys.all, 'dev-focus-suggestions'] as const,
+    queryFn: async (): Promise<Map<number, string[]>> => {
+      try {
+        const byId = await getJson<Record<string, string[]>>('/api/dev/focus-suggestions');
+        return new Map(Object.entries(byId).map(([id, list]) => [Number(id), list]));
+      } catch {
+        return new Map();
+      }
+    },
+    retry: false,
+    staleTime: Infinity,
+  });
+}
+
+/**
+ * Focus suggestions for the selected topics: those of each topic, its parents and its sub-topics (a suggestion on a
+ * parent still applies to one of its sub-topics, and the reverse), without duplicates.
+ */
+export function focusSuggestionsFor(
+  tree: TopicTree,
+  suggestions: Map<number, string[]>,
+  topicIds: number[],
+  max = 8,
+): string[] {
+  const seen = new Set<string>();
+  const add = (node: TopicNode | undefined) => node && suggestions.get(node.id)?.forEach((s) => seen.add(s));
+  const addSubtree = (node: TopicNode) => {
+    add(node);
+    node.children.forEach(addSubtree);
+  };
+  for (const id of topicIds) {
+    const node = tree.byId.get(id);
+    if (!node) continue;
+    addSubtree(node);
+    for (let parentId = node.parentId; parentId != null; parentId = tree.byId.get(parentId)?.parentId) {
+      add(tree.byId.get(parentId));
+    }
+  }
+  return [...seen].slice(0, max);
 }
