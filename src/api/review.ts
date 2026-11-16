@@ -144,3 +144,15 @@ export function useUnpublishTest(testId: number) {
     onSettled: () => queryClient.invalidateQueries({ queryKey: testKeys.all }),
   });
 }
+
+/** Changes the test's name and description; the backend refuses this once the test is published. */
+export function useUpdateTestDetails(testId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { name: string; description?: string }) =>
+      unwrap(api.PUT('/api/tests/{testId}/details', { params: { path: { testId } }, body })),
+    onSuccess: (test) => queryClient.setQueryData(testKeys.detail(testId), test),
+    // The name shows in the tests list, and the change is recorded in the history.
+    onSettled: () => queryClient.invalidateQueries({ queryKey: testKeys.all }),
+  });
+}

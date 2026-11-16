@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/api/tests/{testId}/details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Edit the test's name and description
+         * @description Allowed in every status except PUBLISHED. Recorded as a TEST_DETAILS_UPDATED event.
+         */
+        put: operations["updateDetails"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/content/topics/{id}": {
         parameters: {
             query?: never;
@@ -756,6 +776,144 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description The editable details of a test (allowed until it is published) */
+        TestDetailsInput: {
+            /**
+             * @description Test name (required, max 200 characters)
+             * @example Fire safety at the Corvane offices
+             */
+            name: string;
+            /**
+             * @description Optional description (max 2000 characters); blank removes it
+             * @example Short test for new employees
+             */
+            description?: string;
+        };
+        /** @description Generated test details returned by API */
+        TestDto: {
+            /**
+             * Format: int64
+             * @description Test identifier
+             * @example 5001
+             */
+            id?: number;
+            /**
+             * Format: int64
+             * @description Owning tenant identifier
+             * @example 1
+             */
+            tenantId?: number;
+            /**
+             * @description Test name
+             * @example Java Concurrency – Medium (10 questions)
+             */
+            name?: string;
+            /**
+             * @description Optional free-text description
+             * @example Practice test for the threads and executors chapters
+             */
+            description?: string;
+            /**
+             * @description Topics used for generation
+             * @example [
+             *       101,
+             *       102
+             *     ]
+             */
+            topicIds?: number[];
+            /**
+             * @description Documents used for generation
+             * @example [
+             *       2001,
+             *       2002
+             *     ]
+             */
+            documentIds?: number[];
+            /**
+             * @description Configured difficulty
+             * @example MEDIUM
+             */
+            difficulty?: string;
+            /**
+             * @description Whether repeats were avoided
+             * @example true
+             */
+            avoidRepeats?: boolean;
+            /**
+             * @description Coverage strategy
+             * @example BALANCED_PER_DOC_CHUNKS
+             */
+            coverageMode?: string;
+            /**
+             * @description Text the chunks were matched against, for FOCUSED coverage
+             * @example Thread pools and how to shut down an ExecutorService
+             */
+            focusQuery?: string;
+            /**
+             * Format: int32
+             * @description Requested number of questions
+             * @example 10
+             */
+            questionCount?: number;
+            /**
+             * @description Answer cardinality mode
+             * @example SINGLE_CORRECT
+             */
+            answerCardinality?: string;
+            /**
+             * @description Generation status
+             * @example COMPLETED
+             */
+            status?: string;
+            /**
+             * @description Generation model used
+             * @example gpt-4o-mini
+             */
+            generationModel?: string;
+            /**
+             * @description Prompt template id
+             * @example mcq-default
+             */
+            promptTemplateId?: string;
+            /**
+             * @description Generation parameters used
+             * @example {
+             *       "temperature": 0.2,
+             *       "topP": 1
+             *     }
+             */
+            generationParams?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Format: date-time
+             * @description Generation start time (UTC)
+             * @example 2026-02-18T10:15:30Z
+             */
+            generationStartedAt?: string;
+            /**
+             * Format: date-time
+             * @description Generation finish time (UTC)
+             * @example 2026-02-18T10:15:45Z
+             */
+            generationFinishedAt?: string;
+            /**
+             * Format: date-time
+             * @description Generation failure time (UTC)
+             * @example 2026-02-18T10:15:45Z
+             */
+            generationFailedAt?: string;
+            /**
+             * @description Failure reason when status is FAILED
+             * @example Model request timed out
+             */
+            generationErrorMessage?: string;
+            /**
+             * @description Token of the shared link (/t/{token}); the link works while the test is PUBLISHED
+             * @example dGhpcy1pcy1hLXRva2Vu
+             */
+            publicToken?: string;
+        };
         TopicUpdateInput: {
             /** Format: int64 */
             id?: number;
@@ -884,131 +1042,6 @@ export interface components {
             generationParams?: {
                 [key: string]: unknown;
             };
-        };
-        /** @description Generated test details returned by API */
-        TestDto: {
-            /**
-             * Format: int64
-             * @description Test identifier
-             * @example 5001
-             */
-            id?: number;
-            /**
-             * Format: int64
-             * @description Owning tenant identifier
-             * @example 1
-             */
-            tenantId?: number;
-            /**
-             * @description Test name
-             * @example Java Concurrency – Medium (10 questions)
-             */
-            name?: string;
-            /**
-             * @description Optional free-text description
-             * @example Practice test for the threads and executors chapters
-             */
-            description?: string;
-            /**
-             * @description Topics used for generation
-             * @example [
-             *       101,
-             *       102
-             *     ]
-             */
-            topicIds?: number[];
-            /**
-             * @description Documents used for generation
-             * @example [
-             *       2001,
-             *       2002
-             *     ]
-             */
-            documentIds?: number[];
-            /**
-             * @description Configured difficulty
-             * @example MEDIUM
-             */
-            difficulty?: string;
-            /**
-             * @description Whether repeats were avoided
-             * @example true
-             */
-            avoidRepeats?: boolean;
-            /**
-             * @description Coverage strategy
-             * @example BALANCED_PER_DOC_CHUNKS
-             */
-            coverageMode?: string;
-            /**
-             * @description Text the chunks were matched against, for FOCUSED coverage
-             * @example Thread pools and how to shut down an ExecutorService
-             */
-            focusQuery?: string;
-            /**
-             * Format: int32
-             * @description Requested number of questions
-             * @example 10
-             */
-            questionCount?: number;
-            /**
-             * @description Answer cardinality mode
-             * @example SINGLE_CORRECT
-             */
-            answerCardinality?: string;
-            /**
-             * @description Generation status
-             * @example COMPLETED
-             */
-            status?: string;
-            /**
-             * @description Generation model used
-             * @example gpt-4o-mini
-             */
-            generationModel?: string;
-            /**
-             * @description Prompt template id
-             * @example mcq-default
-             */
-            promptTemplateId?: string;
-            /**
-             * @description Generation parameters used
-             * @example {
-             *       "temperature": 0.2,
-             *       "topP": 1
-             *     }
-             */
-            generationParams?: {
-                [key: string]: unknown;
-            };
-            /**
-             * Format: date-time
-             * @description Generation start time (UTC)
-             * @example 2026-02-18T10:15:30Z
-             */
-            generationStartedAt?: string;
-            /**
-             * Format: date-time
-             * @description Generation finish time (UTC)
-             * @example 2026-02-18T10:15:45Z
-             */
-            generationFinishedAt?: string;
-            /**
-             * Format: date-time
-             * @description Generation failure time (UTC)
-             * @example 2026-02-18T10:15:45Z
-             */
-            generationFailedAt?: string;
-            /**
-             * @description Failure reason when status is FAILED
-             * @example Model request timed out
-             */
-            generationErrorMessage?: string;
-            /**
-             * @description Token of the shared link (/t/{token}); the link works while the test is PUBLISHED
-             * @example dGhpcy1pcy1hLXRva2Vu
-             */
-            publicToken?: string;
         };
         /** @description Optional body of the publish and unpublish actions */
         PublishTestInput: {
@@ -1873,6 +1906,59 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    updateDetails: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                testId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestDetailsInput"];
+            };
+        };
+        responses: {
+            /** @description Details updated; returns the test */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TestDto"];
+                };
+            };
+            /** @description Blank name, or a value that is too long */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TestDto"];
+                };
+            };
+            /** @description Test not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TestDto"];
+                };
+            };
+            /** @description Test is published */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TestDto"];
+                };
+            };
+        };
+    };
     getTopic: {
         parameters: {
             query?: never;

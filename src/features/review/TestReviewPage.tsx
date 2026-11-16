@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Alert,
   Anchor,
   Badge,
@@ -14,7 +15,14 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconAlertCircle, IconArrowBackUp, IconArrowLeft, IconLock, IconSend } from '@tabler/icons-react';
+import {
+  IconAlertCircle,
+  IconArrowBackUp,
+  IconArrowLeft,
+  IconLock,
+  IconPencil,
+  IconSend,
+} from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
@@ -41,6 +49,7 @@ import { GenerationRunsPanel } from './GenerationRunsPanel';
 import { ManualEditModal } from './ManualEditModal';
 import { QuestionCard, type ReviewActionKind } from './QuestionCard';
 import { SharePanel } from './SharePanel';
+import { TestDetailsModal } from './TestDetailsModal';
 import { VersionHistoryDrawer } from './VersionHistoryDrawer';
 
 type ConfirmKind = 'accept-fix' | 'keep' | 'regenerate';
@@ -88,6 +97,7 @@ export function TestReviewPage() {
   const [publishOpen, setPublishOpen] = useState(false);
   const unpublish = useUnpublishTest(testId);
   const [unpublishOpen, setUnpublishOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const attempts = useTestHasAttempts(testId, test?.status === 'PUBLISHED');
 
   const [filter, setFilter] = useState<'all' | 'review'>('all');
@@ -190,6 +200,19 @@ export function TestReviewPage() {
                 {test.name || `Test #${test.id}`}
               </Title>
               <StatusBadge info={testStatus(test.status)} busy={generating} />
+              {/* Name and description stay editable until the test is published. */}
+              {!published && (
+                <Tooltip label="Edit name and description">
+                  <ActionIcon
+                    variant="subtle"
+                    color="gray"
+                    aria-label="Edit name and description"
+                    onClick={() => setDetailsOpen(true)}
+                  >
+                    <IconPencil size={16} />
+                  </ActionIcon>
+                </Tooltip>
+              )}
             </Group>
             <Text c="dimmed" size="sm" mt={4}>
               {test.name ? `Test #${test.id} · ` : ''}
@@ -435,6 +458,7 @@ export function TestReviewPage() {
         onClose={() => setEditing(null)}
       />
       <VersionHistoryDrawer testId={testId} question={historyOf} onClose={() => setHistoryOf(null)} />
+      <TestDetailsModal test={test} opened={detailsOpen} onClose={() => setDetailsOpen(false)} />
     </Stack>
   );
 }

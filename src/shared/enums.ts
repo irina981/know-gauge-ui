@@ -77,6 +77,7 @@ export const EVENT_TYPES: Record<string, EnumInfo> = {
   FLAGS_DISMISSED: { label: 'Kept as is (flags dismissed)', color: 'gray' },
   SHARED_LINK_CREATED: { label: 'Shared link created', color: 'violet' },
   SHARED_LINK_REGENERATED: { label: 'Shared link regenerated (old link disabled)', color: 'violet' },
+  TEST_DETAILS_UPDATED: { label: 'Name or description changed', color: 'gray' },
 };
 export const eventType = (v?: string | null) => lookup(EVENT_TYPES, v);
 
