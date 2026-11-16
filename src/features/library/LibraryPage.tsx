@@ -5,7 +5,6 @@ import {
   Menu,
   Paper,
   ScrollArea,
-  Stack,
   Text,
   ThemeIcon,
   Title,
@@ -33,8 +32,7 @@ import {
   useTopicTree,
 } from '@/api/topics';
 import type { TopicNode } from '@/api/types';
-import { DocumentTable } from '@/features/documents/DocumentTable';
-import { UploadDropzone } from '@/features/documents/UploadDropzone';
+import { DocumentsPanel } from '@/features/documents/DocumentsPanel';
 import { ImportTreeModal } from '@/features/topics/ImportTreeModal';
 import { TopicFormModal, type TopicFormTarget } from '@/features/topics/TopicFormModal';
 import { TopicTree } from '@/features/topics/TopicTree';
@@ -214,18 +212,7 @@ export function LibraryPage() {
                 </Group>
               </Paper>
 
-              <Paper p="lg" className="kg-fill">
-                <Title order={3} fz={18}>
-                  Documents
-                </Title>
-                <Text size="sm" c="dimmed" mb="md">
-                  PDFs are split into passages and embedded, so test questions can quote and cite them.
-                </Text>
-                <Stack gap="lg">
-                  <UploadDropzone topicId={selected.id} />
-                  <DocumentTable key={selected.id} topicId={selected.id} />
-                </Stack>
-              </Paper>
+              <DocumentsPanel key={selected.id} topicId={selected.id} />
             </>
           )}
         </div>

@@ -1,5 +1,5 @@
 import { ActionIcon, Group, Pagination, Table, Text, Tooltip } from '@mantine/core';
-import { IconDownload, IconPlayerPlay, IconRefresh, IconTrash } from '@tabler/icons-react';
+import { IconDownload, IconEye, IconPlayerPlay, IconRefresh, IconTrash } from '@tabler/icons-react';
 import { useState } from 'react';
 import {
   canStartIngestion,
@@ -15,11 +15,20 @@ import { confirmDelete } from '@/shared/confirm';
 import { documentStatus } from '@/shared/enums';
 import { formatBytes, formatDateTime } from '@/shared/format';
 
-const PAGE_SIZE = 10;
+export const DOCUMENT_PAGE_SIZE = 10;
 
-export function DocumentTable({ topicId }: { topicId: number }) {
+interface DocumentTableProps {
+  topicId: number;
+  /** The document shown in the preview, highlighted in the list; undefined while the preview is closed. */
+  previewId?: number;
+  /** Called by a row's preview button, and by clicking the row while the preview is open. */
+  onPreview?: (doc: DocumentDto) => void;
+  onDeleted?: (id: number) => void;
+}
+
+export function DocumentTable({ topicId, previewId, onPreview, onDeleted }: DocumentTableProps) {
   const [page, setPage] = useState(0);
-  const { data, isLoading, error } = useTopicDocuments(topicId, page, PAGE_SIZE);
+  const { data, isLoading, error } = useTopicDocuments(topicId, page, DOCUMENT_PAGE_SIZE);
   const ingest = useIngestDocument();
   const ingestingIds = useIngestingDocumentIds();
   const remove = useDeleteDocument();
@@ -41,12 +50,19 @@ export function DocumentTable({ topicId }: { topicId: number }) {
     return 'Ingest now (otherwise the scheduled job picks it up)';
   };
 
+  const rowsSelect = onPreview && previewId !== undefined;
+
   const rows = data.content.map((doc) => {
     const ingesting = isIngesting(doc);
     const failed = doc.status === 'FAILED';
     const ingestAllowed = !ingesting && canStartIngestion(doc);
     return (
-      <Table.Tr key={doc.id}>
+      <Table.Tr
+        key={doc.id}
+        className={rowsSelect ? 'kg-doc-row' : undefined}
+        data-active={doc.id === previewId || undefined}
+        onClick={rowsSelect ? () => onPreview(doc) : undefined}
+      >
         <Table.Td>
           <Text size="sm" fw={500}>
             {doc.title || doc.originalFileName}
@@ -75,7 +91,14 @@ export function DocumentTable({ topicId }: { topicId: number }) {
           )}
         </Table.Td>
         <Table.Td>
-          <Group gap={4} justify="flex-end" wrap="nowrap">
+          <Group gap={4} justify="flex-end" wrap="nowrap" onClick={(event) => event.stopPropagation()}>
+            {onPreview && (
+              <Tooltip label="Preview">
+                <ActionIcon variant="subtle" aria-label="Preview" onClick={() => onPreview(doc)}>
+                  <IconEye size={18} />
+                </ActionIcon>
+              </Tooltip>
+            )}
             <Tooltip label={ingestTooltip(doc, ingesting)}>
               {/* The wrapper keeps the tooltip working on a disabled button. */}
               <span>
@@ -109,7 +132,7 @@ export function DocumentTable({ topicId }: { topicId: number }) {
                   confirmDelete({
                     title: 'Delete document',
                     message: `Delete "${doc.title || doc.originalFileName}"? This cannot be undone.`,
-                    onConfirm: () => remove.mutate(doc.id!),
+                    onConfirm: () => remove.mutate(doc.id!, { onSuccess: () => onDeleted?.(doc.id!) }),
                   })
                 }
               >

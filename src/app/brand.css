@@ -293,6 +293,135 @@ body {
   .kg-library-detail > .kg-fill {
     flex: 1 0 auto;
   }
+
+  /* The documents card takes exactly the space left (but at least enough for a readable preview), so the list
+     scrolls inside and the preview stays in view. */
+  .kg-library-detail > .kg-docs-card {
+    flex: 1 0 0;
+    min-height: 560px;
+  }
+
+  .kg-docs-card .kg-docs-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
+
+/* ---------- Documents: list and PDF preview ---------- */
+
+.kg-docs-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-md);
+}
+
+.kg-docs-split {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.kg-docs-split[data-dragging] {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.kg-docs-split > .kg-docs-list {
+  flex: 0 0 auto;
+  min-width: 0;
+  padding-right: var(--mantine-spacing-xs);
+}
+
+.kg-docs-resizer {
+  flex: 0 0 12px;
+  cursor: col-resize;
+  position: relative;
+  touch-action: none;
+  outline: none;
+}
+
+/* A thin line in the middle of a wider grab area. */
+.kg-docs-resizer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 5px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--mantine-color-default-border);
+  transition: background 120ms;
+}
+
+.kg-docs-resizer:hover::before,
+.kg-docs-resizer:focus-visible::before,
+.kg-docs-split[data-dragging] .kg-docs-resizer::before {
+  background: var(--mantine-primary-color-filled);
+}
+
+.kg-doc-preview {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-md);
+  overflow: hidden;
+  /* Below the list on narrow screens. */
+  min-height: 70vh;
+}
+
+@media (min-width: 62em) {
+  .kg-doc-preview {
+    min-height: 0;
+  }
+}
+
+.kg-doc-preview-bar {
+  padding: 6px 8px 6px 12px;
+  border-bottom: 1px solid var(--mantine-color-default-border);
+  background: var(--mantine-color-default-hover);
+}
+
+/* PDF.js pages, one under the other on a grey background; scrolls in both directions when zoomed in. */
+.kg-pdf-viewer {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--mantine-spacing-md);
+  background: light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-8));
+}
+
+.kg-pdf-viewer .react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mantine-spacing-md);
+  /* Wider than the view when zoomed in, so the left edge stays reachable instead of being centred off-screen. */
+  width: max-content;
+  min-width: 100%;
+}
+
+.kg-pdf-page {
+  background: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.kg-doc-preview-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mantine-spacing-lg);
+}
+
+.kg-doc-row {
+  cursor: pointer;
+}
+
+.kg-doc-row[data-active] {
+  background: var(--mantine-primary-color-light);
 }
 
 /* ---------- Taking a test ---------- */

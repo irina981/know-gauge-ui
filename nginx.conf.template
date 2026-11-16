@@ -17,6 +17,14 @@ server {
     location /assets/ {
         expires 1y;
         add_header Cache-Control "public, immutable";
+
+        # nginx's MIME list has no .mjs, and browsers only start the PDF.js worker (a module) when it is served as
+        # JavaScript. A types block replaces the whole list, so it is limited to .mjs files here.
+        location ~* \.mjs$ {
+            types { text/javascript mjs; }
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
     }
 
     # Single-page app: unknown paths (e.g. /tests/12) return index.html and React Router takes over.

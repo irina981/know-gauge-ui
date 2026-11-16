@@ -56,6 +56,11 @@ export function documentContentUrl(id: number): string {
   return `/api/content/documents/${id}/content`;
 }
 
+/** The same content served inline, so the browser shows the PDF (in a frame or tab) instead of saving it. */
+export function documentPreviewUrl(id: number): string {
+  return `${documentContentUrl(id)}?inline=true`;
+}
+
 export function useUploadDocument() {
   const queryClient = useQueryClient();
   return useMutation({
