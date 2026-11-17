@@ -64,16 +64,45 @@ function saveLayout(layout: PreviewLayout) {
 }
 
 /**
+ * Topics whose preview the user closed, kept in this browser. Every other topic opens with the preview showing its
+ * first document. Without storage every topic simply opens with the preview.
+ */
+const CLOSED_KEY = 'kg-library-preview-closed-topics';
+
+function loadClosedTopics(): number[] {
+  try {
+    const stored: unknown = JSON.parse(localStorage.getItem(CLOSED_KEY) ?? '[]');
+    return Array.isArray(stored) ? stored.filter((id): id is number => typeof id === 'number') : [];
+  } catch {
+    return [];
+  }
+}
+
+function rememberClosed(topicId: number, closed: boolean) {
+  try {
+    const others = loadClosedTopics().filter((id) => id !== topicId);
+    localStorage.setItem(CLOSED_KEY, JSON.stringify(closed ? [...others, topicId] : others));
+  } catch {
+    // Not remembered; the panel still works.
+  }
+}
+
+/**
  * The Documents card of the Library: upload and the document list on the left, a PDF preview of the chosen document
- * on the right. Every topic opens with the preview closed; the eye button in the header opens it on the first document,
- * the eye button of a row on that document, and while it is open clicking a row shows that document. The divider
+ * on the right. A topic opens with the preview showing its first document, unless the preview was closed for that
+ * topic; the eye button in the header opens it again on the first document, the eye button of a row on that
+ * document, and while it is open clicking a row shows that document. The divider
  * can be dragged (or moved with the arrow keys). On narrow screens the preview sits below the list.
  */
 export function DocumentsPanel({ topicId }: { topicId: number }) {
   const wide = useMediaQuery('(min-width: 62em)', true);
   const [layout, setLayout] = useState(loadLayout);
-  // Not remembered: the panel is mounted per topic, so selecting or returning to a topic closes the preview.
-  const [open, setOpen] = useState(false);
+  // The panel is mounted per topic, so this is read again for every topic.
+  const [open, setOpenState] = useState(() => !loadClosedTopics().includes(topicId));
+  const setOpen = (next: boolean) => {
+    setOpenState(next);
+    rememberClosed(topicId, !next);
+  };
   // The document the user picked; until then (and after it is deleted) the first document of the topic is shown.
   // Same query as the list's first page, so it comes from the cache.
   const [picked, setPicked] = useState<DocumentDto | null>(null);
