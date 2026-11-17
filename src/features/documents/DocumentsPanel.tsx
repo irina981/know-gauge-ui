@@ -173,7 +173,7 @@ export function DocumentsPanel({ topicId }: { topicId: number }) {
           Documents
         </Title>
         <Text size="sm" c="dimmed">
-          PDFs are split into passages and embedded, so test questions can quote and cite them.
+          Tests are generated from ingested PDFs.
         </Text>
       </div>
       {!open && hasDocuments && (

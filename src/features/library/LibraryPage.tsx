@@ -149,11 +149,6 @@ export function LibraryPage() {
                       <Title order={2} fz={22}>
                         {selected.name}
                       </Title>
-                      {selected.description && (
-                        <Text c="dimmed" size="sm" mt={4}>
-                          {selected.description}
-                        </Text>
-                      )}
                     </div>
                   </Group>
                   <Group gap="xs" wrap="nowrap">
@@ -210,6 +205,13 @@ export function LibraryPage() {
                     </Menu>
                   </Group>
                 </Group>
+                {/* Below the title row, so it can use the full width; indented to line up with the title
+                    (icon 44 px + md gap). */}
+                {selected.description && (
+                  <Text c="dimmed" size="sm" mt={4} pl={44 + 16}>
+                    {selected.description}
+                  </Text>
+                )}
               </Paper>
 
               <DocumentsPanel key={selected.id} topicId={selected.id} />
