@@ -91,11 +91,11 @@ export function DocumentTable({ topicId, previewId, onPreview, onDeleted }: Docu
           )}
         </Table.Td>
         <Table.Td>
-          <Group gap={4} justify="flex-end" wrap="nowrap" onClick={(event) => event.stopPropagation()}>
+          <Group gap={0} justify="flex-end" wrap="nowrap" onClick={(event) => event.stopPropagation()}>
             {onPreview && (
               <Tooltip label="Preview">
-                <ActionIcon variant="subtle" aria-label="Preview" onClick={() => onPreview(doc)}>
-                  <IconEye size={18} />
+                <ActionIcon size="sm" variant="subtle" aria-label="Preview" onClick={() => onPreview(doc)}>
+                  <IconEye size={16} />
                 </ActionIcon>
               </Tooltip>
             )}
@@ -103,27 +103,30 @@ export function DocumentTable({ topicId, previewId, onPreview, onDeleted }: Docu
               {/* The wrapper keeps the tooltip working on a disabled button. */}
               <span>
                 <ActionIcon
+                  size="sm"
                   variant="subtle"
                   disabled={!ingestAllowed}
                   onClick={() => ingest.mutate(doc.id!)}
                   aria-label="Ingest"
                 >
-                  {failed ? <IconRefresh size={18} /> : <IconPlayerPlay size={18} />}
+                  {failed ? <IconRefresh size={16} /> : <IconPlayerPlay size={16} />}
                 </ActionIcon>
               </span>
             </Tooltip>
             <Tooltip label="Download">
               <ActionIcon
+                size="sm"
                 variant="subtle"
                 component="a"
                 href={documentContentUrl(doc.id!)}
                 aria-label="Download"
               >
-                <IconDownload size={18} />
+                <IconDownload size={16} />
               </ActionIcon>
             </Tooltip>
             <Tooltip label="Delete">
               <ActionIcon
+                size="sm"
                 variant="subtle"
                 color="red"
                 disabled={ingesting}
@@ -136,7 +139,7 @@ export function DocumentTable({ topicId, previewId, onPreview, onDeleted }: Docu
                   })
                 }
               >
-                <IconTrash size={18} />
+                <IconTrash size={16} />
               </ActionIcon>
             </Tooltip>
           </Group>
