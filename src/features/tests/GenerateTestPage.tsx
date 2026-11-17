@@ -402,7 +402,7 @@ export function GenerateTestPage() {
                   <SimpleGrid cols={{ base: 1, sm: 2 }}>
                     <TextInput
                       label="Generation model"
-                      placeholder="gpt-4.1"
+                      placeholder="server default"
                       {...form.getInputProps('generationModel')}
                     />
                     <TextInput
@@ -412,7 +412,7 @@ export function GenerateTestPage() {
                     />
                     <TextInput
                       label="Prompt template id"
-                      placeholder="mcq-default"
+                      placeholder="server default"
                       {...form.getInputProps('promptTemplateId')}
                     />
                     <NumberInput
