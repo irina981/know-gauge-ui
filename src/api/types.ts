@@ -41,6 +41,10 @@ export interface TopicNode {
   parentId?: number;
   /** Display order among siblings (lowest first); topics without one come after, by name. */
   position?: number;
+  /** Shared library content the user may read and generate tests from, but not change (ADR010). */
+  readOnly: boolean;
+  /** Belongs to the shared library, whoever is asking (an admin may still change it): groups the Library tree. */
+  shared: boolean;
   children: TopicNode[];
 }
 

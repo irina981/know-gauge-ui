@@ -95,7 +95,7 @@ function rememberClosed(topicId: number, closed: boolean) {
  * document, and while it is open clicking a row shows that document. The divider
  * can be dragged (or moved with the arrow keys). On narrow screens the preview sits below the list.
  */
-export function DocumentsPanel({ topicId }: { topicId: number }) {
+export function DocumentsPanel({ topicId, readOnly = false }: { topicId: number; readOnly?: boolean }) {
   const wide = useMediaQuery('(min-width: 62em)', true);
   const [layout, setLayout] = useState(loadLayout);
   // The panel is mounted per topic, so this is read again for every topic.
@@ -157,9 +157,11 @@ export function DocumentsPanel({ topicId }: { topicId: number }) {
 
   const list = (
     <Stack gap="lg">
-      <UploadDropzone topicId={topicId} />
+      {/* Shared library topics take no uploads (ADR010). */}
+      {!readOnly && <UploadDropzone topicId={topicId} />}
       <DocumentTable
         topicId={topicId}
+        topicReadOnly={readOnly}
         previewId={showPreviewPane ? preview?.id : undefined}
         onPreview={showPreview}
         onDeleted={(id) => picked?.id === id && setPicked(null)}

@@ -36,6 +36,8 @@ async function fetchTopicTree(): Promise<TopicTree> {
       description: topic.description ?? undefined,
       parentId: topic.parentId ?? undefined,
       position: topic.position ?? undefined,
+      readOnly: topic.readOnly ?? false,
+      shared: topic.shared ?? false,
       children: [],
     });
   }

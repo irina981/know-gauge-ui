@@ -33,11 +33,12 @@ export function TopicFormModal({ target, onClose, onSaved }: Props) {
     validate: { name: (v) => (v.trim() ? null : 'Name is required') },
   });
 
-  // Every topic as "Parent › Child" for the parent picker.
+  // Every topic the user may add to, as "Parent › Child" for the parent picker (not the read-only library).
   const parentOptions = useMemo(
     () =>
       tree
         ? [...tree.byId.values()]
+            .filter((t) => !t.readOnly)
             .map((t) => ({ value: String(t.id), label: topicPathLabel(tree, t.id) }))
             .sort((a, b) => a.label.localeCompare(b.label))
         : [],
@@ -56,7 +57,7 @@ export function TopicFormModal({ target, onClose, onSaved }: Props) {
       form.setValues({
         name: '',
         description: '',
-        parentId: target?.parent ? String(target.parent.id) : null,
+        parentId: target?.parent && !target.parent.readOnly ? String(target.parent.id) : null,
       });
     }
     form.resetDirty();

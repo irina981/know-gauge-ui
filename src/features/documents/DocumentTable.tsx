@@ -25,9 +25,17 @@ interface DocumentTableProps {
   /** Called by a row's preview button, and by clicking the row while the preview is open. */
   onPreview?: (doc: DocumentDto) => void;
   onDeleted?: (id: number) => void;
+  /** The topic is shared library content: nothing can be uploaded to it. */
+  topicReadOnly?: boolean;
 }
 
-export function DocumentTable({ topicId, previewId, onPreview, onDeleted }: DocumentTableProps) {
+export function DocumentTable({
+  topicId,
+  previewId,
+  onPreview,
+  onDeleted,
+  topicReadOnly,
+}: DocumentTableProps) {
   const [page, setPage] = useState(0);
   const { data, isLoading, error } = useTopicDocuments(topicId, page, DOCUMENT_PAGE_SIZE);
   const ingest = useIngestDocument();
@@ -37,7 +45,13 @@ export function DocumentTable({ topicId, previewId, onPreview, onDeleted }: Docu
   if (isLoading) return <PageLoader />;
   if (error) return <ErrorAlert error={error} title="Could not load documents" />;
   if (!data?.content.length) {
-    return <EmptyState title="No documents yet">Upload a PDF above to add it to this topic.</EmptyState>;
+    return (
+      <EmptyState title="No documents yet">
+        {topicReadOnly
+          ? 'This topic has no documents of its own; its sub-topics hold them.'
+          : 'Upload a PDF above to add it to this topic.'}
+      </EmptyState>
+    );
   }
 
   // Ingestion is a long synchronous call, so "in progress" is a pending request in this browser,
@@ -100,20 +114,22 @@ export function DocumentTable({ topicId, previewId, onPreview, onDeleted }: Docu
                 </ActionIcon>
               </Tooltip>
             )}
-            <Tooltip label={ingestTooltip(doc, ingesting)}>
-              {/* The wrapper keeps the tooltip working on a disabled button. */}
-              <span>
-                <ActionIcon
-                  size="sm"
-                  variant="subtle"
-                  disabled={!ingestAllowed}
-                  onClick={() => ingest.mutate(doc.id!)}
-                  aria-label="Ingest"
-                >
-                  {failed ? <IconRefresh size={16} /> : <IconPlayerPlay size={16} />}
-                </ActionIcon>
-              </span>
-            </Tooltip>
+            {!doc.readOnly && (
+              <Tooltip label={ingestTooltip(doc, ingesting)}>
+                {/* The wrapper keeps the tooltip working on a disabled button. */}
+                <span>
+                  <ActionIcon
+                    size="sm"
+                    variant="subtle"
+                    disabled={!ingestAllowed}
+                    onClick={() => ingest.mutate(doc.id!)}
+                    aria-label="Ingest"
+                  >
+                    {failed ? <IconRefresh size={16} /> : <IconPlayerPlay size={16} />}
+                  </ActionIcon>
+                </span>
+              </Tooltip>
+            )}
             <Tooltip label="Download">
               <ActionIcon
                 size="sm"
@@ -134,24 +150,26 @@ export function DocumentTable({ topicId, previewId, onPreview, onDeleted }: Docu
                 <IconDownload size={16} />
               </ActionIcon>
             </Tooltip>
-            <Tooltip label="Delete">
-              <ActionIcon
-                size="sm"
-                variant="subtle"
-                color="red"
-                disabled={ingesting}
-                aria-label="Delete"
-                onClick={() =>
-                  confirmDelete({
-                    title: 'Delete document',
-                    message: `Delete "${doc.title || doc.originalFileName}"? This cannot be undone.`,
-                    onConfirm: () => remove.mutate(doc.id!, { onSuccess: () => onDeleted?.(doc.id!) }),
-                  })
-                }
-              >
-                <IconTrash size={16} />
-              </ActionIcon>
-            </Tooltip>
+            {!doc.readOnly && (
+              <Tooltip label="Delete">
+                <ActionIcon
+                  size="sm"
+                  variant="subtle"
+                  color="red"
+                  disabled={ingesting}
+                  aria-label="Delete"
+                  onClick={() =>
+                    confirmDelete({
+                      title: 'Delete document',
+                      message: `Delete "${doc.title || doc.originalFileName}"? This cannot be undone.`,
+                      onConfirm: () => remove.mutate(doc.id!, { onSuccess: () => onDeleted?.(doc.id!) }),
+                    })
+                  }
+                >
+                  <IconTrash size={16} />
+                </ActionIcon>
+              </Tooltip>
+            )}
           </Group>
         </Table.Td>
       </Table.Tr>
