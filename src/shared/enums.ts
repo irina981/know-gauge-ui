@@ -100,11 +100,16 @@ export const ANSWER_CARDINALITIES = [
 ];
 
 export const COVERAGE_MODES = [
-  { value: 'BALANCED_PER_DOC_CHUNKS', label: 'Balanced across document chunks' },
-  { value: 'BALANCED_PER_DOCS', label: 'Balanced across documents' },
+  { value: 'BALANCED_PER_DOC_CHUNKS', label: 'Proportional to document size' },
+  { value: 'BALANCED_PER_DOCS', label: 'Equal share per document' },
   // Similarity search for the focus text entered in the form.
   { value: 'FOCUSED', label: 'Focused on a subject' },
 ];
+
+/** The coverage mode as the generate form names it; unknown values fall back to the raw value. */
+export function coverageModeLabel(mode: string): string {
+  return COVERAGE_MODES.find((m) => m.value === mode)?.label ?? mode;
+}
 
 export const LANGUAGES = [
   { value: 'EN', label: 'English' },

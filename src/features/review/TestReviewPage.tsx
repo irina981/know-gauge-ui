@@ -40,7 +40,7 @@ import { isGenerating, testKeys, useTest } from '@/api/tests';
 import { topicPathLabel, useTopicTree } from '@/api/topics';
 import type { TestQuestionDto } from '@/api/types';
 import { EmptyState, ErrorAlert, PageLoader, StatusBadge } from '@/shared/components';
-import { humanize, PUBLISHABLE_TEST_STATUSES, REVIEWABLE_TEST_STATUSES, testStatus } from '@/shared/enums';
+import { coverageModeLabel, humanize, PUBLISHABLE_TEST_STATUSES, REVIEWABLE_TEST_STATUSES, testStatus } from '@/shared/enums';
 import { formatDateTime, formatDuration } from '@/shared/format';
 import { useNow } from '@/shared/useNow';
 import { CommentActionModal } from './CommentActionModal';
@@ -282,7 +282,7 @@ export function TestReviewPage() {
             `${test.questionCount} questions`,
             test.difficulty && humanize(test.difficulty),
             test.answerCardinality && humanize(test.answerCardinality),
-            test.coverageMode && humanize(test.coverageMode),
+            test.coverageMode && coverageModeLabel(test.coverageMode),
             test.generationModel,
           ]
             .filter(Boolean)
