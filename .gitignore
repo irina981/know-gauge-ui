@@ -7,3 +7,6 @@ dist
 .idea
 *.log
 .DS_Store
+
+# Keycloak login theme build (npm run build-keycloak-theme)
+dist_keycloak

@@ -1,6 +1,7 @@
 import { ActionIcon, Group, Pagination, Table, Text, Tooltip } from '@mantine/core';
 import { IconDownload, IconEye, IconPlayerPlay, IconRefresh, IconTrash } from '@tabler/icons-react';
 import { useState } from 'react';
+import { downloadFile, fileLinksNeedToken } from '@/api/client';
 import {
   canStartIngestion,
   documentContentUrl,
@@ -120,6 +121,15 @@ export function DocumentTable({ topicId, previewId, onPreview, onDeleted }: Docu
                 component="a"
                 href={documentContentUrl(doc.id!)}
                 aria-label="Download"
+                onClick={(event) => {
+                  // With sign-in the file needs the access token, which a plain link can't send.
+                  if (!fileLinksNeedToken()) return;
+                  event.preventDefault();
+                  void downloadFile(
+                    documentContentUrl(doc.id!),
+                    doc.originalFileName ?? `document-${doc.id}.pdf`,
+                  );
+                }}
               >
                 <IconDownload size={16} />
               </ActionIcon>

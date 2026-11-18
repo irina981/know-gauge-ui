@@ -13,6 +13,14 @@ server {
         client_max_body_size 50m;
     }
 
+    # Runtime settings of the app (src/app/config.ts), from the container's environment. OIDC_AUTHORITY empty:
+    # no sign-in (backend in security mode fixed).
+    location = /config.js {
+        default_type application/javascript;
+        add_header Cache-Control "no-store";
+        return 200 'window.__KG_CONFIG__ = { oidcAuthority: "${OIDC_AUTHORITY}", oidcClientId: "${OIDC_CLIENT_ID}" };\n';
+    }
+
     # Hashed build assets can be cached for a long time.
     location /assets/ {
         expires 1y;

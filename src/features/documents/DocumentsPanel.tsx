@@ -9,6 +9,7 @@ import {
   IconZoomOut,
 } from '@tabler/icons-react';
 import { lazy, Suspense, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
+import { fileLinksNeedToken, openFileInNewTab } from '@/api/client';
 import { documentPreviewUrl, useTopicDocuments } from '@/api/documents';
 import type { DocumentDto } from '@/api/types';
 import { DOCUMENT_PAGE_SIZE, DocumentTable } from './DocumentTable';
@@ -241,6 +242,12 @@ export function DocumentsPanel({ topicId }: { topicId: number }) {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Open in a new tab"
+                onClick={(event) => {
+                  // With sign-in the file needs the access token, which a plain link can't send.
+                  if (!fileLinksNeedToken()) return;
+                  event.preventDefault();
+                  void openFileInNewTab(documentPreviewUrl(preview.id!));
+                }}
               >
                 <IconExternalLink size={18} />
               </ActionIcon>

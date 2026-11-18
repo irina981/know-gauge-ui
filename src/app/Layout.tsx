@@ -2,6 +2,7 @@ import {
   ActionIcon,
   Anchor,
   AppShell,
+  Avatar,
   Box,
   Burger,
   Button,
@@ -20,6 +21,7 @@ import {
   IconChecklist,
   IconClipboardCheck,
   IconInfoCircle,
+  IconLogout,
   IconMoon,
   IconShieldCheck,
   IconSparkles,
@@ -27,6 +29,7 @@ import {
 } from '@tabler/icons-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Wordmark } from '@/shared/components';
+import { useSession } from './auth';
 
 /** Left navigation. `isActive` decides which entry is highlighted for the current URL. */
 const NAV = [
@@ -87,6 +90,36 @@ function Brand({ large = false }: { large?: boolean }) {
         </div>
       </Group>
     </Link>
+  );
+}
+
+/**
+ * The signed-in user and Sign out: the last block of the sidebar, framed so it stands apart from the content
+ * above it. Not shown when sign-in is off.
+ */
+function UserBox() {
+  const session = useSession();
+  if (!session.enabled) return null;
+  const label = session.name ?? session.email ?? 'Signed in';
+  return (
+    <Group gap="sm" wrap="nowrap" className="kg-sidebar-user">
+      <Avatar size={34} radius="xl" color="needle" variant="filled" name={label} />
+      <Box style={{ flex: 1, minWidth: 0 }}>
+        <Text size="sm" fw={600} c="white" truncate="end">
+          {label}
+        </Text>
+        {session.email && session.email !== label && (
+          <Text size="xs" c="rgba(219,225,255,0.6)" truncate="end">
+            {session.email}
+          </Text>
+        )}
+      </Box>
+      <Tooltip label="Sign out">
+        <ActionIcon variant="subtle" color="gray.3" size="lg" onClick={session.signOut} aria-label="Sign out">
+          <IconLogout size={18} />
+        </ActionIcon>
+      </Tooltip>
+    </Group>
   );
 }
 
@@ -189,6 +222,8 @@ export function Layout() {
             </Text>
             <ColorSchemeToggle />
           </Group>
+
+          <UserBox />
         </Stack>
       </AppShell.Navbar>
 

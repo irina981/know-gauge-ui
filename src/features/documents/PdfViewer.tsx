@@ -1,11 +1,15 @@
 import { Center, Loader, Text } from '@mantine/core';
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
+import { authHeaders } from '@/api/client';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 // PDF.js parses and renders in a web worker; Vite bundles the worker file next to the app.
-pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url,
+).toString();
 
 interface PdfViewerProps {
   url: string;
@@ -95,10 +99,23 @@ export default function PdfViewer({ url, zoom, onZoomStep }: PdfViewerProps) {
     return () => el.removeEventListener('wheel', onWheel);
   }, []);
 
+  // PDF.js loads the file itself, so it gets the access token as a header (sign-in on). Fixed per document: a new
+  // object would make PDF.js load the file again.
+  const [file, setFile] = useState<{ url: string; httpHeaders: Record<string, string> } | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void authHeaders(url).then((httpHeaders) => {
+      if (!cancelled) setFile({ url, httpHeaders });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
+
   return (
     <div ref={ref} className="kg-pdf-viewer" onScroll={onScroll}>
       <Document
-        file={url}
+        file={file}
         onLoadSuccess={({ numPages }) => setPageCount(numPages)}
         loading={
           <Center h={200}>

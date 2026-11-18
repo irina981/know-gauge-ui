@@ -66,6 +66,14 @@ body {
   color: var(--mantine-color-needle-4);
 }
 
+/* The signed-in user at the bottom of the sidebar: framed, a little lighter than the sidebar. */
+.kg-sidebar-user {
+  padding: 10px 8px 10px 10px;
+  border-radius: var(--mantine-radius-md);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(219, 225, 255, 0.14);
+}
+
 .kg-sidebar-card {
   border-radius: var(--mantine-radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.08);

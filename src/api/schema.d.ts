@@ -609,6 +609,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the current user
+         * @description The signed-in user, their tenant and roles. The first call with a new user's token creates the user and a personal tenant. With sign-in off, the fixed tenant and user.
+         */
+        get: operations["me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/content/topics/roots": {
         parameters: {
             query?: never;
@@ -705,7 +725,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Download document content */
+        /**
+         * Download document content
+         * @description With inline=true the browser shows the file (for example in a PDF preview) instead of saving it.
+         */
         get: operations["downloadDocument"];
         put?: never;
         post?: never;
@@ -722,7 +745,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List documents for topic (paged) */
+        /**
+         * List documents for topic (paged)
+         * @description In upload order (by id) unless a sort is given.
+         */
         get: operations["getAllDocuments"];
         put?: never;
         post?: never;
@@ -955,6 +981,10 @@ export interface components {
              * @example 1
              */
             position?: number;
+            /** @description True when the caller may read but not change the topic (shared library content): hide edit actions, keep test generation */
+            readOnly?: boolean;
+            /** @description True when the topic belongs to the shared library (a LIBRARY tenant), whoever is asking */
+            shared?: boolean;
             /** @description Direct child topics */
             children?: components["schemas"]["TopicDto"][];
         };
@@ -1631,6 +1661,10 @@ export interface components {
              * @example 2026-02-18T10:16:05Z
              */
             ingestedAt?: string;
+            /** @description True when the caller may read but not change the document (shared library content): hide edit actions, keep download, preview and test generation */
+            readOnly?: boolean;
+            /** @description True when the document belongs to the shared library (a LIBRARY tenant), whoever is asking */
+            shared?: boolean;
         };
         /** @description Immutable snapshot of a question's content */
         TestQuestionVersionDto: {
@@ -1860,6 +1894,26 @@ export interface components {
             attemptStatus?: string;
             /** @description Token of the running attempt, to continue it; only while STARTED */
             attemptToken?: string;
+        };
+        /** @description The signed-in user and the tenant they work in */
+        CurrentUserDto: {
+            /**
+             * Format: int64
+             * @description Local user id; null when sign-in is off and kg.context.user-id is empty
+             */
+            userId?: number;
+            /**
+             * Format: int64
+             * @description The one tenant the user belongs to
+             */
+            tenantId?: number;
+            tenantName?: string;
+            email?: string;
+            displayName?: string;
+            /** @description APPLICATION_ADMIN (Keycloak realm role) and the role in the tenant (TENANT_ADMIN) */
+            roles?: string[];
+            /** @description fixed (no sign-in, one tenant per deployment) or oidc (Keycloak) */
+            securityMode?: string;
         };
         /** @description How many ingested documents a topic holds directly (sub-topics are counted separately) */
         TopicDocumentCountDto: {
@@ -3201,6 +3255,35 @@ export interface operations {
             };
         };
     };
+    me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Current user returned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CurrentUserDto"];
+                };
+            };
+            /** @description Not signed in (security mode oidc) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CurrentUserDto"];
+                };
+            };
+        };
+    };
     getRoots: {
         parameters: {
             query?: never;
@@ -3338,7 +3421,9 @@ export interface operations {
     };
     downloadDocument: {
         parameters: {
-            query?: never;
+            query?: {
+                inline?: boolean;
+            };
             header?: never;
             path: {
                 id: number;

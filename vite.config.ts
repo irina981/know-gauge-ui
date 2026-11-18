@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { keycloakify } from 'keycloakify/vite-plugin';
 import { fileURLToPath } from 'node:url';
 
 // The UI calls the backend with relative URLs (/api/...).
@@ -7,7 +8,16 @@ import { fileURLToPath } from 'node:url';
 const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:8080';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    // Keycloak login theme (src/login/) in the app's style. `npm run build-keycloak-theme` packs it into
+    // dist_keycloak/knowgauge-keycloak-theme.jar for Keycloak's providers folder. Generates src/kc.gen.tsx.
+    keycloakify({
+      themeName: 'knowgauge',
+      accountThemeImplementation: 'none',
+      keycloakVersionTargets: { '22-to-25': false, 'all-other-versions': 'knowgauge-keycloak-theme.jar' },
+    }),
+  ],
   resolve: {
     // Lets imports use "@/..." for files under src/, e.g. import { api } from '@/api/client'.
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },

@@ -1,0 +1,62 @@
+/*
+ * Keycloakify's default pages (the ones without a page of our own in src/login/pages) render plain HTML forms inside
+ * KgTemplate. These rules give them the look of Mantine's inputs and buttons, using Mantine's CSS variables.
+ */
+.kg-login-card form label {
+  display: block;
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.kg-login-card form input[type='text'],
+.kg-login-card form input[type='email'],
+.kg-login-card form input[type='password'],
+.kg-login-card form input[type='tel'],
+.kg-login-card form select,
+.kg-login-card form textarea {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 12px;
+  margin-bottom: var(--mantine-spacing-md);
+  font: inherit;
+  font-size: var(--mantine-font-size-sm);
+  color: var(--mantine-color-text);
+  background: var(--mantine-color-body);
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-md);
+}
+
+.kg-login-card form input:focus,
+.kg-login-card form select:focus,
+.kg-login-card form textarea:focus {
+  outline: none;
+  border-color: var(--mantine-primary-color-filled);
+}
+
+.kg-login-card form input[type='submit'],
+.kg-login-card form button[type='submit'] {
+  width: 100%;
+  min-height: 42px;
+  margin-top: var(--mantine-spacing-xs);
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  border: 0;
+  border-radius: var(--mantine-radius-md);
+  background-image: linear-gradient(135deg, var(--mantine-color-brand-6), var(--mantine-color-violet-6));
+}
+
+/* Plain links in the default pages; Mantine buttons rendered as links keep their own colours. */
+.kg-login-card form a:not(.mantine-Button-root) {
+  color: var(--mantine-color-anchor);
+}
+
+.kg-login-card .kcInputErrorMessageClass,
+.kg-login-card [id^='input-error'] {
+  display: block;
+  margin: -8px 0 var(--mantine-spacing-sm);
+  font-size: var(--mantine-font-size-xs);
+  color: var(--mantine-color-error);
+}

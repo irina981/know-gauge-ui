@@ -6,6 +6,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { AboutPage } from '@/features/about/AboutPage';
 import { AttemptPage } from '@/features/attempts/AttemptPage';
 import { AttemptsPage } from '@/features/attempts/AttemptsPage';
+import { HomePage } from '@/features/home/HomePage';
 import { LibraryPage } from '@/features/library/LibraryPage';
 import { PublicLayout } from '@/features/public/PublicLayout';
 import { PublicAttemptPage, PublicResultsPage } from '@/features/public/PublicAttemptPage';
@@ -13,13 +14,18 @@ import { InvitationPage, SharedLinkPage } from '@/features/public/StartTestPage'
 import { GenerateTestPage } from '@/features/tests/GenerateTestPage';
 import { TestsPage } from '@/features/tests/TestsPage';
 import { TestReviewPage } from '@/features/review/TestReviewPage';
+import { AuthCallbackPage, KgAuthProvider, RequireAuth } from './AuthRoutes';
 import { Layout } from './Layout';
 import { queryClient } from './queryClient';
 import { theme } from './theme';
 
 /** URL -> page. Add new pages here. */
 const router = createBrowserRouter([
-  // Participants (ADR009): no admin navigation. Tokens, never ids.
+  // Public home page: what KnowGauge is, with Sign in and Create account (straight to the Library when signed in).
+  { path: '/', element: <HomePage /> },
+  // Keycloak sends the browser back here after signing in.
+  { path: 'auth/callback', element: <AuthCallbackPage /> },
+  // Participants (ADR009): no admin navigation, no sign-in. Tokens, never ids.
   {
     element: <PublicLayout />,
     children: [
@@ -29,19 +35,24 @@ const router = createBrowserRouter([
       { path: 'r/:token', element: <PublicResultsPage /> },
     ],
   },
+  // The app itself: needs a signed-in user (when sign-in is on).
   {
-    element: <Layout />,
+    element: <RequireAuth />,
     children: [
-      { index: true, element: <Navigate to="/library" replace /> },
-      { path: 'library', element: <LibraryPage /> },
-      { path: 'library/topics/:topicId', element: <LibraryPage /> },
-      { path: 'tests', element: <TestsPage /> },
-      { path: 'tests/new', element: <GenerateTestPage /> },
-      { path: 'tests/:testId', element: <TestReviewPage /> },
-      { path: 'attempts', element: <AttemptsPage /> },
-      { path: 'attempts/:attemptId', element: <AttemptPage /> },
-      { path: 'about', element: <AboutPage /> },
-      { path: '*', element: <Navigate to="/library" replace /> },
+      {
+        element: <Layout />,
+        children: [
+          { path: 'library', element: <LibraryPage /> },
+          { path: 'library/topics/:topicId', element: <LibraryPage /> },
+          { path: 'tests', element: <TestsPage /> },
+          { path: 'tests/new', element: <GenerateTestPage /> },
+          { path: 'tests/:testId', element: <TestReviewPage /> },
+          { path: 'attempts', element: <AttemptsPage /> },
+          { path: 'attempts/:attemptId', element: <AttemptPage /> },
+          { path: 'about', element: <AboutPage /> },
+          { path: '*', element: <Navigate to="/library" replace /> },
+        ],
+      },
     ],
   },
 ]);
@@ -49,12 +60,14 @@ const router = createBrowserRouter([
 export function App() {
   return (
     <MantineProvider theme={theme} defaultColorScheme="auto">
-      <QueryClientProvider client={queryClient}>
-        <ModalsProvider>
-          <Notifications position="top-right" />
-          <RouterProvider router={router} />
-        </ModalsProvider>
-      </QueryClientProvider>
+      <KgAuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <ModalsProvider>
+            <Notifications position="top-right" />
+            <RouterProvider router={router} />
+          </ModalsProvider>
+        </QueryClientProvider>
+      </KgAuthProvider>
     </MantineProvider>
   );
 }

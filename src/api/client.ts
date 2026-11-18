@@ -14,6 +14,94 @@ export const api = createClient<paths>({
   fetch: (request) => globalThis.fetch(request),
 });
 
+/** How API calls get the signed-in user's token; set by app/auth.tsx when sign-in is on. */
+interface ApiAuth {
+  getAccessToken: () => Promise<string | undefined>;
+  /** Called when the API answers 401 although a token was sent: the session ended. */
+  onUnauthorized: () => void;
+}
+
+let apiAuth: ApiAuth | null = null;
+
+export function configureApiAuth(auth: ApiAuth) {
+  apiAuth = auth;
+}
+
+/** Participants (ADR009) are anonymous: their calls never carry a token, so an old token can't break them. */
+function needsToken(url: string): boolean {
+  const path = new URL(url, window.location.origin).pathname;
+  return path.startsWith('/api/') && !path.startsWith('/api/public/');
+}
+
+async function authorizationFor(url: string): Promise<string | undefined> {
+  if (!apiAuth || !needsToken(url)) return undefined;
+  const token = await apiAuth.getAccessToken();
+  return token ? `Bearer ${token}` : undefined;
+}
+
+function checkSession(response: Response, sentToken: boolean) {
+  if (response.status === 401 && sentToken) apiAuth?.onUnauthorized();
+}
+
+api.use({
+  async onRequest({ request }) {
+    const authorization = await authorizationFor(request.url);
+    if (authorization) request.headers.set('Authorization', authorization);
+    return request;
+  },
+  onResponse({ request, response }) {
+    checkSession(response, request.headers.has('Authorization'));
+    return response;
+  },
+});
+
+/** fetch with the access token added (when sign-in is on). For the helpers below and file downloads. */
+export async function authFetch(url: string, init: RequestInit = {}): Promise<Response> {
+  const authorization = await authorizationFor(url);
+  const headers = new Headers(init.headers);
+  if (authorization) headers.set('Authorization', authorization);
+  const response = await fetch(url, { ...init, headers });
+  checkSession(response, authorization !== undefined);
+  return response;
+}
+
+/** Headers for a request made by a library (e.g. PDF.js), with the access token when sign-in is on. */
+export async function authHeaders(url: string): Promise<Record<string, string>> {
+  const authorization = await authorizationFor(url);
+  return authorization ? { Authorization: authorization } : {};
+}
+
+/** Whether file links need a token, so they must be fetched by script instead of opened as plain links. */
+export function fileLinksNeedToken(): boolean {
+  return apiAuth !== null;
+}
+
+async function fetchFile(url: string): Promise<Blob> {
+  const response = await authFetch(url);
+  if (!response.ok) throw new ApiError(response.status, `${response.status} ${response.statusText}`);
+  return response.blob();
+}
+
+/** Opens a file from the API in a new tab (the browser shows PDFs itself). */
+export async function openFileInNewTab(url: string): Promise<void> {
+  // Opened before the download starts, so the browser doesn't treat it as an unrequested pop-up.
+  const tab = window.open('', '_blank');
+  const objectUrl = URL.createObjectURL(await fetchFile(url));
+  if (tab) tab.location.href = objectUrl;
+  else window.location.href = objectUrl;
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+}
+
+/** Saves a file from the API under `fileName`. */
+export async function downloadFile(url: string, fileName: string): Promise<void> {
+  const objectUrl = URL.createObjectURL(await fetchFile(url));
+  const link = document.createElement('a');
+  link.href = objectUrl;
+  link.download = fileName;
+  link.click();
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+}
+
 /** Error thrown for any non-2xx response. `message` is the backend's `HttpErrorInfo.message` when present. */
 export class ApiError extends Error {
   readonly status: number;
@@ -57,7 +145,7 @@ export async function unwrapVoid(request: Promise<{ error?: unknown; response: R
  * Plain fetch for multipart requests (openapi-fetch is JSON-oriented). Same error handling as `unwrap`.
  */
 export async function postMultipart<T>(url: string, form: FormData): Promise<T> {
-  return parseResponse<T>(await fetch(url, { method: 'POST', body: form }));
+  return parseResponse<T>(await authFetch(url, { method: 'POST', body: form }));
 }
 
 /**
@@ -66,7 +154,7 @@ export async function postMultipart<T>(url: string, form: FormData): Promise<T> 
  */
 export async function postJson<T>(url: string, body: unknown): Promise<T> {
   return parseResponse<T>(
-    await fetch(url, {
+    await authFetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -76,7 +164,7 @@ export async function postJson<T>(url: string, body: unknown): Promise<T> {
 
 /** Untyped JSON GET, for an endpoint that is not in `schema.d.ts` yet. Same error handling as `unwrap`. */
 export async function getJson<T>(url: string): Promise<T> {
-  return parseResponse<T>(await fetch(url));
+  return parseResponse<T>(await authFetch(url));
 }
 
 async function parseResponse<T>(response: Response): Promise<T> {

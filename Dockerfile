@@ -12,4 +12,8 @@ FROM nginx:1.27-alpine
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 ENV BACKEND_URL=http://knowgauge-service:8080
+# Sign-in (Keycloak): the realm URL as the browser reaches it, e.g. https://auth.example.com/realms/knowgauge.
+# Empty: no sign-in. nginx only substitutes variables that exist, so both are always defined.
+ENV OIDC_AUTHORITY=""
+ENV OIDC_CLIENT_ID=knowgauge-ui
 EXPOSE 80
