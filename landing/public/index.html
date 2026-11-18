@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KnowGauge – AI-powered tests from your own documents</title>
+  <meta name="description" content="KnowGauge is an AI-powered assessment studio that turns your organisation's documents into verified multiple-choice tests. Every question is grounded in your sources and approved by a reviewer.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="KnowGauge">
+  <meta property="og:description" content="Build reliable, AI-powered multiple-choice tests from your own documents.">
+  <meta property="og:url" content="https://knowgauge.com/">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <script>
+    // Marks that scripts run, so content is only hidden for the scroll animation when it can be revealed again.
+    document.documentElement.classList.add('js');
+    // Apply the visitor's saved light/dark choice before the page paints (system setting otherwise).
+    try {
+      var saved = localStorage.getItem('kg-theme');
+      if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+    } catch (e) {}
+  </script>
+  <style>
+    /* Self-hosted fonts (same as the app), so visitors' browsers make no third-party requests. */
+    @font-face {
+      font-family: 'Inter Variable';
+      font-style: normal;
+      font-display: swap;
+      font-weight: 100 900;
+      src: url('fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+    }
+    @font-face {
+      font-family: 'Plus Jakarta Sans Variable';
+      font-style: normal;
+      font-display: swap;
+      font-weight: 200 800;
+      src: url('fonts/plus-jakarta-sans-latin-wght-normal.woff2') format('woff2-variations');
+    }
+
+    /* Brand tokens, from the app's theme.ts and brand.css. */
+    :root {
+      --brand-3: #91a7ff;
+      --brand-4: #748ffc;
+      --brand-6: #4c6ef5;
+      --brand-7: #4263eb;
+      --violet-3: #b197fc;
+      --violet-6: #7950f2;
+      --needle-3: #c0eb75;
+      --needle-5: #94d82d;
+
+      --bg: #f5f6fb;
+      --glow-1: rgba(76, 110, 245, 0.12);
+      --glow-2: rgba(121, 80, 242, 0.08);
+      --text: #1a1b25;
+      --dimmed: #5c6070;
+      --card: rgba(255, 255, 255, 0.86);
+      --card-border: rgba(16, 24, 64, 0.08);
+      --shadow: 0 1px 3px rgba(16, 24, 64, 0.06), 0 4px 12px rgba(16, 24, 64, 0.04);
+      --accent: var(--brand-6);
+      --light-brand-bg: rgba(76, 110, 245, 0.1);
+      --light-violet-bg: rgba(121, 80, 242, 0.1);
+      --light-needle-bg: rgba(130, 201, 30, 0.14);
+      --light-violet: var(--violet-6);
+      --light-needle: #66a80f;
+      --hero: radial-gradient(600px 240px at 90% 0%, rgba(169, 227, 75, 0.14), transparent 60%),
+              linear-gradient(135deg, #3d4a8c 0%, #4e4785 100%);
+      --font: "Inter Variable", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-heading: "Plus Jakarta Sans Variable", "Inter Variable", sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #23262e;
+        --glow-1: rgba(116, 143, 252, 0.05);
+        --glow-2: rgba(151, 117, 250, 0.04);
+        --text: #e6e8ee;
+        --dimmed: #9ba0ad;
+        --card: rgba(45, 48, 57, 0.92);
+        --card-border: rgba(255, 255, 255, 0.09);
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        --accent: var(--brand-4);
+        --light-brand-bg: rgba(116, 143, 252, 0.15);
+        --light-violet-bg: rgba(151, 117, 250, 0.15);
+        --light-needle-bg: rgba(169, 227, 75, 0.12);
+        --light-violet: var(--violet-3);
+        --light-needle: var(--needle-3);
+        --hero: radial-gradient(600px 240px at 90% 0%, rgba(169, 227, 75, 0.08), transparent 60%),
+                linear-gradient(135deg, #2f3550 0%, #3a3550 100%);
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #23262e;
+      --glow-1: rgba(116, 143, 252, 0.05);
+      --glow-2: rgba(151, 117, 250, 0.04);
+      --text: #e6e8ee;
+      --dimmed: #9ba0ad;
+      --card: rgba(45, 48, 57, 0.92);
+      --card-border: rgba(255, 255, 255, 0.09);
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      --accent: var(--brand-4);
+      --light-brand-bg: rgba(116, 143, 252, 0.15);
+      --light-violet-bg: rgba(151, 117, 250, 0.15);
+      --light-needle-bg: rgba(169, 227, 75, 0.12);
+      --light-violet: var(--violet-3);
+      --light-needle: var(--needle-3);
+      --hero: radial-gradient(600px 240px at 90% 0%, rgba(169, 227, 75, 0.08), transparent 60%),
+              linear-gradient(135deg, #2f3550 0%, #3a3550 100%);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--text);
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(900px 500px at 100% -10%, var(--glow-1), transparent 70%),
+        radial-gradient(700px 420px at 15% 110%, var(--glow-2), transparent 70%);
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 { font-family: var(--font-heading); font-weight: 700; margin: 0; }
+    p { margin: 0; }
+    .icon { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px 16px 64px; }
+    @media (min-width: 576px) { .container { padding-left: 24px; padding-right: 24px; } }
+
+    /* Header */
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 32px; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; min-width: 0; }
+    .brand img { width: 40px; height: 40px; }
+    .wordmark { font-size: 24px; line-height: 1.1; font-weight: 600; letter-spacing: -0.017em; }
+    .wordmark span { color: var(--accent); }
+    .tagline { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dimmed); line-height: 1.2; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+      padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      color: var(--accent); background: var(--light-brand-bg);
+    }
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    .theme-toggle {
+      display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px;
+      border-radius: 8px; border: 1px solid var(--card-border); background: var(--card); color: var(--text);
+      cursor: pointer; font-size: 18px; box-shadow: var(--shadow);
+    }
+    .theme-toggle:hover { color: var(--accent); }
+    .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    /* Show the moon in light mode (switch to dark) and the sun in dark mode (switch to light). */
+    .theme-toggle .sun { display: none; }
+    :root[data-theme="dark"] .theme-toggle .sun { display: block; }
+    :root[data-theme="dark"] .theme-toggle .moon { display: none; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .theme-toggle .sun { display: block; }
+      :root:not([data-theme="light"]) .theme-toggle .moon { display: none; }
+    }
+    @media (max-width: 420px) { .pill { display: none; } }
+    .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--needle-5); box-shadow: 0 0 0 3px rgba(148, 216, 45, 0.25); }
+
+    /* Cards */
+    .card {
+      position: relative; overflow: hidden;
+      background: var(--card); border: 1px solid var(--card-border); border-radius: 16px;
+      box-shadow: var(--shadow); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      padding: 20px;
+    }
+    @media (min-width: 576px) { .card.lg { padding: 32px; } }
+    .ai-edge::before {
+      content: ''; position: absolute; inset: 0 0 auto 0; height: 3px;
+      background: linear-gradient(90deg, var(--brand-6), var(--violet-6), var(--needle-5));
+    }
+
+    /* Hero */
+    .hero { color: #fff; border: none; background: var(--hero); }
+    .hero::after {
+      content: ''; position: absolute; right: -60px; bottom: -120px; width: 320px; height: 320px;
+      border-radius: 50%; border: 28px solid rgba(255, 255, 255, 0.06); box-shadow: 0 0 0 40px rgba(255, 255, 255, 0.03);
+      pointer-events: none;
+    }
+    .hero > * { position: relative; z-index: 1; }
+    .hero-grid { display: grid; gap: 32px; align-items: center; }
+    /* Real app screenshot in a window-like frame. Wide screens only; too small to read on phones. */
+    .hero-shot { display: none; }
+    @media (min-width: 992px) {
+      .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .hero-shot {
+        display: block; border-radius: 12px; overflow: hidden; background: #23262e;
+        border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+      }
+      .hero-shot .bar { display: flex; gap: 6px; padding: 9px 12px; background: rgba(255, 255, 255, 0.06); }
+      .hero-shot .bar span { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, 0.25); }
+      .hero-shot img { display: block; width: 100%; height: auto; }
+    }
+    /* Photo across the top of a card */
+    .card-photo { display: block; width: calc(100% + 40px); margin: -20px -20px 16px; height: 200px; object-fit: cover; }
+    @media (min-width: 576px) { .card.lg .card-photo { width: calc(100% + 64px); margin: -32px -32px 20px; } }
+    .eyebrow { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--needle-3);
+      font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; }
+    .eyebrow .icon { font-size: 18px; }
+    .hero h1 { font-size: 26px; line-height: 1.2; max-width: 860px; }
+    @media (min-width: 576px) { .hero h1 { font-size: 34px; } }
+    .hero p { color: rgba(255, 255, 255, 0.85); margin-top: 12px; max-width: 860px; }
+    .pipeline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 24px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px;
+      font-size: 13px; font-weight: 600; color: #fff;
+      background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+    .chip .icon { font-size: 14px; }
+    .arrow { color: rgba(255, 255, 255, 0.6); font-size: 14px; }
+    .beta-note {
+      display: inline-flex; align-items: center; gap: 10px; margin-top: 32px; padding: 10px 16px; border-radius: 10px;
+      background: #fff; color: var(--brand-7); font-weight: 600; font-size: 15px;
+    }
+    .beta-note .icon { font-size: 18px; }
+
+    /* Sections */
+    main { display: flex; flex-direction: column; gap: 32px; }
+    .section-title { font-size: 20px; margin-bottom: 4px; }
+    .section-sub { color: var(--dimmed); font-size: 14px; margin-bottom: 16px; }
+    .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+    @media (min-width: 768px) { .grid.steps { grid-template-columns: repeat(2, 1fr); } .grid.two { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 992px) { .grid.three { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1200px) { .grid.steps { grid-template-columns: repeat(5, 1fr); } }
+
+    .step-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .theme-icon {
+      display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;
+      width: 40px; height: 40px; font-size: 22px;
+    }
+    .theme-icon.gradient { color: #fff; background: linear-gradient(135deg, var(--brand-6), var(--violet-6)); }
+    .theme-icon.brand { color: var(--accent); background: var(--light-brand-bg); }
+    .theme-icon.violet { color: var(--light-violet); background: var(--light-violet-bg); }
+    .theme-icon.needle { color: var(--light-needle); background: var(--light-needle-bg); }
+    .theme-icon.big { width: 44px; height: 44px; font-size: 24px; margin-bottom: 12px; }
+    .theme-icon.small { width: 36px; height: 36px; font-size: 20px; }
+    .step-num { font-family: var(--font-heading); font-weight: 800; color: var(--dimmed); }
+    .card-title { font-weight: 700; margin-bottom: 4px; }
+    .card-text { color: var(--dimmed); font-size: 14px; line-height: 1.6; }
+    .card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .card-head .card-title { margin: 0; }
+    /* Quality control: three layers */
+    .layer-label { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dimmed); margin-bottom: 4px; }
+    ul.checks { list-style: none; padding: 0; margin: 14px 0 0; font-size: 14px; color: var(--dimmed); }
+    ul.checks li { display: flex; gap: 8px; align-items: flex-start; }
+    ul.checks li + li { margin-top: 6px; }
+    ul.checks .icon { margin-top: 3px; color: var(--accent); }
+    /* Real screenshot of a flagged question, with its explanation beside it (below it on phones). */
+    figure.shot { margin: 16px 0 0; padding: 0; display: grid; }
+    .shot-frame { background: #23262e; border-bottom: 1px solid var(--card-border); }
+    .shot-frame img { display: block; width: 100%; max-width: 468px; height: auto; margin: 0 auto; }
+    .shot figcaption { padding: 20px; }
+    .shot figcaption .theme-icon { margin-bottom: 12px; }
+    @media (min-width: 992px) {
+      figure.shot { grid-template-columns: minmax(0, 468px) minmax(0, 1fr); align-items: center; }
+      .shot-frame { border-bottom: none; border-right: 1px solid var(--card-border); height: 100%; display: flex; align-items: center; }
+      .shot figcaption { padding: 24px 28px; }
+    }
+    /* Full history: example timeline + what is recorded */
+    ol.timeline { list-style: none; margin: 16px 0 0; padding: 0; }
+    ol.timeline li { position: relative; display: flex; gap: 14px; padding-bottom: 18px; }
+    ol.timeline li:last-child { padding-bottom: 0; }
+    ol.timeline li:not(:last-child)::before {
+      content: ''; position: absolute; left: 17px; top: 38px; bottom: 2px; width: 2px; background: var(--card-border);
+    }
+    ol.timeline .theme-icon { width: 36px; height: 36px; font-size: 18px; border-radius: 50%; }
+    ol.timeline .card-title { margin: 6px 0 2px; font-size: 15px; }
+    .example-label { font-size: 12px; font-weight: 700; color: var(--dimmed); }
+    ul.uses { margin: 0; padding-left: 20px; color: var(--dimmed); font-size: 14px; }
+    ul.uses li + li { margin-top: 6px; }
+
+    /* Scroll animation: content fades and slides up as it comes into view. Off for "reduce motion". */
+    @media (prefers-reduced-motion: no-preference) {
+      .js .reveal {
+        transition: opacity 600ms ease, transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+        transition-delay: calc(var(--reveal-i, 0) * 90ms);
+      }
+      .js .reveal:not(.is-visible) { opacity: 0; transform: translateY(24px); }
+    }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--card-border); background: var(--card); color: var(--dimmed); font-size: 14px; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; padding: 40px 16px 24px; }
+    @media (min-width: 576px) { .footer-inner { padding-left: 24px; padding-right: 24px; } }
+    .footer-grid { display: grid; gap: 32px; grid-template-columns: 1fr; }
+    @media (min-width: 768px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr; } }
+    .footer-about p { margin-top: 12px; max-width: 360px; line-height: 1.6; }
+    .footer-col h3 { font-family: var(--font); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text); margin-bottom: 12px; }
+    .footer-col ul { list-style: none; margin: 0; padding: 0; }
+    .footer-col li + li { margin-top: 8px; }
+    footer a { color: var(--dimmed); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+    footer a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+    .footer-col .icon { vertical-align: -2px; margin-right: 6px; }
+    .footer-bottom {
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px;
+      margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--card-border); font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Tabler icons (MIT), the same set the app uses. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06"/><path d="M15 19l2 2l4 -4"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2zm-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"/></symbol>
+    <symbol id="i-file-search" viewBox="0 0 24 24"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5"/><path d="M14 17.5a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0"/><path d="M18.5 19.5l2.5 2.5"/></symbol>
+    <symbol id="i-user-check" viewBox="0 0 24 24"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4"/><path d="M15 19l2 2l4 -4"/></symbol>
+    <symbol id="i-cloud-upload" viewBox="0 0 24 24"><path d="M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7h-1"/><path d="M9 15l3 -3l3 3"/><path d="M12 12l0 9"/></symbol>
+    <symbol id="i-books" viewBox="0 0 24 24"><path d="M5 5a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"/><path d="M9 5a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"/><path d="M5 8h4"/><path d="M9 16h4"/><path d="M13.803 4.56l2.184 -.53c.562 -.135 1.133 .19 1.282 .732l3.695 13.418a1.02 1.02 0 0 1 -.634 1.219l-.133 .041l-2.184 .53c-.562 .135 -1.133 -.19 -1.282 -.732l-3.695 -13.418a1.02 1.02 0 0 1 .634 -1.219l.133 -.041z"/><path d="M14 9l4 -1"/><path d="M16 16l3.923 -.98"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M12 8l0 4l2 2"/><path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"/></symbol>
+    <symbol id="i-checklist" viewBox="0 0 24 24"><path d="M9.615 20h-2.615a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8"/><path d="M14 19l2 2l4 -4"/><path d="M9 8h4"/><path d="M9 12h2"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z"/><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"/><path d="M8 11v-4a4 4 0 1 1 8 0v4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><path d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z"/><path d="M3 7l9 6l9 -6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5l10 -10"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 5a5 5 0 0 1 7 0a5 5 0 0 0 7 0v9a5 5 0 0 1 -7 0a5 5 0 0 0 -7 0v-9z"/><path d="M5 21v-7"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12l14 0"/><path d="M13 18l6 -6"/><path d="M13 6l6 6"/></symbol>
+  </svg>
+
+  <div class="container">
+    <header>
+      <a class="brand" href="/">
+        <img src="favicon.svg" alt="" width="40" height="40">
+        <div>
+          <div class="wordmark">Know<span>Gauge</span></div>
+          <div class="tagline">Assessment studio</div>
+        </div>
+      </a>
+      <div class="header-actions">
+        <span class="pill"><span class="dot"></span>Public beta soon</span>
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch light or dark theme" title="Switch light or dark theme">
+          <svg class="icon moon"><use href="#i-moon"/></svg>
+          <svg class="icon sun"><use href="#i-sun"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="card lg hero">
+        <div class="hero-grid">
+        <div>
+        <div class="eyebrow"><svg class="icon"><use href="#i-sparkles"/></svg>AI-powered · Grounded in your sources</div>
+        <h1>Build reliable, AI-powered multiple-choice tests from your own documents</h1>
+        <p>KnowGauge is an AI-powered assessment studio that turns an organisation’s own documents into
+          multiple-choice tests. The AI is deliberately bounded: every question, answer and explanation is derived from
+          the documentation you provide, every wrong answer is verified, and a reviewer approves the test before anyone
+          takes it.</p>
+        <div class="pipeline" aria-label="How KnowGauge works">
+          <span class="chip"><svg class="icon"><use href="#i-file-search"/></svg>Retrieve passages</span>
+          <svg class="icon arrow" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+          <span class="chip"><svg class="icon"><use href="#i-sparkles"/></svg>Write questions</span>
+          <svg class="icon arrow" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+          <span class="chip"><svg class="icon"><use href="#i-shield-check"/></svg>Verify answers</span>
+          <svg class="icon arrow" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+          <span class="chip"><svg class="icon"><use href="#i-user-check"/></svg>You review</span>
+        </div>
+        <div class="beta-note"><svg class="icon"><use href="#i-sparkles"/></svg>The public beta opens soon</div>
+        </div>
+        <div class="hero-shot">
+          <div class="bar" aria-hidden="true"><span></span><span></span><span></span></div>
+          <img src="img/app-test-screen.png" width="1001" height="893"
+            alt="The KnowGauge app showing a generated Information Security test: each question with its options, the correct answer marked and an explanation">
+        </div>
+        </div>
+      </section>
+
+      <section id="how-it-works">
+        <h2 class="section-title">How it works</h2>
+        <p class="section-sub">From a folder of documents to a published test in five steps.</p>
+        <div class="grid steps">
+          <div class="card">
+            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-cloud-upload"/></svg></span><span class="step-num">01</span></div>
+            <p class="card-title">Organise and upload</p>
+            <p class="card-text">Arrange your material in a topic tree and upload the PDFs that define what people should know.</p>
+          </div>
+          <div class="card">
+            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-file-search"/></svg></span><span class="step-num">02</span></div>
+            <p class="card-title">Index</p>
+            <p class="card-text">Documents are split into passages and indexed, so the relevant parts can be retrieved for each test.</p>
+          </div>
+          <div class="card">
+            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-sparkles"/></svg></span><span class="step-num">03</span></div>
+            <p class="card-title">Generate</p>
+            <p class="card-text">A language model writes questions, answers and explanations using only the retrieved passages.</p>
+          </div>
+          <div class="card">
+            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-shield-check"/></svg></span><span class="step-num">04</span></div>
+            <p class="card-title">Verify</p>
+            <p class="card-text">A separate verification step checks every wrong answer and flags options that could also be correct.</p>
+          </div>
+          <div class="card">
+            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-user-check"/></svg></span><span class="step-num">05</span></div>
+            <p class="card-title">Review and publish</p>
+            <p class="card-text">A reviewer accepts fixes, regenerates or edits questions, then publishes the test, which freezes it.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="quality">
+        <h2 class="section-title">Quality control in three layers</h2>
+        <p class="section-sub">One AI writes, a second AI checks, and a person decides wherever there is doubt.</p>
+        <div class="grid three">
+          <div class="card lg ai-edge">
+            <span class="theme-icon gradient big"><svg class="icon"><use href="#i-sparkles"/></svg></span>
+            <p class="layer-label">Layer 1</p>
+            <p class="card-title">AI generator</p>
+            <p class="card-text">Writes each question, its answers and an explanation from passages retrieved from your documents, never from general knowledge.</p>
+            <ul class="checks">
+              <li><svg class="icon"><use href="#i-check"/></svg>Grounded in your sources</li>
+              <li><svg class="icon"><use href="#i-check"/></svg>Rule checks before and after the AI runs</li>
+            </ul>
+          </div>
+          <div class="card lg ai-edge">
+            <span class="theme-icon violet big"><svg class="icon"><use href="#i-shield-check"/></svg></span>
+            <p class="layer-label">Layer 2</p>
+            <p class="card-title">AI verifier</p>
+            <p class="card-text">A separate model checks every wrong answer against the same passages. If an option could also be correct, it flags it, explains why and suggests a clearer one.</p>
+            <ul class="checks">
+              <li><svg class="icon"><use href="#i-check"/></svg>Every wrong answer checked</li>
+              <li><svg class="icon"><use href="#i-check"/></svg>Flags with a reason and a suggested fix</li>
+            </ul>
+          </div>
+          <div class="card lg ai-edge">
+            <span class="theme-icon needle big"><svg class="icon"><use href="#i-user-check"/></svg></span>
+            <p class="layer-label">Layer 3</p>
+            <p class="card-title">Your review</p>
+            <p class="card-text">Flagged questions wait for you. Accept the suggested fix, regenerate the question, write your own, or keep it as it is with a comment.</p>
+            <ul class="checks">
+              <li><svg class="icon"><use href="#i-check"/></svg>Your attention goes where it is needed</li>
+              <li><svg class="icon"><use href="#i-check"/></svg>Nothing is published without your approval</li>
+            </ul>
+          </div>
+        </div>
+        <figure class="card shot" style="padding: 0">
+          <div class="shot-frame">
+            <img src="img/review-flagged.png" width="869" height="616" loading="lazy"
+              alt="A question in the KnowGauge review screen. Option C, marked as wrong, says the same as the correct answer D; the verifier flags it with a quote from the source and suggests a clearly wrong replacement. Buttons offer Accept fix, Keep as is, Regenerate and Edit.">
+          </div>
+          <figcaption>
+            <span class="theme-icon violet small"><svg class="icon"><use href="#i-flag"/></svg></span>
+            <p class="card-title">What a flag looks like</p>
+            <p class="card-text">Here wrong answer C says the same thing as the correct answer D. The verifier quotes the source, explains why C is also correct and suggests a clearly wrong replacement. A flag never changes the answer key on its own; you decide with <strong>Accept fix</strong>, <strong>Keep as is</strong>, <strong>Regenerate</strong> or <strong>Edit</strong>.</p>
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="history">
+        <h2 class="section-title">Every step on the record</h2>
+        <p class="section-sub">See exactly how each question was made, and every change since.</p>
+        <div class="grid two">
+          <div class="card lg ai-edge">
+            <p class="example-label">Example: the history of one question</p>
+            <ol class="timeline">
+              <li>
+                <span class="theme-icon gradient"><svg class="icon"><use href="#i-sparkles"/></svg></span>
+                <div><p class="card-title">Question generated · version 1</p>
+                  <p class="card-text">AI model, prompt, source passages and response saved</p></div>
+              </li>
+              <li>
+                <span class="theme-icon violet"><svg class="icon"><use href="#i-flag"/></svg></span>
+                <div><p class="card-title">Option C flagged</p>
+                  <p class="card-text">Verifier: “C could also be correct according to the second passage”</p></div>
+              </li>
+              <li>
+                <span class="theme-icon needle"><svg class="icon"><use href="#i-user-check"/></svg></span>
+                <div><p class="card-title">Suggested fix accepted · version 2</p>
+                  <p class="card-text">By the reviewer; version 1 is kept, unchanged</p></div>
+              </li>
+              <li>
+                <span class="theme-icon brand"><svg class="icon"><use href="#i-lock"/></svg></span>
+                <div><p class="card-title">Test published</p>
+                  <p class="card-text">Frozen: the questions can no longer change</p></div>
+              </li>
+            </ol>
+          </div>
+          <div class="card lg">
+            <div class="card-head"><span class="theme-icon needle small"><svg class="icon"><use href="#i-history"/></svg></span><p class="card-title">What KnowGauge records</p></div>
+            <ul class="checks">
+              <li><svg class="icon"><use href="#i-check"/></svg><span><strong>Every AI call:</strong> the model, the prompt, the passages it was given, its full response and the tokens used.</span></li>
+              <li><svg class="icon"><use href="#i-check"/></svg><span><strong>Every version of every question:</strong> a change creates a new version and never overwrites the old one.</span></li>
+              <li><svg class="icon"><use href="#i-check"/></svg><span><strong>Every decision:</strong> who accepted, regenerated, replaced or kept a question, when, and their comment.</span></li>
+              <li><svg class="icon"><use href="#i-check"/></svg><span><strong>Every source:</strong> each question keeps a reference to the passages it was written from.</span></li>
+            </ul>
+            <p class="card-text" style="margin-top: 16px">When someone asks “where did this question come from?”, the answer is in the review screen.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title">Principles</h2>
+        <p class="section-sub">What you can rely on in every test KnowGauge produces.</p>
+        <div class="grid three">
+          <div class="card lg ai-edge">
+            <span class="theme-icon brand big"><svg class="icon"><use href="#i-books"/></svg></span>
+            <p class="card-title">Grounded in your documentation</p>
+            <p class="card-text">Questions are drawn only from the documents in your library, not from the open internet or a model’s general knowledge. Each question keeps a reference to the passages it was written from.</p>
+          </div>
+          <div class="card lg ai-edge">
+            <span class="theme-icon violet big"><svg class="icon"><use href="#i-shield-check"/></svg></span>
+            <p class="card-title">Verified before review</p>
+            <p class="card-text">Plausible but wrong answers are the hardest part of a good test. An independent check flags ambiguous options and suggests a clearer alternative.</p>
+          </div>
+          <div class="card lg ai-edge">
+            <span class="theme-icon needle big"><svg class="icon"><use href="#i-history"/></svg></span>
+            <p class="card-title">People stay in control</p>
+            <p class="card-text">Nothing is final until a reviewer approves it. Every change is versioned with its author and reason, and published tests can no longer be altered.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid two">
+        <div class="card lg">
+          <!-- Photo: unsplash.com/photos/IESB4iFVuzA (Unsplash licence) -->
+          <img class="card-photo" src="img/onboarding-welcome.jpg" width="1200" height="675" loading="lazy" alt="A smiling colleague shaking hands with a new team member">
+          <div class="card-head"><span class="theme-icon brand small"><svg class="icon"><use href="#i-checklist"/></svg></span><p class="card-title">Where it fits</p></div>
+          <ul class="uses">
+            <li>Employee onboarding and policy training</li>
+            <li>Compliance and regulatory knowledge checks</li>
+            <li>Technical and product knowledge assessments</li>
+            <li>Certification and exam preparation</li>
+          </ul>
+        </div>
+        <div class="card lg">
+          <!-- Photo: unsplash.com/photos/yKnIbJV0RbY (Unsplash licence) -->
+          <img class="card-photo" src="img/review-checklist.jpg" width="1200" height="675" loading="lazy" alt="A hand ticking off items on a checklist with a stylus">
+          <div class="card-head"><span class="theme-icon needle small"><svg class="icon"><use href="#i-lock"/></svg></span><p class="card-title">Your content stays the source of truth</p></div>
+          <p class="card-text">The language model is used as a writing and checking tool, within the boundaries of your documentation. When your documents change, re-ingest them and generate a new test: the questions follow the material, not the other way round.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="/">
+            <img src="favicon.svg" alt="" width="32" height="32">
+            <span class="wordmark" style="font-size: 20px; color: var(--text)">Know<span>Gauge</span></span>
+          </a>
+          <p>AI-powered multiple-choice tests from your own documents, verified by a second AI and approved by people.</p>
+        </div>
+        <nav class="footer-col" aria-label="Product">
+          <h3>Product</h3>
+          <ul>
+            <li><a href="#how-it-works">How it works</a></li>
+            <li><a href="#quality">Quality control</a></li>
+            <li><a href="#history">Full history</a></li>
+          </ul>
+        </nav>
+        <div class="footer-col">
+          <h3>Contact</h3>
+          <ul>
+            <li><a href="mailto:support@knowgauge.com"><svg class="icon"><use href="#i-mail"/></svg>support@knowgauge.com</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 KnowGauge. All rights reserved.</span>
+        <span>Public beta opens soon</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll animation: section titles and cards below the hero appear as they scroll into view. Cards in the
+    // same row follow each other with a short delay.
+    (function () {
+      var items = document.querySelectorAll(
+        'main section:not(.hero) > h2, main section:not(.hero) > .section-sub, main section > .card, main .grid > .card');
+      items.forEach(function (el) {
+        el.classList.add('reveal');
+        if (el.parentElement.classList.contains('grid')) {
+          el.style.setProperty('--reveal-i', Array.prototype.indexOf.call(el.parentElement.children, el));
+        }
+      });
+      if (!('IntersectionObserver' in window)) {
+        items.forEach(function (el) { el.classList.add('is-visible'); });
+        return;
+      }
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      items.forEach(function (el) { observer.observe(el); });
+    })();
+
+    // Light/dark switch: flips the current look and remembers it in this browser only.
+    document.getElementById('theme-toggle').addEventListener('click', function () {
+      var root = document.documentElement;
+      var current = root.getAttribute('data-theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      var next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('kg-theme', next); } catch (e) {}
+    });
+  </script>
+</body>
+</html>

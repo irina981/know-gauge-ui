@@ -10,3 +10,6 @@ dist
 
 # Keycloak login theme build (npm run build-keycloak-theme)
 dist_keycloak
+
+# Wrangler local state (landing page deploys)
+.wrangler

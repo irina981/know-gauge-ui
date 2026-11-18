@@ -1,0 +1,16 @@
+// Static landing page for https://knowgauge.com (Cloudflare Workers static assets, no server code).
+// Deploy from this folder: npx wrangler@4 deploy
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "knowgauge-landing",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "single-page-application"
+  },
+  "routes": [
+    { "pattern": "knowgauge.com", "custom_domain": true },
+    { "pattern": "www.knowgauge.com", "custom_domain": true }
+  ],
+  "workers_dev": false
+}
