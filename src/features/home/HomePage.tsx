@@ -16,6 +16,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useSession } from '@/app/auth';
 import { AboutContent } from '@/features/about/AboutPage';
 import { Wordmark } from '@/shared/components';
+import { SiteFooter } from './SiteFooter';
 
 /**
  * The public home page (`/`): what KnowGauge is (the About content), with Sign in and Create account. Both open the
@@ -42,8 +43,8 @@ export function HomePage() {
   const signUp = () => session.signUp(returnTo);
 
   return (
-    <Box mih="100vh" pb={64}>
-      <Container size={1200} py="lg">
+    <Box mih="100vh">
+      <Container size={1200} pt="lg" pb={64}>
         <Group justify="space-between" mb="xl" wrap="nowrap">
           <Group gap="sm" wrap="nowrap">
             <Image src="/favicon.svg" alt="" w={40} h={40} />
@@ -108,6 +109,7 @@ export function HomePage() {
           </Group>
         </Paper>
       </Container>
+      <SiteFooter onSignIn={signIn} onSignUp={signUp} />
     </Box>
   );
 }
