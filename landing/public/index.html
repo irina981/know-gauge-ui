@@ -21,11 +21,15 @@
   <script>
     // Marks that scripts run, so content is only hidden for the scroll animation when it can be revealed again.
     document.documentElement.classList.add('js');
-    // Apply the visitor's saved light/dark choice before the page paints (system setting otherwise).
+    // Apply the visitor's saved light/dark choice before the page paints. Without one the page starts light,
+    // whatever the system setting; the toggle switches to dark and remembers it. (Without JavaScript the
+    // system setting still applies.)
+    var theme = 'light';
     try {
       var saved = localStorage.getItem('kg-theme');
-      if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+      if (saved === 'light' || saved === 'dark') theme = saved;
     } catch (e) {}
+    document.documentElement.setAttribute('data-theme', theme);
   </script>
   <style>
     /* Self-hosted fonts (same as the app), so visitors' browsers make no third-party requests. */
