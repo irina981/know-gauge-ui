@@ -247,16 +247,18 @@
     .notify { margin-top: 32px; max-width: 480px; }
     .notify-label { display: block; color: #fff; font-weight: 600; font-size: 15px; margin-bottom: 8px; }
     .notify-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    /* A translucent field and a solid white button: the field reads as "type here", the button as the action. */
     .notify input[type="email"] {
       flex: 1 1 220px; min-width: 0; padding: 11px 14px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.35);
-      background: #fff; color: #1a1b25; font: inherit; font-size: 15px;
+      background: rgba(255, 255, 255, 0.1); color: #fff; font: inherit; font-size: 15px;
     }
+    .notify input[type="email"]::placeholder { color: rgba(255, 255, 255, 0.6); }
     .notify input[type="email"]:focus-visible { outline: 2px solid var(--needle-3); outline-offset: 2px; }
     .notify button {
       display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border: none; border-radius: 10px;
-      background: var(--needle-3); color: #1a1b25; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
+      background: #fff; color: var(--brand-7); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
     }
-    .notify button:hover { background: var(--needle-5); }
+    .notify button:hover { background: #f4fce3; }
     .notify button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
     .notify button:disabled { opacity: 0.7; cursor: progress; }
     .notify button .icon { font-size: 18px; }
