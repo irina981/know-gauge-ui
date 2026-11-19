@@ -229,13 +229,22 @@ const USE_CASES = [
 ];
 
 /** A photo across the top of a `p="lg"` card, cancelling the card's padding so it runs edge to edge. */
-function CardPhoto({ src, alt }: { src: string; alt: string }) {
+function CardPhoto({
+  src,
+  alt,
+  position,
+}: {
+  src: string;
+  alt: string;
+  /** CSS object-position of the crop. */ position?: string;
+}) {
   return (
     <Image
       src={src}
       alt={alt}
       h={200}
       fit="cover"
+      style={position ? { objectPosition: position } : undefined}
       loading="lazy"
       mt="calc(var(--mantine-spacing-lg) * -1)"
       mx="calc(var(--mantine-spacing-lg) * -1)"
@@ -607,10 +616,11 @@ export function AboutContent({
       <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
         <Reveal index={0} fill>
           <Paper p="lg" h="100%" style={{ overflow: 'hidden' }}>
-            {/* Photo: unsplash.com/photos/IESB4iFVuzA (Unsplash licence) */}
+            {/* Photo: istockphoto.com, image 2252700261 (iStock standard licence) */}
             <CardPhoto
-              src="/img/onboarding-welcome.jpg"
-              alt="A smiling colleague shaking hands with a new team member"
+              src="/img/team-session.jpg"
+              position="center 40%"
+              alt="A small team in a bright meeting room listening to a colleague at the head of the table, with laptops and notes"
             />
             <Group gap="sm" mb="sm">
               <ThemeIcon variant="light" size={36} radius="md">
@@ -627,10 +637,11 @@ export function AboutContent({
         </Reveal>
         <Reveal index={1} fill>
           <Paper p="lg" h="100%" style={{ overflow: 'hidden' }}>
-            {/* Photo: unsplash.com/photos/yKnIbJV0RbY (Unsplash licence) */}
+            {/* Photo: istockphoto.com, image 1088419382 (iStock standard licence) */}
             <CardPhoto
-              src="/img/review-checklist.jpg"
-              alt="A hand ticking off items on a checklist with a stylus"
+              src="/img/highlighting-document.jpg"
+              position="center 60%"
+              alt="A hand marking a line of a printed document with a yellow highlighter"
             />
             <Group gap="sm" mb="sm">
               <ThemeIcon variant="light" color="needle" size={36} radius="md">
