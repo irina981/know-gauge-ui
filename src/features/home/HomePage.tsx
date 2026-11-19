@@ -15,7 +15,7 @@ import { IconLogin2, IconSparkles, IconUserPlus } from '@tabler/icons-react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSession } from '@/app/auth';
 import { AboutContent } from '@/features/about/AboutPage';
-import { Wordmark } from '@/shared/components';
+import { ColorSchemeToggle, Wordmark } from '@/shared/components';
 import { SiteFooter } from './SiteFooter';
 
 /**
@@ -58,6 +58,7 @@ export function HomePage() {
             </div>
           </Group>
           <Group gap="sm" wrap="nowrap">
+            <ColorSchemeToggle variant="default" color="gray" size={36} />
             <Button variant="default" leftSection={<IconLogin2 size={18} />} onClick={signIn}>
               Sign in
             </Button>

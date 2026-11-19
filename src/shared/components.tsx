@@ -1,11 +1,61 @@
-import { Alert, Badge, Center, Group, Loader, Paper, Stack, Text, ThemeIcon, Title } from '@mantine/core';
-import { IconAlertCircle, IconInbox, IconShieldCheck, type Icon as TablerIcon } from '@tabler/icons-react';
+import {
+  ActionIcon,
+  Alert,
+  Badge,
+  Center,
+  Group,
+  Loader,
+  Paper,
+  Stack,
+  Text,
+  ThemeIcon,
+  Title,
+  Tooltip,
+  useComputedColorScheme,
+  useMantineColorScheme,
+  type ActionIconProps,
+} from '@mantine/core';
+import {
+  IconAlertCircle,
+  IconInbox,
+  IconMoon,
+  IconShieldCheck,
+  IconSun,
+  type Icon as TablerIcon,
+} from '@tabler/icons-react';
 import type { ReactNode } from 'react';
 import type { EnumInfo } from './enums';
 
 /** Small reusable building blocks used across pages. */
 
 type IconComponent = TablerIcon;
+
+/**
+ * Light/dark switch (remembered by Mantine in this browser). Defaults to the look of the always-dark sidebar;
+ * the public home page passes `variant="default"` for a bordered button like its Sign in button.
+ */
+export function ColorSchemeToggle({
+  variant = 'subtle',
+  color = 'gray.3',
+  size = 'lg',
+}: Pick<ActionIconProps, 'variant' | 'color' | 'size'>) {
+  const { setColorScheme } = useMantineColorScheme();
+  const scheme = useComputedColorScheme('light');
+  const next = scheme === 'dark' ? 'light' : 'dark';
+  return (
+    <Tooltip label={`Switch to ${next} mode`}>
+      <ActionIcon
+        variant={variant}
+        color={color}
+        size={size}
+        onClick={() => setColorScheme(next)}
+        aria-label="Toggle color scheme"
+      >
+        {scheme === 'dark' ? <IconSun size={18} /> : <IconMoon size={18} />}
+      </ActionIcon>
+    </Tooltip>
+  );
+}
 
 /**
  * "KnowGauge" written as in the logo (backend logo.svg / logo-dark.svg): Inter semibold, "Gauge" in the brand

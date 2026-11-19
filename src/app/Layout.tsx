@@ -12,8 +12,6 @@ import {
   Stack,
   Text,
   Tooltip,
-  useComputedColorScheme,
-  useMantineColorScheme,
 } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import {
@@ -22,13 +20,11 @@ import {
   IconClipboardCheck,
   IconInfoCircle,
   IconLogout,
-  IconMoon,
   IconShieldCheck,
   IconSparkles,
-  IconSun,
 } from '@tabler/icons-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Wordmark } from '@/shared/components';
+import { ColorSchemeToggle, Wordmark } from '@/shared/components';
 import { useSession } from './auth';
 
 /** Left navigation. `isActive` decides which entry is highlighted for the current URL. */
@@ -48,25 +44,6 @@ const NAV = [
   },
   { to: '/about', label: 'About', icon: IconInfoCircle, isActive: (p: string) => p === '/about' },
 ];
-
-function ColorSchemeToggle() {
-  const { setColorScheme } = useMantineColorScheme();
-  const scheme = useComputedColorScheme('light');
-  const next = scheme === 'dark' ? 'light' : 'dark';
-  return (
-    <Tooltip label={`Switch to ${next} mode`}>
-      <ActionIcon
-        variant="subtle"
-        color="gray.3"
-        size="lg"
-        onClick={() => setColorScheme(next)}
-        aria-label="Toggle color scheme"
-      >
-        {scheme === 'dark' ? <IconSun size={18} /> : <IconMoon size={18} />}
-      </ActionIcon>
-    </Tooltip>
-  );
-}
 
 /**
  * Logo mark + wordmark, shown in the sidebar and the mobile top bar. `large` (sidebar) is a step
