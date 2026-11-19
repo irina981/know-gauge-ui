@@ -10,6 +10,12 @@
   <meta property="og:description" content="Turn your documents into tests you can trust.">
   <meta property="og:url" content="https://knowgauge.com/">
   <meta property="og:type" content="website">
+  <!-- Link preview image (Slack, LinkedIn, WhatsApp, X...). Source: landing/og/og-image.html -->
+  <meta property="og:image" content="https://knowgauge.com/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="KnowGauge: turn your documents into tests you can trust, shown next to a generated test in the app">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <script>
@@ -200,7 +206,7 @@
       .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; }
       /* Text from the top of the screenshot, button down to its bottom edge. */
       .hero-grid > div:first-child { display: flex; flex-direction: column; }
-      .hero-grid .beta-note { margin-top: auto; align-self: flex-start; }
+      .hero-grid .notify { margin-top: auto; }
       /* The three points share the height between the headline and the button evenly. */
       .hero-grid .hero-points { flex: 1; justify-content: space-evenly; margin: 16px 0 24px; }
       .hero-shot {
@@ -237,11 +243,29 @@
     }
     .hero-point .hero-point-title { color: #fff; font-weight: 700; font-size: 17px; margin: 0; }
     .hero .hero-point p { margin: 2px 0 0; font-size: 15px; color: rgba(255, 255, 255, 0.8); }
-    .beta-note {
-      display: inline-flex; align-items: center; gap: 10px; margin-top: 32px; padding: 10px 16px; border-radius: 10px;
-      background: #fff; color: var(--brand-7); font-weight: 600; font-size: 15px;
+    /* Beta waitlist sign-up (POST /api/notify, handled by src/worker.js) */
+    .notify { margin-top: 32px; max-width: 480px; }
+    .notify-label { display: block; color: #fff; font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+    .notify-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .notify input[type="email"] {
+      flex: 1 1 220px; min-width: 0; padding: 11px 14px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.35);
+      background: #fff; color: #1a1b25; font: inherit; font-size: 15px;
     }
-    .beta-note .icon { font-size: 18px; }
+    .notify input[type="email"]:focus-visible { outline: 2px solid var(--needle-3); outline-offset: 2px; }
+    .notify button {
+      display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border: none; border-radius: 10px;
+      background: var(--needle-3); color: #1a1b25; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
+    }
+    .notify button:hover { background: var(--needle-5); }
+    .notify button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+    .notify button:disabled { opacity: 0.7; cursor: progress; }
+    .notify button .icon { font-size: 18px; }
+    /* Honeypot: hidden from people, filled in only by bots. */
+    .notify .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+    .hero .notify-note { margin: 8px 0 0; font-size: 13px; color: rgba(255, 255, 255, 0.75); }
+    .hero .notify-note.error { color: #ffd8a8; }
+    .notify.done .notify-row { display: none; }
+    .hero .notify.done .notify-note { font-size: 15px; font-weight: 600; color: #fff; }
 
     /* Sections */
     main { display: flex; flex-direction: column; gap: 32px; }
@@ -391,7 +415,18 @@
             <div><h2 class="hero-point-title">Reliable and grounded</h2><p>A second AI checks every wrong answer, and you approve every test.</p></div>
           </div>
         </div>
-        <div class="beta-note"><svg class="icon"><use href="#i-sparkles"/></svg>The public beta opens soon</div>
+        <!-- Beta waitlist: stored by the Worker (src/worker.js) in the WAITLIST KV namespace. -->
+        <form class="notify" id="notify" method="post" action="/api/notify">
+          <label class="notify-label" for="notify-email">Get notified when the beta opens</label>
+          <div class="notify-row">
+            <input id="notify-email" type="email" name="email" required maxlength="254" autocomplete="email"
+              placeholder="you@company.com">
+            <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <button type="submit"><svg class="icon"><use href="#i-mail"/></svg>Notify me</button>
+          </div>
+          <p class="notify-note" role="status">We'll only use your email to tell you when the beta opens. To be removed,
+            write to support@knowgauge.com.</p>
+        </form>
         </div>
         <div class="hero-shot">
           <div class="bar" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -637,6 +672,43 @@
         });
       }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
       items.forEach(function (el) { observer.observe(el); });
+    })();
+
+    // Beta waitlist: sends the form to /api/notify without leaving the page and shows the result in its place.
+    // Without JavaScript the form posts normally and the Worker answers with a short thank-you page.
+    (function () {
+      var form = document.getElementById('notify');
+      var input = document.getElementById('notify-email');
+      var button = form.querySelector('button');
+      var note = form.querySelector('.notify-note');
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        if (!input.checkValidity()) {
+          note.textContent = 'Please enter a valid email address.';
+          note.classList.add('error');
+          input.focus();
+          return;
+        }
+        button.disabled = true;
+        fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: input.value, website: form.elements.website.value })
+        }).then(function (response) {
+          return response.json().then(function (body) { return { ok: response.ok, body: body }; });
+        }).then(function (result) {
+          if (!result.ok) throw new Error(result.body.error || 'Something went wrong.');
+          note.classList.remove('error');
+          note.textContent = 'Thanks! We’ll email ' + input.value.trim() + ' when the beta opens.';
+          form.classList.add('done');
+        }).catch(function (error) {
+          note.textContent = error.message.indexOf('valid email') >= 0 ? error.message
+            : 'Sorry, that didn’t work. Please try again, or write to support@knowgauge.com.';
+          note.classList.add('error');
+        }).finally(function () {
+          button.disabled = false;
+        });
+      });
     })();
 
     // Light/dark switch: flips the current look and remembers it in this browser only.
