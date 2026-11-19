@@ -73,6 +73,7 @@ export function HomePage() {
         </Group>
 
         <AboutContent
+          heroScreenshot
           heroAction={
             // Sign in is in the header and the closing card, so the hero only invites new users.
             <Button

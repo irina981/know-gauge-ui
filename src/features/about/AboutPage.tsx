@@ -1,5 +1,4 @@
 import {
-  Badge,
   Box,
   Flex,
   Group,
@@ -15,11 +14,11 @@ import {
   useComputedColorScheme,
 } from '@mantine/core';
 import {
-  IconArrowRight,
   IconBooks,
   IconCheck,
   IconChecklist,
   IconCloudUpload,
+  IconDatabase,
   IconFileSearch,
   IconFlag,
   IconHistory,
@@ -27,21 +26,34 @@ import {
   IconShieldCheck,
   IconSparkles,
   IconUserCheck,
-  type Icon as TablerIcon,
 } from '@tabler/icons-react';
 import type { ReactNode } from 'react';
 import { PageHeader, Wordmark } from '@/shared/components';
 import { Reveal } from '@/shared/Reveal';
 
-/** Short version of the pipeline, shown as chips in the hero. */
-const PIPELINE = [
-  { label: 'Retrieve passages', icon: IconFileSearch },
-  { label: 'Write questions', icon: IconSparkles },
-  { label: 'Verify answers', icon: IconShieldCheck },
-  { label: 'You review', icon: IconUserCheck },
+/** The three main points under the hero headline. Keep in sync with the static landing page. */
+const HERO_POINTS = [
+  {
+    icon: IconSparkles,
+    title: 'AI-powered',
+    text: 'Questions, answers and explanations written for you in minutes.',
+  },
+  {
+    icon: IconBooks,
+    title: 'From your own documents',
+    text: 'Upload your PDFs and get multiple-choice tests built only from them.',
+  },
+  {
+    icon: IconShieldCheck,
+    title: 'Reliable and grounded',
+    text: 'A second AI checks every wrong answer, and you approve every test.',
+  },
 ];
 
-/** The steps from a document to a published test. Keep in sync with the backend pipeline. */
+/**
+ * The steps from a document to a published test: the one flow shown on every page. Keep in sync with the backend
+ * pipeline and the static landing page.
+ */
 const STEPS = [
   {
     icon: IconCloudUpload,
@@ -49,9 +61,14 @@ const STEPS = [
     text: 'Arrange your material in a topic tree and upload the PDFs that define what people should know.',
   },
   {
-    icon: IconFileSearch,
+    icon: IconDatabase,
     title: 'Index',
     text: 'Documents are split into passages and indexed, so the relevant parts can be retrieved for each test.',
+  },
+  {
+    icon: IconFileSearch,
+    title: 'Retrieve',
+    text: 'For each test, passages are picked from the chosen topics: spread evenly across your documents, or the ones closest to a focus you describe.',
   },
   {
     icon: IconSparkles,
@@ -69,6 +86,46 @@ const STEPS = [
     text: 'A reviewer accepts fixes, regenerates or edits questions, then publishes the test, which freezes it.',
   },
 ];
+
+/** The two phases of STEPS: preparing the library once per document, then the same four steps for every test. */
+const PHASES = [
+  { tag: 'Once per document', title: 'Build your library', from: 0, to: 2, cols: { base: 1, sm: 2 } },
+  {
+    tag: 'For every test',
+    title: 'Create, check and approve',
+    from: 2,
+    to: 6,
+    cols: { base: 1, sm: 2, lg: 4 },
+  },
+];
+
+/** One numbered step of "How it works". */
+function StepCard({
+  step: { icon: Icon, title, text },
+  number,
+}: {
+  step: (typeof STEPS)[number];
+  number: number;
+}) {
+  return (
+    <Paper p="md" h="100%">
+      <Group justify="space-between" mb="sm">
+        <ThemeIcon variant="gradient" size={40} radius="md">
+          <Icon size={22} stroke={1.6} />
+        </ThemeIcon>
+        <Text fw={800} c="dimmed" ff="heading">
+          {String(number).padStart(2, '0')}
+        </Text>
+      </Group>
+      <Text fw={700} mb={4}>
+        {title}
+      </Text>
+      <Text size="sm" c="dimmed">
+        {text}
+      </Text>
+    </Paper>
+  );
+}
 
 /** The three quality-control layers: generator, verifier, reviewer. Keep in sync with the static landing page. */
 const QUALITY_LAYERS = [
@@ -171,27 +228,6 @@ const USE_CASES = [
   'Certification and exam preparation',
 ];
 
-/** One step of the pipeline as a translucent chip on the banner. */
-function PipelineChip({ label, icon: Icon }: { label: string; icon: TablerIcon }) {
-  return (
-    <Badge
-      size="lg"
-      radius="xl"
-      variant="outline"
-      tt="none"
-      fw={600}
-      leftSection={<Icon size={14} />}
-      style={{
-        color: '#fff',
-        background: 'rgba(255, 255, 255, 0.12)',
-        borderColor: 'rgba(255, 255, 255, 0.22)',
-      }}
-    >
-      {label}
-    </Badge>
-  );
-}
-
 /** A photo across the top of a `p="lg"` card, cancelling the card's padding so it runs edge to edge. */
 function CardPhoto({ src, alt }: { src: string; alt: string }) {
   return (
@@ -253,7 +289,14 @@ export function AboutPage() {
  * What KnowGauge is for and how it works. Shown on the About page and on the public home page, so both always say
  * the same. `heroAction` is placed under the pipeline in the hero (the home page's sign-up button).
  */
-export function AboutContent({ heroAction }: { heroAction?: ReactNode }) {
+export function AboutContent({
+  heroAction,
+  heroScreenshot = false,
+}: {
+  heroAction?: ReactNode;
+  /** Show the app screenshot beside the hero text (the public home page; not inside the app). */
+  heroScreenshot?: boolean;
+}) {
   // The screenshots and their frames follow the light/dark theme.
   const dark = useComputedColorScheme('light') === 'dark';
   const shot = {
@@ -267,88 +310,111 @@ export function AboutContent({ heroAction }: { heroAction?: ReactNode }) {
   return (
     <Stack gap="xl">
       <Paper p={{ base: 'lg', sm: 'xl' }} className="kg-hero">
-        <Group gap="xl" align="center" wrap="nowrap" style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <Group gap="xs" mb="xs">
-              <IconSparkles size={18} color="var(--mantine-color-needle-3)" />
-              <Text size="xs" fw={800} tt="uppercase" c="needle.3" style={{ letterSpacing: '0.12em' }}>
-                AI-powered · Grounded in your sources
-              </Text>
-            </Group>
-            <Title order={2} c="white" fz={{ base: 24, sm: 30 }} lh={1.2}>
-              Build reliable, AI-powered multiple-choice tests from your own documents
-            </Title>
-            <Text c="rgba(255,255,255,0.85)" mt="sm" maw={860}>
-              KnowGauge is an AI-powered assessment studio that turns an organisation’s own documents into
-              multiple-choice tests. The AI is deliberately bounded: every question, answer and explanation is
-              derived from the documentation you provide, every wrong answer is verified, and a reviewer
-              approves the test before anyone takes it.
-            </Text>
-            {/* The pipeline at a glance; "How it works" below explains each step. */}
-            <Group gap="xs" mt="lg">
-              {PIPELINE.map(({ label, icon: Icon }, i) => (
-                <Group key={label} gap={6} wrap="nowrap">
-                  <PipelineChip label={label} icon={Icon} />
-                  {i < PIPELINE.length - 1 && <IconArrowRight size={14} color="rgba(255,255,255,0.6)" />}
+        <Box style={{ position: 'relative', zIndex: 1 }}>
+          <Group gap="xl" align={heroScreenshot ? 'stretch' : 'center'} wrap="nowrap">
+            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+              <Group gap="xs" mb="xs">
+                <IconSparkles size={18} color="var(--mantine-color-needle-3)" />
+                <Text size="xs" fw={800} tt="uppercase" c="needle.3" style={{ letterSpacing: '0.12em' }}>
+                  AI-powered · Grounded in your sources
+                </Text>
+              </Group>
+              <Title order={2} c="white" fz={{ base: 26, sm: 34 }} lh={1.2}>
+                Turn your documents into tests you can trust
+              </Title>
+              {/* Beside the screenshot the points share the height up to the button evenly. */}
+              <Stack
+                gap={20}
+                mt={24}
+                justify={heroScreenshot ? 'space-evenly' : undefined}
+                style={heroScreenshot ? { flex: 1 } : undefined}
+              >
+                {HERO_POINTS.map(({ icon: Icon, title, text }) => (
+                  <Group key={title} gap={14} wrap="nowrap" align="flex-start">
+                    <ThemeIcon
+                      size={40}
+                      radius={10}
+                      style={{
+                        flexShrink: 0,
+                        color: 'var(--mantine-color-needle-3)',
+                        background: 'rgba(255, 255, 255, 0.12)',
+                        border: '1px solid rgba(255, 255, 255, 0.18)',
+                      }}
+                    >
+                      <Icon size={20} />
+                    </ThemeIcon>
+                    <div>
+                      <Text c="white" fw={700} fz={17}>
+                        {title}
+                      </Text>
+                      <Text c="rgba(255,255,255,0.8)" fz={15} mt={2}>
+                        {text}
+                      </Text>
+                    </div>
+                  </Group>
+                ))}
+              </Stack>
+              {heroAction && (
+                // Pushed down so its bottom edge lines up with the screenshot's.
+                <Box mt="auto" pt="xl">
+                  {heroAction}
+                </Box>
+              )}
+            </div>
+            {/* The real app in a window-like frame. Wide screens only; too small to read on phones. */}
+            {heroScreenshot && (
+              <Box
+                visibleFrom="md"
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  borderRadius: 12,
+                  overflow: 'hidden',
+                  background: shot.bg,
+                  border: '1px solid rgba(255, 255, 255, 0.18)',
+                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.3)',
+                }}
+              >
+                <Group gap={6} px={12} py={9} bg={shot.bar} aria-hidden>
+                  {[0, 1, 2].map((dot) => (
+                    <Box key={dot} w={9} h={9} bg={shot.dot} style={{ borderRadius: '50%' }} />
+                  ))}
                 </Group>
-              ))}
-            </Group>
-            {heroAction && <Box mt="xl">{heroAction}</Box>}
-          </div>
-          {/* The real app in a window-like frame. Wide screens only; too small to read on phones. */}
-          <Box
-            visibleFrom="md"
-            style={{
-              flex: 1,
-              minWidth: 0,
-              borderRadius: 12,
-              overflow: 'hidden',
-              background: shot.bg,
-              border: '1px solid rgba(255, 255, 255, 0.18)',
-              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.3)',
-            }}
-          >
-            <Group gap={6} px={12} py={9} bg={shot.bar} aria-hidden>
-              {[0, 1, 2].map((dot) => (
-                <Box key={dot} w={9} h={9} bg={shot.dot} style={{ borderRadius: '50%' }} />
-              ))}
-            </Group>
-            <Image
-              src={shot.hero}
-              alt="The KnowGauge app showing a generated Information Security test: each question with its options, the correct answer marked and an explanation"
-              w="100%"
-            />
-          </Box>
-        </Group>
+                <Image
+                  src={shot.hero}
+                  alt="The KnowGauge app showing a generated Information Security test: each question with its options, the correct answer marked and an explanation"
+                  w="100%"
+                />
+              </Box>
+            )}
+          </Group>
+        </Box>
       </Paper>
 
       <div id="how-it-works">
         <SectionHeading
           title="How it works"
-          sub="From a folder of documents to a published test in five steps."
+          sub="From a folder of documents to a published test in six steps: prepare your documents once, then create as many tests as you need."
         />
-        <SimpleGrid cols={{ base: 1, sm: 2, lg: 5 }} spacing="md">
-          {STEPS.map(({ icon: Icon, title, text }, i) => (
-            <Reveal key={title} index={i} fill>
-              <Paper p="md" h="100%">
-                <Group justify="space-between" mb="sm">
-                  <ThemeIcon variant="gradient" size={40} radius="md">
-                    <Icon size={22} stroke={1.6} />
-                  </ThemeIcon>
-                  <Text fw={800} c="dimmed" ff="heading">
-                    {String(i + 1).padStart(2, '0')}
-                  </Text>
-                </Group>
-                <Text fw={700} mb={4}>
-                  {title}
+        {PHASES.map(({ tag, title, from, to, cols }, p) => (
+          <div key={tag}>
+            <Reveal>
+              <Group gap={10} align="baseline" mt={p === 0 ? 0 : 24} mb="sm">
+                <Text size="xs" fw={800} tt="uppercase" c="brand" style={{ letterSpacing: '0.12em' }}>
+                  {tag}
                 </Text>
-                <Text size="sm" c="dimmed">
-                  {text}
-                </Text>
-              </Paper>
+                <Text fw={700}>{title}</Text>
+              </Group>
             </Reveal>
-          ))}
-        </SimpleGrid>
+            <SimpleGrid cols={cols} spacing="md">
+              {STEPS.slice(from, to).map((step, i) => (
+                <Reveal key={step.title} index={i} fill>
+                  <StepCard step={step} number={from + i + 1} />
+                </Reveal>
+              ))}
+            </SimpleGrid>
+          </div>
+        ))}
       </div>
 
       <div id="quality">
