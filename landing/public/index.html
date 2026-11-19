@@ -58,6 +58,10 @@
       --card-border: rgba(16, 24, 64, 0.08);
       --shadow: 0 1px 3px rgba(16, 24, 64, 0.06), 0 4px 12px rgba(16, 24, 64, 0.04);
       --accent: var(--brand-6);
+      --shot-bg: #ffffff;
+      --flag-bg: #fefefe;
+      --shot-bar: rgba(16, 24, 64, 0.05);
+      --shot-dot: rgba(16, 24, 64, 0.18);
       --light-brand-bg: rgba(76, 110, 245, 0.1);
       --light-violet-bg: rgba(121, 80, 242, 0.1);
       --light-needle-bg: rgba(130, 201, 30, 0.14);
@@ -79,6 +83,10 @@
         --card-border: rgba(255, 255, 255, 0.09);
         --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         --accent: var(--brand-4);
+      --shot-bg: #23262e;
+      --flag-bg: #2d2f38;
+      --shot-bar: rgba(255, 255, 255, 0.06);
+      --shot-dot: rgba(255, 255, 255, 0.25);
         --light-brand-bg: rgba(116, 143, 252, 0.15);
         --light-violet-bg: rgba(151, 117, 250, 0.15);
         --light-needle-bg: rgba(169, 227, 75, 0.12);
@@ -98,6 +106,10 @@
       --card-border: rgba(255, 255, 255, 0.09);
       --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
       --accent: var(--brand-4);
+      --shot-bg: #23262e;
+      --flag-bg: #2d2f38;
+      --shot-bar: rgba(255, 255, 255, 0.06);
+      --shot-dot: rgba(255, 255, 255, 0.25);
       --light-brand-bg: rgba(116, 143, 252, 0.15);
       --light-violet-bg: rgba(151, 117, 250, 0.15);
       --light-needle-bg: rgba(169, 227, 75, 0.12);
@@ -187,13 +199,21 @@
     @media (min-width: 992px) {
       .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
       .hero-shot {
-        display: block; border-radius: 12px; overflow: hidden; background: #23262e;
+        display: block; border-radius: 12px; overflow: hidden; background: var(--shot-bg);
         border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
       }
-      .hero-shot .bar { display: flex; gap: 6px; padding: 9px 12px; background: rgba(255, 255, 255, 0.06); }
-      .hero-shot .bar span { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, 0.25); }
+      .hero-shot .bar { display: flex; gap: 6px; padding: 9px 12px; background: var(--shot-bar); }
+      .hero-shot .bar span { width: 9px; height: 9px; border-radius: 50%; background: var(--shot-dot); }
       .hero-shot img { display: block; width: 100%; height: auto; }
     }
+    /* Screenshots follow the theme: the light ones by default, the dark ones in dark mode. */
+    :root img.only-dark { display: none; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) img.only-light { display: none; }
+      :root:not([data-theme="light"]) img.only-dark { display: block; }
+    }
+    :root[data-theme="dark"] img.only-light { display: none; }
+    :root[data-theme="dark"] img.only-dark { display: block; }
     /* Photo across the top of a card */
     .card-photo { display: block; width: calc(100% + 40px); margin: -20px -20px 16px; height: 200px; object-fit: cover; }
     @media (min-width: 576px) { .card.lg .card-photo { width: calc(100% + 64px); margin: -32px -32px 20px; } }
@@ -250,12 +270,12 @@
     ul.checks .icon { margin-top: 3px; color: var(--accent); }
     /* Real screenshot of a flagged question, with its explanation beside it (below it on phones). */
     figure.shot { margin: 16px 0 0; padding: 0; display: grid; }
-    .shot-frame { background: #23262e; border-bottom: 1px solid var(--card-border); }
+    .shot-frame { background: var(--flag-bg); padding: 16px; border-bottom: 1px solid var(--card-border); }
     .shot-frame img { display: block; width: 100%; max-width: 468px; height: auto; margin: 0 auto; }
     .shot figcaption { padding: 20px; }
     .shot figcaption .theme-icon { margin-bottom: 12px; }
     @media (min-width: 992px) {
-      figure.shot { grid-template-columns: minmax(0, 468px) minmax(0, 1fr); align-items: center; }
+      figure.shot { grid-template-columns: minmax(0, 500px) minmax(0, 1fr); align-items: center; }
       .shot-frame { border-bottom: none; border-right: 1px solid var(--card-border); height: 100%; display: flex; align-items: center; }
       .shot figcaption { padding: 24px 28px; }
     }
@@ -362,7 +382,9 @@
         </div>
         <div class="hero-shot">
           <div class="bar" aria-hidden="true"><span></span><span></span><span></span></div>
-          <img src="img/app-test-screen.png" width="1001" height="893"
+          <img class="only-light" src="img/app-test-screen-light.png" width="950" height="892"
+            alt="The KnowGauge app showing a generated Information Security test: each question with its options, the correct answer marked and an explanation">
+          <img class="only-dark" src="img/app-test-screen.png" width="955" height="895"
             alt="The KnowGauge app showing a generated Information Security test: each question with its options, the correct answer marked and an explanation">
         </div>
         </div>
@@ -437,13 +459,15 @@
         </div>
         <figure class="card shot" style="padding: 0">
           <div class="shot-frame">
-            <img src="img/review-flagged.png" width="869" height="616" loading="lazy"
-              alt="A question in the KnowGauge review screen. Option C, marked as wrong, says the same as the correct answer D; the verifier flags it with a quote from the source and suggests a clearly wrong replacement. Buttons offer Accept fix, Keep as is, Regenerate and Edit.">
+            <img class="only-light" src="img/review-flagged-light.png" width="894" height="552" loading="lazy"
+              alt="A question in the KnowGauge review screen. Option B, marked as wrong, is also consistent with the guidance; the verifier flags it with a quote from the source and suggests a clearly wrong replacement. Buttons offer Accept fix, Keep as is, Regenerate and Edit.">
+            <img class="only-dark" src="img/review-flagged.png" width="896" height="553" loading="lazy"
+              alt="A question in the KnowGauge review screen. Option B, marked as wrong, is also consistent with the guidance; the verifier flags it with a quote from the source and suggests a clearly wrong replacement. Buttons offer Accept fix, Keep as is, Regenerate and Edit.">
           </div>
           <figcaption>
             <span class="theme-icon violet small"><svg class="icon"><use href="#i-flag"/></svg></span>
             <p class="card-title">What a flag looks like</p>
-            <p class="card-text">Here wrong answer C says the same thing as the correct answer D. The verifier quotes the source, explains why C is also correct and suggests a clearly wrong replacement. A flag never changes the answer key on its own; you decide with <strong>Accept fix</strong>, <strong>Keep as is</strong>, <strong>Regenerate</strong> or <strong>Edit</strong>.</p>
+            <p class="card-text">Here wrong answer B is just as consistent with the guidance as the correct answer A. The verifier quotes the source, explains why B is also correct and suggests a clearly wrong replacement. A flag never changes the answer key on its own; you decide with <strong>Accept fix</strong>, <strong>Keep as is</strong>, <strong>Regenerate</strong> or <strong>Edit</strong>.</p>
           </figcaption>
         </figure>
       </section>

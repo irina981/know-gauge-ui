@@ -12,6 +12,7 @@ import {
   ThemeIcon,
   Timeline,
   Title,
+  useComputedColorScheme,
 } from '@mantine/core';
 import {
   IconArrowRight,
@@ -253,6 +254,16 @@ export function AboutPage() {
  * the same. `heroAction` is placed under the pipeline in the hero (the home page's sign-up button).
  */
 export function AboutContent({ heroAction }: { heroAction?: ReactNode }) {
+  // The screenshots and their frames follow the light/dark theme.
+  const dark = useComputedColorScheme('light') === 'dark';
+  const shot = {
+    hero: dark ? '/img/app-test-screen.png' : '/img/app-test-screen-light.png',
+    flagged: dark ? '/img/review-flagged.png' : '/img/review-flagged-light.png',
+    bg: dark ? '#23262e' : '#ffffff',
+    flagBg: dark ? '#2d2f38' : '#fefefe',
+    bar: dark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(16, 24, 64, 0.05)',
+    dot: dark ? 'rgba(255, 255, 255, 0.25)' : 'rgba(16, 24, 64, 0.18)',
+  };
   return (
     <Stack gap="xl">
       <Paper p={{ base: 'lg', sm: 'xl' }} className="kg-hero">
@@ -286,24 +297,24 @@ export function AboutContent({ heroAction }: { heroAction?: ReactNode }) {
           </div>
           {/* The real app in a window-like frame. Wide screens only; too small to read on phones. */}
           <Box
-            visibleFrom="lg"
+            visibleFrom="md"
             style={{
               flex: 1,
               minWidth: 0,
               borderRadius: 12,
               overflow: 'hidden',
-              background: '#23262e',
+              background: shot.bg,
               border: '1px solid rgba(255, 255, 255, 0.18)',
               boxShadow: '0 16px 40px rgba(0, 0, 0, 0.3)',
             }}
           >
-            <Group gap={6} px={12} py={9} bg="rgba(255, 255, 255, 0.06)" aria-hidden>
+            <Group gap={6} px={12} py={9} bg={shot.bar} aria-hidden>
               {[0, 1, 2].map((dot) => (
-                <Box key={dot} w={9} h={9} bg="rgba(255, 255, 255, 0.25)" style={{ borderRadius: '50%' }} />
+                <Box key={dot} w={9} h={9} bg={shot.dot} style={{ borderRadius: '50%' }} />
               ))}
             </Group>
             <Image
-              src="/img/app-test-screen.png"
+              src={shot.hero}
               alt="The KnowGauge app showing a generated Information Security test: each question with its options, the correct answer marked and an explanation"
               w="100%"
             />
@@ -392,25 +403,26 @@ export function AboutContent({ heroAction }: { heroAction?: ReactNode }) {
         <Reveal>
           {/* A real flagged question from the review screen, with its explanation beside it (below on phones). */}
           <Paper mt="md" style={{ overflow: 'hidden' }}>
-            <Flex direction={{ base: 'column', lg: 'row' }} align={{ base: 'stretch', lg: 'center' }}>
+            <Flex direction={{ base: 'column', md: 'row' }} align={{ base: 'stretch', md: 'center' }}>
               <Flex
                 align="center"
                 justify="center"
-                w={{ base: '100%', lg: 468 }}
+                w={{ base: '100%', md: 500 }}
                 style={{
                   flexShrink: 0,
                   maxWidth: '100%',
                   alignSelf: 'stretch',
-                  background: '#23262e',
+                  background: shot.flagBg,
+                  padding: 16,
                   borderRight: '1px solid var(--mantine-color-default-border)',
                 }}
               >
                 <Image
-                  src="/img/review-flagged.png"
+                  src={shot.flagged}
                   w="100%"
                   maw={468}
                   loading="lazy"
-                  alt="A question in the KnowGauge review screen. Option C, marked as wrong, says the same as the correct answer D; the verifier flags it with a quote from the source and suggests a clearly wrong replacement. Buttons offer Accept fix, Keep as is, Regenerate and Edit."
+                  alt="A question in the KnowGauge review screen. Option B, marked as wrong, is also consistent with the guidance; the verifier flags it with a quote from the source and suggests a clearly wrong replacement. Buttons offer Accept fix, Keep as is, Regenerate and Edit."
                 />
               </Flex>
               <Box p="lg" style={{ flex: 1, minWidth: 0 }}>
@@ -421,10 +433,10 @@ export function AboutContent({ heroAction }: { heroAction?: ReactNode }) {
                   What a flag looks like
                 </Text>
                 <Text size="sm" c="dimmed" lh={1.6}>
-                  Here wrong answer C says the same thing as the correct answer D. The verifier quotes the
-                  source, explains why C is also correct and suggests a clearly wrong replacement. A flag
-                  never changes the answer key on its own; you decide with <b>Accept fix</b>,{' '}
-                  <b>Keep as is</b>, <b>Regenerate</b> or <b>Edit</b>.
+                  Here wrong answer B is just as consistent with the guidance as the correct answer A. The
+                  verifier quotes the source, explains why B is also correct and suggests a clearly wrong
+                  replacement. A flag never changes the answer key on its own; you decide with{' '}
+                  <b>Accept fix</b>, <b>Keep as is</b>, <b>Regenerate</b> or <b>Edit</b>.
                 </Text>
               </Box>
             </Flex>
