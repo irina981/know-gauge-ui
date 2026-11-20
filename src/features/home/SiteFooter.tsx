@@ -5,6 +5,9 @@ import { Wordmark } from '@/shared/components';
 
 export const SUPPORT_EMAIL = 'support@knowgauge.com';
 
+/** The static landing page, which hosts the privacy policy and terms. */
+const LANDING_URL = 'https://knowgauge.com';
+
 /** Sections of the About content the Product links jump to (ids set in AboutContent). */
 const PRODUCT_LINKS = [
   { label: 'How it works', href: '#how-it-works' },
@@ -88,8 +91,16 @@ export function SiteFooter({ onSignIn, onSignUp }: { onSignIn: () => void; onSig
           <Text size="xs" c="dimmed">
             © {new Date().getFullYear()} KnowGauge. All rights reserved.
           </Text>
+          {/* The legal pages live on the static landing page. */}
           <Text size="xs" c="dimmed">
-            Public beta
+            <Anchor href={`${LANDING_URL}/privacy.html`} size="xs" c="dimmed">
+              Privacy
+            </Anchor>
+            {' · '}
+            <Anchor href={`${LANDING_URL}/terms.html`} size="xs" c="dimmed">
+              Terms
+            </Anchor>
+            {' · '}Public beta
           </Text>
         </Group>
       </Container>
