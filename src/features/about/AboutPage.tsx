@@ -289,6 +289,7 @@ export function AboutContent({
   const dark = useComputedColorScheme('light') === 'dark';
   const shot = {
     hero: dark ? '/img/app-test-screen.png' : '/img/app-test-screen-light.png',
+    heroPhone: dark ? '/img/app-question-phone.png' : '/img/app-question-phone-light.png',
     flagged: dark ? '/img/review-flagged.png' : '/img/review-flagged-light.png',
     bg: dark ? '#23262e' : '#ffffff',
     flagBg: dark ? '#2d2f38' : '#fefefe',
@@ -384,10 +385,20 @@ export function AboutContent({
                     <Box key={dot} w={9} h={9} bg={shot.dot} style={{ borderRadius: '50%' }} />
                   ))}
                 </Group>
+                {/* Narrow screens: the first question as the app shows it on a phone. From md: the whole screen. */}
                 <Image
+                  className="kg-hero-shot-phone"
+                  src={shot.heroPhone}
+                  alt="A generated question in the KnowGauge app: the question, four options with the correct answer marked, and an explanation"
+                  w="100%"
+                  loading="lazy"
+                />
+                <Image
+                  className="kg-hero-shot-wide"
                   src={shot.hero}
                   alt="The KnowGauge app showing a generated Information Security test: each question with its options, the correct answer marked and an explanation"
                   w="100%"
+                  loading="lazy"
                 />
               </Box>
             )}

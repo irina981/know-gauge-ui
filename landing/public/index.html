@@ -204,10 +204,11 @@
     }
     .hero > * { position: relative; z-index: 1; }
     .hero-grid { display: grid; gap: 32px; align-items: center; }
-    /* Real app screenshot in a window-like frame. On narrow screens a zoomed-in crop of the first question sits
-       under the text (the whole screen would be too small to read); from 992px the full screen sits beside it. */
+    /* Real app screenshot in a window-like frame. On narrow screens the first question as the app shows it on a
+       phone sits under the text (the whole desktop screen would be too small to read); from 992px the full
+       screen sits beside it. Hidden images are lazy, so each screen downloads only the one it shows. */
     .hero-shot {
-      display: block; max-width: 520px; border-radius: 12px; overflow: hidden; background: var(--shot-bg);
+      display: block; max-width: 360px; border-radius: 12px; overflow: hidden; background: var(--shot-bg);
       border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
     }
     .hero-shot .bar {
@@ -215,8 +216,8 @@
       background: linear-gradient(var(--shot-bar), var(--shot-bar)), var(--shot-bg);
     }
     .hero-shot .bar span { width: 9px; height: 9px; border-radius: 50%; background: var(--shot-dot); }
-    /* Enlarged 1.7x from the bottom-left corner and clipped by the frame: shows the question and its answers. */
-    .hero-shot img { display: block; width: 100%; height: auto; transform: scale(1.7); transform-origin: left bottom; }
+    .hero-shot img { display: block; width: 100%; height: auto; }
+    .hero-shot .shot-wide { display: none; }
     @media (min-width: 992px) {
       .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; }
       /* Text from the top of the screenshot, button down to its bottom edge. */
@@ -225,7 +226,8 @@
       /* The three points share the height between the headline and the button evenly. */
       .hero-grid .hero-points { flex: 1; justify-content: space-evenly; margin: 16px 0 24px; }
       .hero-shot { max-width: none; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3); }
-      .hero-shot img { transform: none; }
+      .hero-shot .shot-phone { display: none; }
+      .hero-shot .shot-wide { display: block; }
     }
     /* Screenshots follow the theme: the light ones by default, the dark ones in dark mode. */
     :root img.only-dark { display: none; }
@@ -442,10 +444,18 @@
         </div>
         <div class="hero-shot">
           <div class="bar" aria-hidden="true"><span></span><span></span><span></span></div>
-          <img class="only-light" src="img/app-test-screen-light.png" width="950" height="892" loading="lazy"
-            alt="The KnowGauge app showing a generated Information Security test: each question with its options, the correct answer marked and an explanation">
-          <img class="only-dark" src="img/app-test-screen.png" width="955" height="895" loading="lazy"
-            alt="The KnowGauge app showing a generated Information Security test: each question with its options, the correct answer marked and an explanation">
+          <div class="shot-phone">
+            <img class="only-light" src="img/app-question-phone-light.png" width="542" height="916" loading="lazy"
+              alt="A generated question in the KnowGauge app: the question, four options with the correct answer marked, and an explanation">
+            <img class="only-dark" src="img/app-question-phone.png" width="542" height="916" loading="lazy"
+              alt="A generated question in the KnowGauge app: the question, four options with the correct answer marked, and an explanation">
+          </div>
+          <div class="shot-wide">
+            <img class="only-light" src="img/app-test-screen-light.png" width="950" height="892" loading="lazy"
+              alt="The KnowGauge app showing a generated Information Security test: each question with its options, the correct answer marked and an explanation">
+            <img class="only-dark" src="img/app-test-screen.png" width="955" height="895" loading="lazy"
+              alt="The KnowGauge app showing a generated Information Security test: each question with its options, the correct answer marked and an explanation">
+          </div>
         </div>
         </div>
       </section>

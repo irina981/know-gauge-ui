@@ -468,15 +468,15 @@ body {
   }
 }
 
-/* Hero screenshot on the public home page: below md a zoomed-in crop of the first question (enlarged 1.7x from
-   the bottom-left corner and clipped by the frame), from md the whole screen. Same as the static landing page. */
+/* Hero screenshot on the public home page: below md the first question as the app shows it on a phone (the whole
+   desktop screen would be too small to read), from md the whole screen. Same as the static landing page. Both
+   images are lazy, so each screen downloads only the one it shows. */
 .kg-hero-shot {
-  max-width: 520px;
+  max-width: 360px;
 }
 
-.kg-hero-shot img {
-  transform: scale(1.7);
-  transform-origin: left bottom;
+.kg-hero-shot .kg-hero-shot-wide {
+  display: none;
 }
 
 @media (min-width: 62em) {
@@ -484,8 +484,12 @@ body {
     max-width: none;
   }
 
-  .kg-hero-shot img {
-    transform: none;
+  .kg-hero-shot .kg-hero-shot-phone {
+    display: none;
+  }
+
+  .kg-hero-shot .kg-hero-shot-wide {
+    display: block;
   }
 }
 
