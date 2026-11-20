@@ -25,6 +25,8 @@ import {
 } from '@tabler/icons-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { ColorSchemeToggle, Wordmark } from '@/shared/components';
+import { FEEDBACK_MAILTO, PRIVACY_URL, TERMS_URL } from '@/shared/siteLinks';
+import { BetaBanner } from './BetaBanner';
 import { useSession } from './auth';
 
 /** Left navigation. `isActive` decides which entry is highlighted for the current URL. */
@@ -99,6 +101,13 @@ function UserBox() {
     </Group>
   );
 }
+
+/** Small links at the bottom of the sidebar. */
+const SIDEBAR_LINKS = [
+  { label: 'Privacy', href: PRIVACY_URL },
+  { label: 'Terms', href: TERMS_URL },
+  { label: 'Feedback', href: FEEDBACK_MAILTO },
+];
 
 /** The frame around every page: branded sidebar and the page itself (<Outlet />). */
 export function Layout() {
@@ -193,11 +202,25 @@ export function Layout() {
             </Anchor>
           </Box>
 
-          <Group justify="space-between" visibleFrom="sm">
-            <Text size="xs" c="rgba(219,225,255,0.45)">
-              RAG-powered assessments
-            </Text>
-            <ColorSchemeToggle />
+          {/* Legal pages (on knowgauge.com) and feedback; the theme switch is in the top bar on phones. */}
+          <Group justify="space-between" wrap="nowrap">
+            <Group gap={6} wrap="nowrap">
+              {SIDEBAR_LINKS.map(({ label, href }, i) => (
+                <Group key={label} gap={6} wrap="nowrap">
+                  {i > 0 && (
+                    <Text size="xs" c="rgba(219,225,255,0.35)" aria-hidden>
+                      ·
+                    </Text>
+                  )}
+                  <Anchor href={href} size="xs" c="rgba(219,225,255,0.6)" className="kg-sidebar-footer-link">
+                    {label}
+                  </Anchor>
+                </Group>
+              ))}
+            </Group>
+            <Box visibleFrom="sm">
+              <ColorSchemeToggle />
+            </Box>
           </Group>
 
           <UserBox />
@@ -207,6 +230,7 @@ export function Layout() {
       <AppShell.Main>
         {/* Wide cap so very large screens keep readable line lengths; below it the content uses the full width. */}
         <Box maw={1800} mx="auto" px={{ base: 0, sm: 'sm' }}>
+          <BetaBanner />
           <Outlet />
         </Box>
       </AppShell.Main>

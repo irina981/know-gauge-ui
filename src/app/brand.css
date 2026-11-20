@@ -488,3 +488,8 @@ body {
     transform: none;
   }
 }
+
+/* Privacy / Terms / Feedback at the bottom of the sidebar. */
+.kg-sidebar-footer-link:hover {
+  color: var(--mantine-color-white) !important;
+}
