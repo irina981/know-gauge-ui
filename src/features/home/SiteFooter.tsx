@@ -1,4 +1,4 @@
-import { Anchor, Box, Container, Group, Image, SimpleGrid, Stack, Text } from '@mantine/core';
+import { Anchor, Box, Container, Group, Image, Stack, Text } from '@mantine/core';
 import { IconMail } from '@tabler/icons-react';
 import type { ReactNode } from 'react';
 import { Wordmark } from '@/shared/components';
@@ -33,7 +33,8 @@ export function SiteFooter({ onSignIn, onSignUp }: { onSignIn: () => void; onSig
       }}
     >
       <Container size={1200} pt={40} pb="lg">
-        <SimpleGrid cols={{ base: 1, sm: 4 }} spacing="xl">
+        {/* Same columns as the static landing page footer: brand twice as wide (kg-site-footer-grid). */}
+        <Box className="kg-site-footer-grid">
           <Box maw={360}>
             <Group gap="sm" wrap="nowrap">
               <Image src="/favicon.svg" alt="" w={32} h={32} />
@@ -76,7 +77,7 @@ export function SiteFooter({ onSignIn, onSignUp }: { onSignIn: () => void; onSig
               </Group>
             </Anchor>
           </div>
-        </SimpleGrid>
+        </Box>
         <Group
           justify="space-between"
           gap="xs"

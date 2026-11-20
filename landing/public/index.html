@@ -353,7 +353,7 @@
     .footer-inner { max-width: 1200px; margin: 0 auto; padding: 40px 16px 24px; }
     @media (min-width: 576px) { .footer-inner { padding-left: 24px; padding-right: 24px; } }
     .footer-grid { display: grid; gap: 32px; grid-template-columns: 1fr; }
-    @media (min-width: 768px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr; } }
+    @media (min-width: 768px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; } }
     .footer-about p { margin-top: 12px; max-width: 360px; line-height: 1.6; }
     .footer-col h3 { font-family: var(--font); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text); margin-bottom: 12px; }
     .footer-col ul { list-style: none; margin: 0; padding: 0; }
@@ -623,6 +623,13 @@
             <li><a href="#history">Full history</a></li>
           </ul>
         </nav>
+        <!-- Same place as the app's Account column (Sign in, Create account) until sign-up opens. -->
+        <div class="footer-col">
+          <h3>Beta</h3>
+          <ul>
+            <li><a href="#notify">Get notified</a></li>
+          </ul>
+        </div>
         <div class="footer-col">
           <h3>Contact</h3>
           <ul>
@@ -632,8 +639,7 @@
       </div>
       <div class="footer-bottom">
         <span>© 2026 KnowGauge. All rights reserved.</span>
-        <span><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></span>
-        <span>Public beta opens soon</span>
+        <span><a href="privacy">Privacy</a> · <a href="terms">Terms</a> · Public beta opens soon</span>
       </div>
     </div>
   </footer>

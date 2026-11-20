@@ -493,3 +493,16 @@ body {
 .kg-sidebar-footer-link:hover {
   color: var(--mantine-color-white) !important;
 }
+
+/* Public home page footer columns, as on the static landing page: brand twice as wide from 768 px. */
+.kg-site-footer-grid {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 48em) {
+  .kg-site-footer-grid {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+  }
+}
