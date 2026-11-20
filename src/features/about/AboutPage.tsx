@@ -17,12 +17,15 @@ import {
   IconBooks,
   IconCheck,
   IconChecklist,
+  IconChartBar,
+  IconClipboardCheck,
   IconCloudUpload,
   IconDatabase,
   IconFileSearch,
   IconFlag,
   IconHistory,
   IconLock,
+  IconSend,
   IconShieldCheck,
   IconSparkles,
   IconUserCheck,
@@ -85,9 +88,27 @@ const STEPS = [
     title: 'Review and publish',
     text: 'A reviewer accepts fixes, regenerates or edits questions, then publishes the test, which freezes it.',
   },
+  {
+    icon: IconSend,
+    title: 'Share',
+    text: 'Share one link with a group, or invite people by email: each invited person gets a personal link they can use once.',
+  },
+  {
+    icon: IconClipboardCheck,
+    title: 'Take and score',
+    text: 'Participants answer in the browser, without an account. Each attempt is scored on submit, and the participant gets an email with their score; the answer key stays private.',
+  },
+  {
+    icon: IconChartBar,
+    title: 'Review attempts',
+    text: 'See every attempt by test and participant, with score and time taken, and open one to check each answer, including the questions people got wrong.',
+  },
 ];
 
-/** The two phases of STEPS: preparing the library once per document, then the same four steps for every test. */
+/**
+ * The three phases of STEPS: preparing the library once per document, the same four steps for every test, then
+ * sharing a published test and following the results.
+ */
 const PHASES = [
   { tag: 'Once per document', title: 'Build your library', from: 0, to: 2, cols: { base: 1, sm: 2 } },
   {
@@ -96,6 +117,13 @@ const PHASES = [
     from: 2,
     to: 6,
     cols: { base: 1, sm: 2, lg: 4 },
+  },
+  {
+    tag: 'After publishing',
+    title: 'Share, take and score',
+    from: 6,
+    to: 9,
+    cols: { base: 1, sm: 2, md: 3 },
   },
 ];
 
@@ -409,7 +437,7 @@ export function AboutContent({
       <div id="how-it-works">
         <SectionHeading
           title="How it works"
-          sub="From a folder of documents to a published test in six steps: prepare your documents once, then create as many tests as you need."
+          sub="From a folder of documents to scored results in nine steps: prepare your documents once, create and approve each test, then share it and see how people did."
         />
         {PHASES.map(({ tag, title, from, to, cols }, p) => (
           <div key={tag}>

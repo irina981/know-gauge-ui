@@ -289,7 +289,7 @@
     @media (min-width: 768px) { .grid.steps { grid-template-columns: repeat(2, 1fr); } .grid.two { grid-template-columns: repeat(2, 1fr); } }
     @media (min-width: 992px) { .grid.three { grid-template-columns: repeat(3, 1fr); } }
     @media (min-width: 1200px) { .grid.steps.four { grid-template-columns: repeat(4, 1fr); } }
-    /* The two phases of "How it works": once per document, then for every test. */
+    /* The three phases of "How it works": once per document, for every test, then after publishing. */
     .phase { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 24px 0 12px; }
     .phase:first-of-type { margin-top: 0; }
     .phase-tag { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); }
@@ -381,6 +381,9 @@
     <symbol id="i-books" viewBox="0 0 24 24"><path d="M5 5a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"/><path d="M9 5a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"/><path d="M5 8h4"/><path d="M9 16h4"/><path d="M13.803 4.56l2.184 -.53c.562 -.135 1.133 .19 1.282 .732l3.695 13.418a1.02 1.02 0 0 1 -.634 1.219l-.133 .041l-2.184 .53c-.562 .135 -1.133 -.19 -1.282 -.732l-3.695 -13.418a1.02 1.02 0 0 1 .634 -1.219l.133 -.041z"/><path d="M14 9l4 -1"/><path d="M16 16l3.923 -.98"/></symbol>
     <symbol id="i-history" viewBox="0 0 24 24"><path d="M12 8l0 4l2 2"/><path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"/></symbol>
     <symbol id="i-checklist" viewBox="0 0 24 24"><path d="M9.615 20h-2.615a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8"/><path d="M14 19l2 2l4 -4"/><path d="M9 8h4"/><path d="M9 12h2"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M10 14l11 -11"/><path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5"/></symbol>
+    <symbol id="i-clipboard-check" viewBox="0 0 24 24"><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/><path d="M9 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2"/><path d="M9 14l2 2l4 -4"/></symbol>
+    <symbol id="i-chart-bar" viewBox="0 0 24 24"><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6"/><path d="M15 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10"/><path d="M9 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14"/><path d="M4 20h14"/></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z"/><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"/><path d="M8 11v-4a4 4 0 1 1 8 0v4"/></symbol>
     <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"/></symbol>
     <symbol id="i-sun" viewBox="0 0 24 24"><path d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"/></symbol>
@@ -462,7 +465,7 @@
 
       <section id="how-it-works">
         <h2 class="section-title">How it works</h2>
-        <p class="section-sub">From a folder of documents to a published test in six steps: prepare your documents once, then create as many tests as you need.</p>
+        <p class="section-sub">From a folder of documents to scored results in nine steps: prepare your documents once, create and approve each test, then share it and see how people did.</p>
         <div class="phase"><span class="phase-tag">Once per document</span><span class="phase-title">Build your library</span></div>
         <div class="grid steps">
           <div class="card">
@@ -497,6 +500,24 @@
             <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-user-check"/></svg></span><span class="step-num">06</span></div>
             <p class="card-title">Review and publish</p>
             <p class="card-text">A reviewer accepts fixes, regenerates or edits questions, then publishes the test, which freezes it.</p>
+          </div>
+        </div>
+        <div class="phase"><span class="phase-tag">After publishing</span><span class="phase-title">Share, take and score</span></div>
+        <div class="grid steps three">
+          <div class="card">
+            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-send"/></svg></span><span class="step-num">07</span></div>
+            <p class="card-title">Share</p>
+            <p class="card-text">Share one link with a group, or invite people by email: each invited person gets a personal link they can use once.</p>
+          </div>
+          <div class="card">
+            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-clipboard-check"/></svg></span><span class="step-num">08</span></div>
+            <p class="card-title">Take and score</p>
+            <p class="card-text">Participants answer in the browser, without an account. Each attempt is scored on submit, and the participant gets an email with their score; the answer key stays private.</p>
+          </div>
+          <div class="card">
+            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-chart-bar"/></svg></span><span class="step-num">09</span></div>
+            <p class="card-title">Review attempts</p>
+            <p class="card-text">See every attempt by test and participant, with score and time taken, and open one to check each answer, including the questions people got wrong.</p>
           </div>
         </div>
       </section>
