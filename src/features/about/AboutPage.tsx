@@ -200,27 +200,6 @@ const RECORDED = [
   },
 ];
 
-const PRINCIPLES = [
-  {
-    icon: IconBooks,
-    color: 'brand',
-    title: 'Grounded in your documentation',
-    text: 'Questions are drawn only from the documents in your library, not from the open internet or a model’s general knowledge. Each question keeps a reference to the passages it was written from.',
-  },
-  {
-    icon: IconShieldCheck,
-    color: 'violet',
-    title: 'Verified before review',
-    text: 'Plausible but wrong answers are the hardest part of a good test. An independent check flags ambiguous options and suggests a clearer alternative.',
-  },
-  {
-    icon: IconHistory,
-    color: 'needle',
-    title: 'People stay in control',
-    text: 'Nothing is final until a reviewer approves it. Every change is versioned with its author and reason, and published tests can no longer be altered.',
-  },
-];
-
 const USE_CASES = [
   'Employee onboarding and policy training',
   'Compliance and regulatory knowledge checks',
@@ -320,7 +299,12 @@ export function AboutContent({
     <Stack gap="xl">
       <Paper p={{ base: 'lg', sm: 'xl' }} className="kg-hero">
         <Box style={{ position: 'relative', zIndex: 1 }}>
-          <Group gap="xl" align={heroScreenshot ? 'stretch' : 'center'} wrap="nowrap">
+          {/* Text and screenshot side by side from md; stacked (text first) on narrower screens. */}
+          <Flex
+            gap="xl"
+            direction={{ base: 'column', md: 'row' }}
+            align={{ base: 'stretch', md: heroScreenshot ? 'stretch' : 'center' }}
+          >
             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
               <Group gap="xs" mb="xs">
                 <IconSparkles size={18} color="var(--mantine-color-needle-3)" />
@@ -370,10 +354,11 @@ export function AboutContent({
                 </Box>
               )}
             </div>
-            {/* The real app in a window-like frame. Wide screens only; too small to read on phones. */}
+            {/* The real app in a window-like frame. Narrower screens show a zoomed-in crop of the first
+                question (kg-hero-shot in brand.css), as on the static landing page. */}
             {heroScreenshot && (
               <Box
-                visibleFrom="md"
+                className="kg-hero-shot"
                 style={{
                   flex: 1,
                   minWidth: 0,
@@ -384,7 +369,17 @@ export function AboutContent({
                   boxShadow: '0 16px 40px rgba(0, 0, 0, 0.3)',
                 }}
               >
-                <Group gap={6} px={12} py={9} bg={shot.bar} aria-hidden>
+                <Group
+                  gap={6}
+                  px={12}
+                  py={9}
+                  aria-hidden
+                  style={{
+                    position: 'relative',
+                    zIndex: 1,
+                    background: `linear-gradient(${shot.bar}, ${shot.bar}), ${shot.bg}`,
+                  }}
+                >
                   {[0, 1, 2].map((dot) => (
                     <Box key={dot} w={9} h={9} bg={shot.dot} style={{ borderRadius: '50%' }} />
                   ))}
@@ -396,7 +391,7 @@ export function AboutContent({
                 />
               </Box>
             )}
-          </Group>
+          </Flex>
         </Box>
       </Paper>
 
@@ -589,27 +584,6 @@ export function AboutContent({
               </Text>
             </Paper>
           </Reveal>
-        </SimpleGrid>
-      </div>
-
-      <div>
-        <SectionHeading title="Principles" sub="What you can rely on in every test KnowGauge produces." />
-        <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md">
-          {PRINCIPLES.map(({ icon: Icon, color, title, text }, i) => (
-            <Reveal key={title} index={i} fill>
-              <Paper p="lg" h="100%" className="kg-ai-edge" style={{ overflow: 'hidden' }}>
-                <ThemeIcon variant="light" color={color} size={44} radius="md" mb="sm">
-                  <Icon size={24} stroke={1.6} />
-                </ThemeIcon>
-                <Text fw={700} mb={6}>
-                  {title}
-                </Text>
-                <Text size="sm" c="dimmed" lh={1.6}>
-                  {text}
-                </Text>
-              </Paper>
-            </Reveal>
-          ))}
         </SimpleGrid>
       </div>
 
