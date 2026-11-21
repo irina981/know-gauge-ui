@@ -295,12 +295,82 @@
     .phase-tag { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); }
     .phase-title { font-weight: 700; }
 
+    /* "How it works" as a timeline: a rail down the left with a numbered marker per phase, the phase's steps to
+       its right with arrows between them. Arrows follow the layout: down while cards stack, right between cards
+       that sit side by side. */
+    .flow { display: grid; gap: 40px; padding-left: 36px; counter-reset: flow-phase; }
+    @media (min-width: 576px) { .flow { padding-left: 48px; } }
+    .flow-phase { position: relative; counter-increment: flow-phase; --arrow-color: var(--dimmed); }
+    /* Marker: the phase number in a gradient circle, like the step icons. */
+    .flow-phase::before {
+      content: counter(flow-phase); position: absolute; left: -36px; top: 0; width: 26px; height: 26px;
+      display: grid; place-items: center; border-radius: 50%; color: #fff; font-size: 13px; font-weight: 800;
+      background: linear-gradient(135deg, var(--brand-6), var(--violet-6));
+    }
+    /* Rail: from below this marker down to the next one. */
+    .flow-phase:not(:last-child)::after {
+      content: ""; position: absolute; left: -24px; top: 34px; bottom: -34px; width: 2px; border-radius: 1px;
+      background: linear-gradient(rgba(76, 110, 245, 0.35), rgba(121, 80, 242, 0.35));
+    }
+    @media (min-width: 576px) {
+      .flow-phase::before { left: -48px; width: 30px; height: 30px; font-size: 14px; }
+      .flow-phase:not(:last-child)::after { left: -34px; top: 38px; bottom: -32px; }
+    }
+    .flow-phase .phase { display: flex; align-items: center; min-height: 26px; margin: 0 0 14px; }
+    @media (min-width: 576px) { .flow-phase .phase { min-height: 30px; } }
+    .flow-phase .grid { row-gap: 28px; column-gap: 32px; }
+    /* Step cards have no photo or top edge to clip, so the arrow may sit outside them. */
+    .flow-phase .card { position: relative; overflow: visible; }
+    /* Arrow between steps: a chevron drawn with borders. */
+    .flow-phase .card::after {
+      content: ""; position: absolute; width: 9px; height: 9px; box-sizing: content-box;
+      border: solid var(--arrow-color); border-width: 0 2px 2px 0; pointer-events: none;
+    }
+    .flow-phase .card:not(:last-child)::after { left: 50%; bottom: -19px; transform: translateX(-50%) rotate(45deg); }
+    .flow-phase .card:last-child::after { display: none; }
+    @media (min-width: 768px) {
+      .flow-phase .grid.steps > .card:nth-child(odd):not(:last-child)::after {
+        left: auto; bottom: auto; right: -21px; top: 50%; transform: translateY(-50%) rotate(-45deg);
+      }
+      .flow-phase .grid.steps > .card:nth-child(even)::after { display: none; }
+    }
+    @media (min-width: 992px) {
+      .flow-phase .grid.three > .card:not(:last-child)::after {
+        display: block; left: auto; bottom: auto; right: -21px; top: 50%; transform: translateY(-50%) rotate(-45deg);
+      }
+    }
+    @media (min-width: 1200px) {
+      .flow-phase .grid.four > .card:not(:last-child)::after {
+        display: block; left: auto; bottom: auto; right: -21px; top: 50%; transform: translateY(-50%) rotate(-45deg);
+      }
+    }
     .step-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .theme-icon {
       display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;
       width: 40px; height: 40px; font-size: 22px;
     }
     .theme-icon.gradient { color: #fff; background: linear-gradient(135deg, var(--brand-6), var(--violet-6)); }
+    /* Process icons take a colour from the page's own palette for who acts: your material (blue), the AI writer
+       (violet), the AI checker (grape) and people (lime). Soft and bright in both themes: a light tint of the colour
+       with the slightest diagonal gradient, a faint ring and the icon in a clear shade (a lighter one on the dark theme). */
+    .tone-doc { --tone-rgb: 76, 110, 245; --tone-icon: #4c6ef5; --tone-icon-dark: #91a7ff; }
+    .tone-ai { --tone-rgb: 121, 80, 242; --tone-icon: #7950f2; --tone-icon-dark: #b197fc; }
+    .tone-check { --tone-rgb: 190, 75, 219; --tone-icon: #ae3ec9; --tone-icon-dark: #e599f7; }
+    .tone-people { --tone-rgb: 116, 184, 22; --tone-icon: #5c940d; --tone-icon-dark: #b4d98a; }
+    /* Lime is the loudest of the four, so its tile is a little lighter. */
+    .theme-icon.tone-people { background: linear-gradient(135deg, rgba(var(--tone-rgb), 0.17), rgba(var(--tone-rgb), 0.05)); box-shadow: inset 0 0 0 1px rgba(var(--tone-rgb), 0.2); }
+    :root[data-theme="dark"] .theme-icon.tone-people { background: linear-gradient(135deg, rgba(var(--tone-rgb), 0.24), rgba(var(--tone-rgb), 0.08)); box-shadow: inset 0 0 0 1px rgba(var(--tone-rgb), 0.28); }
+    .theme-icon[class*="tone-"] {
+      color: var(--tone-icon); background: linear-gradient(135deg, rgba(var(--tone-rgb), 0.22), rgba(var(--tone-rgb), 0.07)); box-shadow: inset 0 0 0 1px rgba(var(--tone-rgb), 0.24);
+    }
+    :root[data-theme="dark"] .theme-icon[class*="tone-"] {
+      color: var(--tone-icon-dark); background: linear-gradient(135deg, rgba(var(--tone-rgb), 0.32), rgba(var(--tone-rgb), 0.12)); box-shadow: inset 0 0 0 1px rgba(var(--tone-rgb), 0.35);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .theme-icon[class*="tone-"] {
+        color: var(--tone-icon-dark); background: linear-gradient(135deg, rgba(var(--tone-rgb), 0.32), rgba(var(--tone-rgb), 0.12)); box-shadow: inset 0 0 0 1px rgba(var(--tone-rgb), 0.35);
+      }
+    }
     .theme-icon.brand { color: var(--accent); background: var(--light-brand-bg); }
     .theme-icon.violet { color: var(--light-violet); background: var(--light-violet-bg); }
     .theme-icon.needle { color: var(--light-needle); background: var(--light-needle-bg); }
@@ -322,11 +392,11 @@
     .shot-frame { background: var(--flag-bg); padding: 16px; border-bottom: 1px solid var(--card-border); }
     .shot-frame img { display: block; width: 100%; max-width: 468px; height: auto; margin: 0 auto; }
     .shot figcaption { padding: 20px; }
-    .shot figcaption .theme-icon { margin-bottom: 12px; }
     @media (min-width: 992px) {
       figure.shot { grid-template-columns: minmax(0, 500px) minmax(0, 1fr); align-items: center; }
       .shot-frame { border-bottom: none; border-right: 1px solid var(--card-border); height: 100%; display: flex; align-items: center; }
-      .shot figcaption { padding: 24px 28px; }
+      /* Caption from the top, like the other cards, not centred against the screenshot. */
+      .shot figcaption { padding: 24px 28px; align-self: start; }
     }
     /* Full history: example timeline + what is recorded */
     ol.timeline { list-style: none; margin: 16px 0 0; padding: 0; }
@@ -466,59 +536,67 @@
       <section id="how-it-works">
         <h2 class="section-title">How it works</h2>
         <p class="section-sub">From a folder of documents to scored results in nine steps: prepare your documents once, create and approve each test, then share it and see how people did.</p>
-        <div class="phase"><span class="phase-tag">Once per document</span><span class="phase-title">Build your library</span></div>
-        <div class="grid steps">
-          <div class="card">
-            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-cloud-upload"/></svg></span><span class="step-num">01</span></div>
-            <p class="card-title">Organise and upload</p>
-            <p class="card-text">Arrange your material in a topic tree and upload the PDFs that define what people should know.</p>
-          </div>
-          <div class="card">
-            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-database"/></svg></span><span class="step-num">02</span></div>
-            <p class="card-title">Index</p>
-            <p class="card-text">Documents are split into passages and indexed, so the relevant parts can be retrieved for each test.</p>
-          </div>
-        </div>
-        <div class="phase"><span class="phase-tag">For every test</span><span class="phase-title">Create, check and approve</span></div>
-        <div class="grid steps four">
-          <div class="card">
-            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-file-search"/></svg></span><span class="step-num">03</span></div>
-            <p class="card-title">Retrieve</p>
-            <p class="card-text">For each test, passages are picked from the chosen topics: spread evenly across your documents, or the ones closest to a focus you describe.</p>
-          </div>
-          <div class="card">
-            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-sparkles"/></svg></span><span class="step-num">04</span></div>
-            <p class="card-title">Generate</p>
-            <p class="card-text">A language model writes questions, answers and explanations using only the retrieved passages.</p>
-          </div>
-          <div class="card">
-            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-shield-check"/></svg></span><span class="step-num">05</span></div>
-            <p class="card-title">Verify</p>
-            <p class="card-text">A separate verification step checks every wrong answer and flags options that could also be correct.</p>
-          </div>
-          <div class="card">
-            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-user-check"/></svg></span><span class="step-num">06</span></div>
-            <p class="card-title">Review and publish</p>
-            <p class="card-text">A reviewer accepts fixes, regenerates or edits questions, then publishes the test, which freezes it.</p>
+        <div class="flow">
+        <div class="flow-phase p1">
+          <div class="phase"><span class="phase-tag">Once per document</span><span class="phase-title">Build your library</span></div>
+          <div class="grid steps">
+            <div class="card">
+              <div class="step-head"><span class="theme-icon tone-doc"><svg class="icon"><use href="#i-cloud-upload"/></svg></span><span class="step-num">01</span></div>
+              <p class="card-title">Organise and upload</p>
+              <p class="card-text">Arrange your material in a topic tree and upload the PDFs that define what people should know.</p>
+            </div>
+            <div class="card">
+              <div class="step-head"><span class="theme-icon tone-doc"><svg class="icon"><use href="#i-database"/></svg></span><span class="step-num">02</span></div>
+              <p class="card-title">Index</p>
+              <p class="card-text">Documents are split into passages and indexed, so the relevant parts can be retrieved for each test.</p>
+            </div>
           </div>
         </div>
-        <div class="phase"><span class="phase-tag">After publishing</span><span class="phase-title">Share, take and score</span></div>
-        <div class="grid steps three">
-          <div class="card">
-            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-send"/></svg></span><span class="step-num">07</span></div>
-            <p class="card-title">Share</p>
-            <p class="card-text">Share one link with a group, or invite people by email: each invited person gets a personal link they can use once.</p>
+        <div class="flow-phase p2">
+          <div class="phase"><span class="phase-tag">For every test</span><span class="phase-title">Create, check and approve</span></div>
+          <div class="grid steps four">
+            <div class="card">
+              <div class="step-head"><span class="theme-icon tone-doc"><svg class="icon"><use href="#i-file-search"/></svg></span><span class="step-num">03</span></div>
+              <p class="card-title">Retrieve</p>
+              <p class="card-text">For each test, passages are picked from the chosen topics: spread evenly across your documents, or the ones closest to a focus you describe.</p>
+            </div>
+            <div class="card">
+              <div class="step-head"><span class="theme-icon tone-ai"><svg class="icon"><use href="#i-sparkles"/></svg></span><span class="step-num">04</span></div>
+              <p class="card-title">Generate</p>
+              <p class="card-text">A language model writes questions, answers and explanations using only the retrieved passages.</p>
+            </div>
+            <div class="card">
+              <div class="step-head"><span class="theme-icon tone-check"><svg class="icon"><use href="#i-shield-check"/></svg></span><span class="step-num">05</span></div>
+              <p class="card-title">Verify</p>
+              <p class="card-text">A separate verification step checks every wrong answer and flags options that could also be correct.</p>
+            </div>
+            <div class="card">
+              <div class="step-head"><span class="theme-icon tone-people"><svg class="icon"><use href="#i-user-check"/></svg></span><span class="step-num">06</span></div>
+              <p class="card-title">Review and publish</p>
+              <p class="card-text">A reviewer accepts fixes, regenerates or edits questions, then publishes the test, which freezes it.</p>
+            </div>
           </div>
-          <div class="card">
-            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-clipboard-check"/></svg></span><span class="step-num">08</span></div>
-            <p class="card-title">Take and score</p>
-            <p class="card-text">Participants answer in the browser, without an account. Each attempt is scored on submit, and the participant gets an email with their score; the answer key stays private.</p>
+        </div>
+        <div class="flow-phase p3">
+          <div class="phase"><span class="phase-tag">After publishing</span><span class="phase-title">Share, take and score</span></div>
+          <div class="grid steps three">
+            <div class="card">
+              <div class="step-head"><span class="theme-icon tone-people"><svg class="icon"><use href="#i-send"/></svg></span><span class="step-num">07</span></div>
+              <p class="card-title">Share</p>
+              <p class="card-text">Share one link with a group, or invite people by email: each invited person gets a personal link they can use once.</p>
+            </div>
+            <div class="card">
+              <div class="step-head"><span class="theme-icon tone-people"><svg class="icon"><use href="#i-clipboard-check"/></svg></span><span class="step-num">08</span></div>
+              <p class="card-title">Take and score</p>
+              <p class="card-text">Participants answer in the browser, without an account. Each attempt is scored on submit, and the participant gets an email with their score; the answer key stays private.</p>
+            </div>
+            <div class="card">
+              <div class="step-head"><span class="theme-icon tone-people"><svg class="icon"><use href="#i-chart-bar"/></svg></span><span class="step-num">09</span></div>
+              <p class="card-title">Review attempts</p>
+              <p class="card-text">See every attempt by test and participant, with score and time taken, and open one to check each answer, including the questions people got wrong.</p>
+            </div>
           </div>
-          <div class="card">
-            <div class="step-head"><span class="theme-icon gradient"><svg class="icon"><use href="#i-chart-bar"/></svg></span><span class="step-num">09</span></div>
-            <p class="card-title">Review attempts</p>
-            <p class="card-text">See every attempt by test and participant, with score and time taken, and open one to check each answer, including the questions people got wrong.</p>
-          </div>
+        </div>
         </div>
       </section>
 
@@ -527,7 +605,7 @@
         <p class="section-sub">One AI writes, a second AI checks, and a person decides wherever there is doubt.</p>
         <div class="grid three">
           <div class="card lg ai-edge">
-            <span class="theme-icon gradient big"><svg class="icon"><use href="#i-sparkles"/></svg></span>
+            <span class="theme-icon tone-ai big"><svg class="icon"><use href="#i-sparkles"/></svg></span>
             <p class="layer-label">Layer 1</p>
             <p class="card-title">AI generator</p>
             <p class="card-text">Writes each question, its answers and an explanation from passages retrieved from your documents, never from general knowledge.</p>
@@ -537,7 +615,7 @@
             </ul>
           </div>
           <div class="card lg ai-edge">
-            <span class="theme-icon violet big"><svg class="icon"><use href="#i-shield-check"/></svg></span>
+            <span class="theme-icon tone-check big"><svg class="icon"><use href="#i-shield-check"/></svg></span>
             <p class="layer-label">Layer 2</p>
             <p class="card-title">AI verifier</p>
             <p class="card-text">A separate model checks every wrong answer against the same passages. If an option could also be correct, it flags it, explains why and suggests a clearer one.</p>
@@ -547,7 +625,7 @@
             </ul>
           </div>
           <div class="card lg ai-edge">
-            <span class="theme-icon needle big"><svg class="icon"><use href="#i-user-check"/></svg></span>
+            <span class="theme-icon tone-people big"><svg class="icon"><use href="#i-user-check"/></svg></span>
             <p class="layer-label">Layer 3</p>
             <p class="card-title">Your review</p>
             <p class="card-text">Flagged questions wait for you. Accept the suggested fix, regenerate the question, write your own, or keep it as it is with a comment.</p>
@@ -565,8 +643,7 @@
               alt="A question in the KnowGauge review screen. Option B, marked as wrong, is also consistent with the guidance; the verifier flags it with a quote from the source and suggests a clearly wrong replacement. Buttons offer Accept fix, Keep as is, Regenerate and Edit.">
           </div>
           <figcaption>
-            <span class="theme-icon violet small"><svg class="icon"><use href="#i-flag"/></svg></span>
-            <p class="card-title">What a flag looks like</p>
+            <div class="card-head"><span class="theme-icon violet small"><svg class="icon"><use href="#i-flag"/></svg></span><p class="card-title">What a flag looks like</p></div>
             <p class="card-text">Here wrong answer B is just as consistent with the guidance as the correct answer A. The verifier quotes the source, explains why B is also correct and suggests a clearly wrong replacement. A flag never changes the answer key on its own; you decide with <strong>Accept fix</strong>, <strong>Keep as is</strong>, <strong>Regenerate</strong> or <strong>Edit</strong>.</p>
           </figcaption>
         </figure>
@@ -580,22 +657,22 @@
             <p class="example-label">Example: the history of one question</p>
             <ol class="timeline">
               <li>
-                <span class="theme-icon gradient"><svg class="icon"><use href="#i-sparkles"/></svg></span>
+                <span class="theme-icon tone-ai"><svg class="icon"><use href="#i-sparkles"/></svg></span>
                 <div><p class="card-title">Question generated · version 1</p>
                   <p class="card-text">AI model, prompt, source passages and response saved</p></div>
               </li>
               <li>
-                <span class="theme-icon violet"><svg class="icon"><use href="#i-flag"/></svg></span>
+                <span class="theme-icon tone-check"><svg class="icon"><use href="#i-shield-check"/></svg></span>
                 <div><p class="card-title">Option C flagged</p>
                   <p class="card-text">Verifier: “C could also be correct according to the second passage”</p></div>
               </li>
               <li>
-                <span class="theme-icon needle"><svg class="icon"><use href="#i-user-check"/></svg></span>
+                <span class="theme-icon tone-people"><svg class="icon"><use href="#i-user-check"/></svg></span>
                 <div><p class="card-title">Suggested fix accepted · version 2</p>
                   <p class="card-text">By the reviewer; version 1 is kept, unchanged</p></div>
               </li>
               <li>
-                <span class="theme-icon brand"><svg class="icon"><use href="#i-lock"/></svg></span>
+                <span class="theme-icon tone-doc"><svg class="icon"><use href="#i-lock"/></svg></span>
                 <div><p class="card-title">Test published</p>
                   <p class="card-text">Frozen: the questions can no longer change</p></div>
               </li>

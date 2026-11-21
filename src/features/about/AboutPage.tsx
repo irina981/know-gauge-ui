@@ -60,46 +60,55 @@ const HERO_POINTS = [
 const STEPS = [
   {
     icon: IconCloudUpload,
+    tone: 'doc',
     title: 'Organise and upload',
     text: 'Arrange your material in a topic tree and upload the PDFs that define what people should know.',
   },
   {
     icon: IconDatabase,
+    tone: 'doc',
     title: 'Index',
     text: 'Documents are split into passages and indexed, so the relevant parts can be retrieved for each test.',
   },
   {
     icon: IconFileSearch,
+    tone: 'doc',
     title: 'Retrieve',
     text: 'For each test, passages are picked from the chosen topics: spread evenly across your documents, or the ones closest to a focus you describe.',
   },
   {
     icon: IconSparkles,
+    tone: 'ai',
     title: 'Generate',
     text: 'A language model writes questions, answers and explanations using only the retrieved passages.',
   },
   {
     icon: IconShieldCheck,
+    tone: 'check',
     title: 'Verify',
     text: 'A separate verification step checks every wrong answer and flags options that could also be correct.',
   },
   {
     icon: IconUserCheck,
+    tone: 'people',
     title: 'Review and publish',
     text: 'A reviewer accepts fixes, regenerates or edits questions, then publishes the test, which freezes it.',
   },
   {
     icon: IconSend,
+    tone: 'people',
     title: 'Share',
     text: 'Share one link with a group, or invite people by email: each invited person gets a personal link they can use once.',
   },
   {
     icon: IconClipboardCheck,
+    tone: 'people',
     title: 'Take and score',
     text: 'Participants answer in the browser, without an account. Each attempt is scored on submit, and the participant gets an email with their score; the answer key stays private.',
   },
   {
     icon: IconChartBar,
+    tone: 'people',
     title: 'Review attempts',
     text: 'See every attempt by test and participant, with score and time taken, and open one to check each answer, including the questions people got wrong.',
   },
@@ -129,7 +138,7 @@ const PHASES = [
 
 /** One numbered step of "How it works". */
 function StepCard({
-  step: { icon: Icon, title, text },
+  step: { icon: Icon, tone, title, text },
   number,
 }: {
   step: (typeof STEPS)[number];
@@ -138,7 +147,7 @@ function StepCard({
   return (
     <Paper p="md" h="100%">
       <Group justify="space-between" mb="sm">
-        <ThemeIcon variant="gradient" size={40} radius="md">
+        <ThemeIcon size={40} radius="md" className={`kg-tone kg-tone-${tone}`}>
           <Icon size={22} stroke={1.6} />
         </ThemeIcon>
         <Text fw={800} c="dimmed" ff="heading">
@@ -159,21 +168,21 @@ function StepCard({
 const QUALITY_LAYERS = [
   {
     icon: IconSparkles,
-    color: 'gradient',
+    tone: 'ai',
     title: 'AI generator',
     text: 'Writes each question, its answers and an explanation from passages retrieved from your documents, never from general knowledge.',
     checks: ['Grounded in your sources', 'Rule checks before and after the AI runs'],
   },
   {
     icon: IconShieldCheck,
-    color: 'violet',
+    tone: 'check',
     title: 'AI verifier',
     text: 'A separate model checks every wrong answer against the same passages. If an option could also be correct, it flags it, explains why and suggests a clearer one.',
     checks: ['Every wrong answer checked', 'Flags with a reason and a suggested fix'],
   },
   {
     icon: IconUserCheck,
-    color: 'needle',
+    tone: 'people',
     title: 'Your review',
     text: 'Flagged questions wait for you. Accept the suggested fix, regenerate the question, write your own, or keep it as it is with a comment.',
     checks: ['Your attention goes where it is needed', 'Nothing is published without your approval'],
@@ -184,25 +193,25 @@ const QUALITY_LAYERS = [
 const EXAMPLE_HISTORY = [
   {
     icon: IconSparkles,
-    color: 'gradient',
+    tone: 'ai',
     title: 'Question generated · version 1',
     text: 'AI model, prompt, source passages and response saved',
   },
   {
-    icon: IconFlag,
-    color: 'violet',
+    icon: IconShieldCheck,
+    tone: 'check',
     title: 'Option C flagged',
     text: 'Verifier: “C could also be correct according to the second passage”',
   },
   {
     icon: IconUserCheck,
-    color: 'needle',
+    tone: 'people',
     title: 'Suggested fix accepted · version 2',
     text: 'By the reviewer; version 1 is kept, unchanged',
   },
   {
     icon: IconLock,
-    color: 'brand',
+    tone: 'doc',
     title: 'Test published',
     text: 'Frozen: the questions can no longer change',
   },
@@ -439,25 +448,40 @@ export function AboutContent({
           title="How it works"
           sub="From a folder of documents to scored results in nine steps: prepare your documents once, create and approve each test, then share it and see how people did."
         />
-        {PHASES.map(({ tag, title, from, to, cols }, p) => (
-          <div key={tag}>
-            <Reveal>
-              <Group gap={10} align="baseline" mt={p === 0 ? 0 : 24} mb="sm">
-                <Text size="xs" fw={800} tt="uppercase" c="brand" style={{ letterSpacing: '0.12em' }}>
-                  {tag}
-                </Text>
-                <Text fw={700}>{title}</Text>
-              </Group>
-            </Reveal>
-            <SimpleGrid cols={cols} spacing="md">
-              {STEPS.slice(from, to).map((step, i) => (
-                <Reveal key={step.title} index={i} fill>
-                  <StepCard step={step} number={from + i + 1} />
-                </Reveal>
-              ))}
-            </SimpleGrid>
-          </div>
-        ))}
+        {/* A timeline: a numbered marker per phase on a rail (kg-flow in brand.css), arrows between its steps.
+            Same as the static landing page. */}
+        <div className="kg-flow">
+          {PHASES.map(({ tag, title, from, to, cols }, p) => (
+            <div key={tag} className={`kg-flow-phase p${p + 1}`}>
+              <Reveal>
+                <Group gap={10} align="center" mb="sm" className="kg-flow-heading">
+                  <Text
+                    size="xs"
+                    fw={800}
+                    tt="uppercase"
+                    className="kg-flow-tag"
+                    style={{ letterSpacing: '0.12em' }}
+                  >
+                    {tag}
+                  </Text>
+                  <Text fw={700}>{title}</Text>
+                </Group>
+              </Reveal>
+              <SimpleGrid
+                cols={cols}
+                spacing={32}
+                verticalSpacing={28}
+                className={`kg-flow-steps${to - from === 4 ? ' four' : to - from === 3 ? ' three' : ''}`}
+              >
+                {STEPS.slice(from, to).map((step, i) => (
+                  <Reveal key={step.title} index={i} fill>
+                    <StepCard step={step} number={from + i + 1} />
+                  </Reveal>
+                ))}
+              </SimpleGrid>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div id="quality">
@@ -466,16 +490,10 @@ export function AboutContent({
           sub="One AI writes, a second AI checks, and a person decides wherever there is doubt."
         />
         <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md">
-          {QUALITY_LAYERS.map(({ icon: Icon, color, title, text, checks }, i) => (
+          {QUALITY_LAYERS.map(({ icon: Icon, tone, title, text, checks }, i) => (
             <Reveal key={title} index={i} fill>
               <Paper p="lg" h="100%" className="kg-ai-edge" style={{ overflow: 'hidden' }}>
-                <ThemeIcon
-                  variant={color === 'gradient' ? 'gradient' : 'light'}
-                  color={color === 'gradient' ? undefined : color}
-                  size={44}
-                  radius="md"
-                  mb="sm"
-                >
+                <ThemeIcon size={44} radius="md" mb="sm" className={`kg-tone kg-tone-${tone}`}>
                   <Icon size={24} stroke={1.6} />
                 </ThemeIcon>
                 <Text size="xs" fw={800} tt="uppercase" c="dimmed" mb={4} style={{ letterSpacing: '0.12em' }}>
@@ -534,13 +552,13 @@ export function AboutContent({
                   alt="A question in the KnowGauge review screen. Option B, marked as wrong, is also consistent with the guidance; the verifier flags it with a quote from the source and suggests a clearly wrong replacement. Buttons offer Accept fix, Keep as is, Regenerate and Edit."
                 />
               </Flex>
-              <Box p="lg" style={{ flex: 1, minWidth: 0 }}>
-                <ThemeIcon variant="light" color="violet" size={36} radius="md" mb="sm">
-                  <IconFlag size={20} />
-                </ThemeIcon>
-                <Text fw={700} mb={6}>
-                  What a flag looks like
-                </Text>
+              <Box p="lg" style={{ flex: 1, minWidth: 0, alignSelf: 'flex-start' }}>
+                <Group gap="sm" mb="sm">
+                  <ThemeIcon variant="light" color="violet" size={36} radius="md">
+                    <IconFlag size={20} />
+                  </ThemeIcon>
+                  <Text fw={700}>What a flag looks like</Text>
+                </Group>
                 <Text size="sm" c="dimmed" lh={1.6}>
                   Here wrong answer B is just as consistent with the guidance as the correct answer A. The
                   verifier quotes the source, explains why B is also correct and suggests a clearly wrong
@@ -565,16 +583,11 @@ export function AboutContent({
                 Example: the history of one question
               </Text>
               <Timeline bulletSize={36} lineWidth={2}>
-                {EXAMPLE_HISTORY.map(({ icon: Icon, color, title, text }) => (
+                {EXAMPLE_HISTORY.map(({ icon: Icon, tone, title, text }) => (
                   <Timeline.Item
                     key={title}
                     bullet={
-                      <ThemeIcon
-                        variant={color === 'gradient' ? 'gradient' : 'light'}
-                        color={color === 'gradient' ? undefined : color}
-                        size={36}
-                        radius="xl"
-                      >
+                      <ThemeIcon size={36} radius="xl" className={`kg-tone kg-tone-${tone}`}>
                         <Icon size={18} />
                       </ThemeIcon>
                     }
