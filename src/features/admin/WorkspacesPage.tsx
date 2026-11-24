@@ -50,7 +50,7 @@ const numberFormat = new Intl.NumberFormat();
 const COLUMNS: TableColumn<ColumnKey>[] = [
   { key: 'name', label: 'Workspace', width: 260, min: 140, hideable: false },
   { key: 'type', label: 'Type', width: 130, min: 80 },
-  { key: 'owner', label: 'Owner', width: 220, min: 100 },
+  { key: 'owner', label: 'Owner', width: 220, min: 100, hiddenByDefault: true },
   { key: 'topics', label: 'Topics', width: 100, min: 70 },
   { key: 'documents', label: 'Documents', width: 120, min: 70 },
   { key: 'storage', label: 'Storage', width: 160, min: 120 },

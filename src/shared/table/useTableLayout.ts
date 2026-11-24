@@ -12,6 +12,8 @@ export interface TableColumn<K extends string = string> {
   min: number;
   /** False for the column that names the row: it always shows. */
   hideable?: boolean;
+  /** True for a column that is hidden until the user shows it (Columns). */
+  hiddenByDefault?: boolean;
 }
 
 /** Rows per page to pick from; 20 until one is picked. */
@@ -20,8 +22,9 @@ const DEFAULT_PAGE_SIZE = 20;
 
 /**
  * What a user changes about a table, kept per browser under `storageKey` (`.hidden-columns`, `.column-widths`,
- * `.page-size`): the columns shown, their widths and the rows per page. A column added later shows until it is
- * hidden. `actionsWidth` is the fixed width of a last column with the row's buttons (0 without one).
+ * `.page-size`, `.shown-columns`): the columns shown, their widths and the rows per page. Columns marked
+ * `hiddenByDefault` are hidden until the user shows them; any other column shows until it is hidden. `actionsWidth`
+ * is the fixed width of a last column with the row's buttons (0 without one).
  *
  * Until a column is resized the browser lays the table out; once resized the table has a fixed layout exactly as wide
  * as its columns. Pass `tableProps` to the `Table`, `thStyle(column)` to each header cell and `actionsStyle` to the
@@ -36,11 +39,28 @@ export function useTableLayout<K extends string>({
   columns: TableColumn<K>[];
   actionsWidth?: number;
 }) {
-  const [hidden, setHidden] = useLocalStorage<K[]>({
+  // Columns the user hid, and the hiddenByDefault columns the user showed. Kept apart, so a column marked
+  // hiddenByDefault later is hidden also in browsers that already stored a choice.
+  const [hiddenByUser, setHiddenByUser] = useLocalStorage<K[]>({
     key: `${storageKey}.hidden-columns`,
     defaultValue: [],
     getInitialValueInEffect: false,
   });
+  const [shownByUser, setShownByUser] = useLocalStorage<K[]>({
+    key: `${storageKey}.shown-columns`,
+    defaultValue: [],
+    getInitialValueInEffect: false,
+  });
+  const hiddenByDefault = columns.filter((c) => c.hiddenByDefault).map((c) => c.key);
+  const hidden: K[] = [
+    ...hiddenByUser.filter((key) => !hiddenByDefault.includes(key)),
+    ...hiddenByDefault.filter((key) => !shownByUser.includes(key)),
+  ];
+  /** Stores which columns are hidden: hiddenByDefault columns as "shown by the user", the others as hidden. */
+  const setHidden = (keys: K[]) => {
+    setHiddenByUser(keys.filter((key) => !hiddenByDefault.includes(key)));
+    setShownByUser(hiddenByDefault.filter((key) => !keys.includes(key)));
+  };
   const [storedPageSize, setPageSize] = useLocalStorage<number>({
     key: `${storageKey}.page-size`,
     defaultValue: DEFAULT_PAGE_SIZE,
