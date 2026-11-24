@@ -39,6 +39,25 @@ async function authorizationFor(url: string): Promise<string | undefined> {
   return token ? `Bearer ${token}` : undefined;
 }
 
+/**
+ * The library (tenant) an admin is viewing read-only, or undefined for the user's own (ADR013). Set by the admin
+ * library view; content requests then carry it in the X-KG-Tenant header.
+ */
+let viewedTenantId: number | undefined;
+
+export function setViewedTenant(tenantId: number | undefined) {
+  viewedTenantId = tenantId;
+}
+
+/** The header that makes a content request read the viewed library; only content requests carry it. */
+function tenantHeaderFor(url: string): string | undefined {
+  if (viewedTenantId === undefined) return undefined;
+  const path = new URL(url, window.location.origin).pathname;
+  return path.startsWith('/api/content/') ? String(viewedTenantId) : undefined;
+}
+
+export const TENANT_HEADER = 'X-KG-Tenant';
+
 function checkSession(response: Response, sentToken: boolean) {
   if (response.status === 401 && sentToken) apiAuth?.onUnauthorized();
 }
@@ -47,6 +66,8 @@ api.use({
   async onRequest({ request }) {
     const authorization = await authorizationFor(request.url);
     if (authorization) request.headers.set('Authorization', authorization);
+    const tenant = tenantHeaderFor(request.url);
+    if (tenant) request.headers.set(TENANT_HEADER, tenant);
     return request;
   },
   onResponse({ request, response }) {
@@ -60,6 +81,8 @@ export async function authFetch(url: string, init: RequestInit = {}): Promise<Re
   const authorization = await authorizationFor(url);
   const headers = new Headers(init.headers);
   if (authorization) headers.set('Authorization', authorization);
+  const tenant = tenantHeaderFor(url);
+  if (tenant) headers.set(TENANT_HEADER, tenant);
   const response = await fetch(url, { ...init, headers });
   checkSession(response, authorization !== undefined);
   return response;
@@ -68,7 +91,11 @@ export async function authFetch(url: string, init: RequestInit = {}): Promise<Re
 /** Headers for a request made by a library (e.g. PDF.js), with the access token when sign-in is on. */
 export async function authHeaders(url: string): Promise<Record<string, string>> {
   const authorization = await authorizationFor(url);
-  return authorization ? { Authorization: authorization } : {};
+  const tenant = tenantHeaderFor(url);
+  return {
+    ...(authorization ? { Authorization: authorization } : {}),
+    ...(tenant ? { [TENANT_HEADER]: tenant } : {}),
+  };
 }
 
 /** Whether file links need a token, so they must be fetched by script instead of opened as plain links. */

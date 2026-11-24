@@ -17,6 +17,7 @@ import {
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import {
   IconBooks,
+  IconBuildingWarehouse,
   IconChecklist,
   IconClipboardCheck,
   IconInfoCircle,
@@ -29,6 +30,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { ColorSchemeToggle, Wordmark } from '@/shared/components';
 import { useApplyStoredTheme } from '@/shared/themePreference';
 import { FEEDBACK_MAILTO, PRIVACY_URL, TERMS_URL } from '@/shared/siteLinks';
+import { useMe } from '@/api/account';
 import { BetaBanner } from './BetaBanner';
 import { useSession } from './auth';
 
@@ -120,6 +122,22 @@ function UserBox({ onNavigate }: { onNavigate: () => void }) {
   );
 }
 
+/** Small uppercase heading of a group of sidebar links. */
+function NavHeading({ children }: { children: string }) {
+  return (
+    <Text
+      size="xs"
+      fw={700}
+      c="rgba(219,225,255,0.45)"
+      tt="uppercase"
+      px="xs"
+      style={{ letterSpacing: '0.1em' }}
+    >
+      {children}
+    </Text>
+  );
+}
+
 /** Small links at the bottom of the sidebar. */
 const SIDEBAR_LINKS = [
   { label: 'Privacy', href: PRIVACY_URL },
@@ -135,6 +153,8 @@ export function Layout() {
   const { pathname } = useLocation();
   // Below the "sm" breakpoint the sidebar is hidden behind a burger in a top bar.
   const isMobile = useMediaQuery('(max-width: 48em)');
+  const { data: me } = useMe();
+  const isAdmin = !!me?.roles?.includes('ADMIN');
 
   return (
     <AppShell
@@ -173,16 +193,7 @@ export function Layout() {
           </Button>
 
           <Stack gap={4}>
-            <Text
-              size="xs"
-              fw={700}
-              c="rgba(219,225,255,0.45)"
-              tt="uppercase"
-              px="xs"
-              style={{ letterSpacing: '0.1em' }}
-            >
-              Workspace
-            </Text>
+            <NavHeading>Workspace</NavHeading>
             {NAV.map(({ to, label, icon: Icon, isActive }) => (
               <NavLink
                 key={to}
@@ -196,6 +207,22 @@ export function Layout() {
               />
             ))}
           </Stack>
+
+          {/* Admins look into every library, read-only (ADR013). */}
+          {isAdmin && (
+            <Stack gap={4}>
+              <NavHeading>Administration</NavHeading>
+              <NavLink
+                component={Link}
+                to="/admin/libraries"
+                label="Libraries"
+                className="kg-nav-link"
+                leftSection={<IconBuildingWarehouse size={20} stroke={1.6} />}
+                active={pathname.startsWith('/admin/libraries')}
+                onClick={close}
+              />
+            </Stack>
+          )}
 
           <Box mt="auto" className="kg-sidebar-card">
             <Group gap="xs" mb={6} wrap="nowrap">

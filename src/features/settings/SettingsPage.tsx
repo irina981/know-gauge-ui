@@ -194,7 +194,7 @@ function ProfileTab() {
           </Box>
         </Group>
         <Stack gap="xs">
-          <Field label="Workspace">{me?.tenantName ?? '—'}</Field>
+          <Field label="Library">{me?.tenantName ?? '—'}</Field>
           {session.enabled && <Field label="Member since">{formatDate(me?.createdAt)}</Field>}
           <Field label="Plan">Free beta</Field>
         </Stack>
@@ -363,7 +363,7 @@ function UsageTab() {
   return (
     <Stack gap="lg">
       <Section
-        title="Your workspace"
+        title="Your library"
         description="What you keep in My library. The shared library is not counted."
       >
         <SimpleGrid cols={{ base: 1, xs: 3 }} spacing="md">

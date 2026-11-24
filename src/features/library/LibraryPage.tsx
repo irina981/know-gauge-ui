@@ -14,8 +14,10 @@ import {
   Tooltip,
 } from '@mantine/core';
 import {
+  IconArrowLeft,
   IconBooks,
   IconDots,
+  IconEye,
   IconFileImport,
   IconFolderOpen,
   IconFolderPlus,
@@ -64,8 +66,17 @@ function saveLibraryView(view: LibraryView) {
   }
 }
 
-/** Topics on the left, the selected topic and its documents on the right. */
-export function LibraryPage() {
+/** Another user's library an admin is viewing, read-only (ADR013). */
+export interface ViewedLibrary {
+  tenantId: number;
+  name: string;
+}
+
+/**
+ * Topics on the left, the selected topic and its documents on the right. With `viewed`, an admin looks at another
+ * user's library: the same view, read-only, without the shared library.
+ */
+export function LibraryPage({ viewed }: { viewed?: ViewedLibrary } = {}) {
   const params = useParams();
   const selectedId = params.topicId ? Number(params.topicId) : undefined;
   const navigate = useNavigate();
@@ -75,13 +86,15 @@ export function LibraryPage() {
   const [formTarget, setFormTarget] = useState<TopicFormTarget | null>(null);
   const [importOpen, setImportOpen] = useState(false);
 
-  const select = (id: number) => navigate(`/library/topics/${id}`);
+  const basePath = viewed ? `/admin/libraries/${viewed.tenantId}` : '/library';
+  const select = (id: number) => navigate(`${basePath}/topics/${id}`);
   const selected = selectedId != null ? tree?.byId.get(selectedId) : undefined;
 
   // The tree shows one library at a time: the user's own topics or the shared library (ADR010). An open topic
-  // decides which one (a link may point into either); otherwise the last choice, kept in this browser.
+  // decides which one (a link may point into either); otherwise the last choice, kept in this browser. A viewed
+  // library shows only its own topics.
   const [chosenLibrary, setChosenLibrary] = useState<LibraryView>(loadLibraryView);
-  const hasShared = !!tree?.roots.some((t) => t.shared);
+  const hasShared = !viewed && !!tree?.roots.some((t) => t.shared);
   const library: LibraryView = !hasShared
     ? 'mine'
     : selected
@@ -100,7 +113,7 @@ export function LibraryPage() {
   // A topic stands for its whole subtree in test generation, so a parent topic without documents of its own can
   // be used as long as an ingested document exists somewhere below it. The counts refresh after ingestion.
   const { data: ingestedCounts } = useIngestedDocumentCounts();
-  const canGenerate = !!selected && !!ingestedCounts && subtreeCount(selected, ingestedCounts) > 0;
+  const canGenerate = !viewed && !!selected && !!ingestedCounts && subtreeCount(selected, ingestedCounts) > 0;
 
   const handleDelete = (topic: TopicNode) =>
     confirmDelete({
@@ -116,32 +129,47 @@ export function LibraryPage() {
     // On desktop the page fills the window: both panels reach the bottom and scroll inside (brand.css).
     <div className="kg-library-page">
       <PageHeader
-        eyebrow="Knowledge base"
-        title="Library"
-        description="Organise your source material in topics. Uploaded PDFs are indexed so every test is grounded in them."
-        icon={IconBooks}
+        eyebrow={viewed ? 'Administration · read-only' : 'Knowledge base'}
+        title={viewed ? `${viewed.name} · library` : 'Library'}
+        description={
+          viewed
+            ? 'You are viewing another user’s library as an admin. You can open and download, but not change anything.'
+            : 'Organise your source material in topics. Uploaded PDFs are indexed so every test is grounded in them.'
+        }
+        icon={viewed ? IconEye : IconBooks}
         actions={
-          <>
+          viewed ? (
             <Button
+              component={Link}
+              to="/admin/libraries"
               variant="default"
-              leftSection={<IconFileImport size={16} />}
-              onClick={() => setImportOpen(true)}
+              leftSection={<IconArrowLeft size={16} />}
             >
-              Import tree
+              All libraries
             </Button>
-            {/* The dialog preselects the selected topic as parent; clear it for a top-level topic. */}
-            <Button
-              leftSection={<IconPlus size={16} />}
-              onClick={() =>
-                setFormTarget({
-                  mode: 'create',
-                  parent: selected && !selected.readOnly ? selected : undefined,
-                })
-              }
-            >
-              New topic
-            </Button>
-          </>
+          ) : (
+            <>
+              <Button
+                variant="default"
+                leftSection={<IconFileImport size={16} />}
+                onClick={() => setImportOpen(true)}
+              >
+                Import tree
+              </Button>
+              {/* The dialog preselects the selected topic as parent; clear it for a top-level topic. */}
+              <Button
+                leftSection={<IconPlus size={16} />}
+                onClick={() =>
+                  setFormTarget({
+                    mode: 'create',
+                    parent: selected && !selected.readOnly ? selected : undefined,
+                  })
+                }
+              >
+                New topic
+              </Button>
+            </>
+          )
         }
       />
 
@@ -179,14 +207,18 @@ export function LibraryPage() {
           )}
           {tree && (
             <Text size="xs" c="dimmed" px={6} pt="xs" pb={6}>
-              {library === 'shared'
-                ? 'Sample topics for everyone. Generate tests from them; they can’t be changed.'
-                : 'Your own topics and documents. Only you can see them.'}
+              {viewed
+                ? `Topics and documents of ${viewed.name}.`
+                : library === 'shared'
+                  ? 'Sample topics for everyone. Generate tests from them; they can’t be changed.'
+                  : 'Your own topics and documents. Only you and KnowGauge admins can see them.'}
             </Text>
           )}
           {tree && libraryRoots.length === 0 && (
             <EmptyState title="No topics yet" icon={IconFolders}>
-              Create a topic with New topic to upload your own PDFs.
+              {viewed
+                ? 'This library has no topics yet.'
+                : 'Create a topic with New topic to upload your own PDFs.'}
             </EmptyState>
           )}
           {tree && libraryRoots.length > 0 && (
@@ -203,7 +235,9 @@ export function LibraryPage() {
                 title={selectedId != null && tree ? 'Topic not found' : 'Select a topic'}
                 icon={IconFolders}
               >
-                Pick a topic on the left to see and upload its documents.
+                {viewed
+                  ? 'Pick a topic on the left to see its documents.'
+                  : 'Pick a topic on the left to see and upload its documents.'}
               </EmptyState>
             </Paper>
           ) : (
@@ -244,7 +278,8 @@ export function LibraryPage() {
                         Add sub-topic
                       </Button>
                     )}
-                    {canGenerate ? (
+                    {/* An admin viewing another library only looks: no generation there (ADR013). */}
+                    {viewed ? null : canGenerate ? (
                       <Button
                         component={Link}
                         to={`/tests/new?topicId=${selected.id}`}

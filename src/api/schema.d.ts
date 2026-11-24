@@ -862,6 +862,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/tenants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List all tenants
+         * @description Every tenant (user workspaces and libraries) with its type, owner and content counts, by name. An ADMIN reads any of them through the normal content API: send the tenant id in the X-KG-Tenant header on GET /api/content/** requests, which then return that tenant's content, read-only (ADR013).
+         */
+        get: operations["tenants"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2080,6 +2100,27 @@ export interface components {
         PagedModelDocumentDto: {
             content?: components["schemas"]["DocumentDto"][];
             page?: components["schemas"]["PageMetadata"];
+        };
+        /** @description A tenant for admins: type, owner and how much content it holds (ADR013) */
+        TenantSummaryDto: {
+            /**
+             * Format: int64
+             * @description Tenant id; send it in the X-KG-Tenant header to read this tenant's content
+             */
+            tenantId?: number;
+            name?: string;
+            /** @enum {string} */
+            type?: "INDIVIDUAL" | "ORGANIZATION" | "LIBRARY";
+            /** Format: int64 */
+            ownerUserId?: number;
+            ownerName?: string;
+            ownerEmail?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: int64 */
+            topics?: number;
+            /** Format: int64 */
+            documents?: number;
         };
     };
     responses: never;
@@ -3780,6 +3821,44 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["AttemptDetailDto"];
+                };
+            };
+        };
+    };
+    tenants: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Tenants returned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TenantSummaryDto"][];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TenantSummaryDto"][];
+                };
+            };
+            /** @description Not an ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TenantSummaryDto"][];
                 };
             };
         };

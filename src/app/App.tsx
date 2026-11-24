@@ -12,6 +12,8 @@ import { PublicLayout } from '@/features/public/PublicLayout';
 import { PublicAttemptPage, PublicResultsPage } from '@/features/public/PublicAttemptPage';
 import { InvitationPage, SharedLinkPage } from '@/features/public/StartTestPage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
+import { LibrariesPage } from '@/features/admin/LibrariesPage';
+import { ViewedLibraryPage } from '@/features/admin/ViewedLibraryPage';
 import { GenerateTestPage } from '@/features/tests/GenerateTestPage';
 import { TestsPage } from '@/features/tests/TestsPage';
 import { TestReviewPage } from '@/features/review/TestReviewPage';
@@ -53,6 +55,10 @@ const router = createBrowserRouter([
           { path: 'about', element: <AboutPage /> },
           { path: 'settings', element: <Navigate to="/settings/profile" replace /> },
           { path: 'settings/:tab', element: <SettingsPage /> },
+          // Admins only (ADR013); the API refuses everyone else.
+          { path: 'admin/libraries', element: <LibrariesPage /> },
+          { path: 'admin/libraries/:tenantId', element: <ViewedLibraryPage /> },
+          { path: 'admin/libraries/:tenantId/topics/:topicId', element: <ViewedLibraryPage /> },
           { path: '*', element: <Navigate to="/library" replace /> },
         ],
       },

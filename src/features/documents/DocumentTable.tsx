@@ -47,9 +47,7 @@ export function DocumentTable({
   if (!data?.content.length) {
     return (
       <EmptyState title="No documents yet">
-        {topicReadOnly
-          ? 'This topic has no documents of its own; its sub-topics hold them.'
-          : 'Upload a PDF above to add it to this topic.'}
+        {topicReadOnly ? 'No documents in this topic.' : 'Upload a PDF above to add it to this topic.'}
       </EmptyState>
     );
   }
