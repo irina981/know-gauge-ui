@@ -78,19 +78,19 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * List a workspace's settings
-         * @description The workspace-level settings (for now the workspace limits) of one workspace: the system value, the workspace's own value if it has one, and the value in effect (ADR014).
+         * List a tenant's settings
+         * @description The tenant-level settings (for now the tenant limits) of one tenant: the system value, the tenant's own value if it has one, and the value in effect (ADR014).
          */
         get: operations["tenantSettings"];
         /**
-         * Save a workspace's settings
-         * @description Saves the workspace's own values, which override the system values for it and apply at once. An empty value removes the workspace's own value. For a limit, 0 means no limit. All values are checked first: if one does not fit, nothing is saved.
+         * Save a tenant's settings
+         * @description Saves the tenant's own values, which override the system values for it and apply at once. An empty value removes the tenant's own value. For a limit, 0 means no limit. All values are checked first: if one does not fit, nothing is saved.
          */
         put: operations["saveTenantSettings"];
         post?: never;
         /**
-         * Reset a workspace's settings
-         * @description Removes all of the workspace's own values, so the system values apply to it again.
+         * Reset a tenant's settings
+         * @description Removes all of the tenant's own values, so the system values apply to it again.
          */
         delete: operations["resetTenantSettings"];
         options?: never;
@@ -971,7 +971,7 @@ export interface paths {
         };
         /**
          * List tenants (filtered, sorted, paged)
-         * @description Tenants (user workspaces and libraries) with their type, owner and content counts. search matches the name and the owner's name or email; type keeps one tenant type. Sort by name (default), type, owner, topics, documents, storage (bytes of documents), usage (this month's tokens) or createdAt. Each tenant comes with its storage and its LLM tokens this calendar month (UTC), each with its limit. An ADMIN reads any of them through the normal content API: send the tenant id in the X-KG-Tenant header on GET requests to the workspace APIs, which then return that tenant's data, read-only (ADR013).
+         * @description Tenants (user workspaces and libraries) with their type, owner and content counts. search matches the name and the owner's name or email; type keeps one tenant type. Sort by name (default), type, owner, topics, documents, storage (bytes of documents), usage (this month's tokens) or createdAt. Each tenant comes with its storage and its LLM tokens this calendar month (UTC), each with its limit. An ADMIN reads any of them through the normal content API: send the tenant id in the X-KG-Tenant header on GET requests to the tenant APIs, which then return that tenant's data, read-only (ADR013).
          */
         get: operations["tenants"];
         put?: never;
@@ -1241,15 +1241,15 @@ export interface components {
             /** @description Direct child topics */
             children?: components["schemas"]["TopicDto"][];
         };
-        /** @description A workspace's own setting values (the Limits dialog's Save) */
-        WorkspaceSettingsInput: {
-            /** @description Values as text by setting key; an empty value removes the workspace's own value, so the system value applies. For a limit, 0 means no limit */
+        /** @description A tenant's own setting values (the Limits dialog's Save) */
+        TenantSettingsInput: {
+            /** @description Values as text by setting key; an empty value removes the tenant's own value, so the system value applies. For a limit, 0 means no limit */
             values: {
                 [key: string]: string;
             };
         };
-        /** @description A workspace-level setting of one workspace (ADR014): the system value, the workspace's own value, and the value in effect for it */
-        WorkspaceSettingDto: {
+        /** @description A tenant-level setting of one tenant (ADR014): the system value, the tenant's own value, and the value in effect for it */
+        TenantSettingDto: {
             /** @description The property name, e.g. kg.settings.tenant.monthly-token-limit */
             key?: string;
             label?: string;
@@ -1268,9 +1268,9 @@ export interface components {
             max?: number;
             /** @description The system value in effect; null when empty */
             systemValue?: string;
-            /** @description The workspace's own value; null when it uses the system value */
+            /** @description The tenant's own value; null when it uses the system value */
             ownValue?: string;
-            /** @description The value in effect for the workspace */
+            /** @description The value in effect for the tenant */
             value?: string;
         };
         /** @description New values for system settings (the page's Save) */
@@ -1314,8 +1314,8 @@ export interface components {
             value?: string;
             /** @description Values to offer for a TEXT setting, e.g. model names from the price catalog; other text is allowed */
             suggestions?: string[];
-            /** @description Whether a workspace may have a value of its own, overriding this one (ADR014) */
-            workspaceLevel?: boolean;
+            /** @description Whether a tenant may have a value of its own, overriding this one (ADR014) */
+            tenantLevel?: boolean;
         };
         /** @description The price of a model, in US dollars per million tokens */
         TokenPriceInput: {
@@ -2284,7 +2284,7 @@ export interface components {
              */
             createdAt?: string;
         };
-        /** @description What the user's workspace holds, and what it used in the current calendar month (UTC). The shared library is not counted. */
+        /** @description What the user's tenant holds, and what it used in the current calendar month (UTC). The shared library is not counted. */
         UsageSummaryDto: {
             /**
              * Format: date-time
@@ -2341,12 +2341,12 @@ export interface components {
             unpricedModels?: string[];
             /**
              * Format: int64
-             * @description LLM tokens (input + output) the workspace may use per month; null for no limit
+             * @description LLM tokens (input + output) the tenant may use per month; null for no limit
              */
             llmTokenLimit?: number;
             /**
              * Format: int64
-             * @description Bytes of documents the workspace may keep; null for no limit. An upload over it is refused
+             * @description Bytes of documents the tenant may keep; null for no limit. An upload over it is refused
              */
             storageLimitBytes?: number;
         };
@@ -2399,7 +2399,7 @@ export interface components {
             tenantId?: number;
             name?: string;
             /** @enum {string} */
-            type?: "INDIVIDUAL" | "ORGANIZATION" | "LIBRARY";
+            type?: "PERSONAL" | "ORGANIZATION" | "LIBRARY";
             /** Format: int64 */
             ownerUserId?: number;
             ownerName?: string;
@@ -2729,7 +2729,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                    "*/*": components["schemas"]["TenantSettingDto"][];
                 };
             };
             /** @description Not an ADMIN */
@@ -2738,7 +2738,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                    "*/*": components["schemas"]["TenantSettingDto"][];
                 };
             };
             /** @description No such tenant */
@@ -2747,7 +2747,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                    "*/*": components["schemas"]["TenantSettingDto"][];
                 };
             };
         };
@@ -2763,17 +2763,17 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["WorkspaceSettingsInput"];
+                "application/json": components["schemas"]["TenantSettingsInput"];
             };
         };
         responses: {
-            /** @description Settings saved; the workspace's settings returned */
+            /** @description Settings saved; the tenant's settings returned */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                    "*/*": components["schemas"]["TenantSettingDto"][];
                 };
             };
             /** @description A value does not fit, or the setting applies to the whole system only */
@@ -2782,7 +2782,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                    "*/*": components["schemas"]["TenantSettingDto"][];
                 };
             };
             /** @description Not an ADMIN */
@@ -2791,7 +2791,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                    "*/*": components["schemas"]["TenantSettingDto"][];
                 };
             };
             /** @description No such tenant or setting */
@@ -2800,7 +2800,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                    "*/*": components["schemas"]["TenantSettingDto"][];
                 };
             };
         };
@@ -2816,13 +2816,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Settings reset; the workspace's settings returned */
+            /** @description Settings reset; the tenant's settings returned */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                    "*/*": components["schemas"]["TenantSettingDto"][];
                 };
             };
             /** @description Not an ADMIN */
@@ -2831,7 +2831,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                    "*/*": components["schemas"]["TenantSettingDto"][];
                 };
             };
             /** @description No such tenant */
@@ -2840,7 +2840,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                    "*/*": components["schemas"]["TenantSettingDto"][];
                 };
             };
         };

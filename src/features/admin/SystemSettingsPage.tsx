@@ -95,7 +95,7 @@ function SettingRow({
           </Tooltip>
         )
       )}
-      {setting.workspaceLevel && (
+      {setting.tenantLevel && (
         <Tooltip label="A workspace may have a value of its own, which wins over this one (Workspaces → Limits)">
           <Badge size="xs" variant="light" color="gray">
             Per workspace

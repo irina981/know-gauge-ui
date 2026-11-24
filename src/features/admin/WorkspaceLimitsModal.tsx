@@ -1,7 +1,7 @@
 import { Badge, Button, Group, Modal, NumberInput, Stack, Text } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useResetWorkspaceSettings, useSaveWorkspaceSettings, useWorkspaceSettings } from '@/api/admin';
-import type { TenantSummaryDto, WorkspaceSettingDto } from '@/api/types';
+import type { TenantSummaryDto, TenantSettingDto } from '@/api/types';
 import { ErrorAlert, PageLoader } from '@/shared/components';
 
 const integerFormat = new Intl.NumberFormat();
@@ -13,7 +13,7 @@ function limitText(value?: string | null): string {
 }
 
 /** What a field means: the workspace's own value, or the system value it falls back to. */
-function hint(setting: WorkspaceSettingDto, draft: string): string {
+function hint(setting: TenantSettingDto, draft: string): string {
   if (draft === '') return `Uses the system value: ${limitText(setting.systemValue)}.`;
   if (Number(draft) === 0) return `Own value: no limit (system: ${limitText(setting.systemValue)}).`;
   return `Own value (system: ${limitText(setting.systemValue)}).`;

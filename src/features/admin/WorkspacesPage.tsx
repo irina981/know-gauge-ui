@@ -40,7 +40,7 @@ const PAGE_SIZE = 20;
 
 /** Tenant types as the UI names them (a tenant is a "library" there, its owner's "workspace"). */
 const TYPE_LABELS: Record<string, string> = {
-  INDIVIDUAL: 'Personal',
+  PERSONAL: 'Personal',
   ORGANIZATION: 'Organization',
   LIBRARY: 'Shared library',
 };
