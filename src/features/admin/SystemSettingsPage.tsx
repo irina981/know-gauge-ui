@@ -12,15 +12,27 @@ import {
   SimpleGrid,
   Stack,
   Table,
+  Tabs,
   Text,
   TextInput,
   Title,
   Tooltip,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
-import { IconAdjustments, IconPencil, IconRestore, IconSearch, IconTrash } from '@tabler/icons-react';
+import {
+  IconAdjustments,
+  IconGauge,
+  IconPencil,
+  IconRestore,
+  IconSearch,
+  IconSettings,
+  IconTrash,
+  type Icon,
+} from '@tabler/icons-react';
 import { Fragment, useEffect, useState, type ReactNode } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   useDeleteTokenPrice,
   useEmbeddingInfo,
@@ -177,16 +189,52 @@ function SettingRow({
   );
 }
 
+/** The setting types (setting_configs.setting_type on the server), one vertical tab each, in this order. */
+const SETTING_TYPES: { type: string; tab: string; label: string; icon: Icon; description: string }[] = [
+  {
+    type: 'CONFIG',
+    tab: 'configuration',
+    label: 'Configuration',
+    icon: IconSettings,
+    description:
+      'Values start from the properties files; a value saved here overrides them, also after restarts.',
+  },
+  {
+    type: 'LIMIT',
+    tab: 'limits',
+    label: 'Limits',
+    icon: IconGauge,
+    description:
+      'Values start from the properties files; a value saved here overrides them, also after restarts. A setting marked Per workspace may also have a value of its own in a workspace (Workspaces → Limits).',
+  },
+];
+
 /**
- * Settings that start from the properties files and can be overridden here. "Save changes" stores every changed
- * value at once (nothing is saved if one does not fit); "Reset to defaults" removes every override from the database.
- * An override applies at once and again after every restart.
+ * Settings that start from the properties files and can be overridden here, on one vertical tab per setting type.
+ * "Save changes" stores every changed value of all tabs at once (nothing is saved if one does not fit); "Reset to
+ * defaults" removes every override from the database. An override applies at once and again after every restart.
  */
 function SystemSettingsSections({ after }: { after: Record<string, ReactNode> }) {
   const { data, isLoading, error } = useSystemSettings();
   const save = useSaveSystemSettings();
   const reset = useResetSystemSettings();
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  // The open tab is in the address (?tab=limits), so a reload or a shared link keeps it.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const narrow = useMediaQuery('(max-width: 48em)');
+  const tab = SETTING_TYPES.some((t) => t.tab === searchParams.get('tab'))
+    ? searchParams.get('tab')!
+    : SETTING_TYPES[0].tab;
+  const openTab = (value: string | null) =>
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        if (!value || value === SETTING_TYPES[0].tab) next.delete('tab');
+        else next.set('tab', value);
+        return next;
+      },
+      { replace: true },
+    );
 
   // Start from the values in effect, and follow them after a save or reset.
   useEffect(() => {
@@ -231,12 +279,17 @@ function SystemSettingsSections({ after }: { after: Record<string, ReactNode> })
         }),
     });
 
-  // Keep the server's order: groups appear in the order of their first setting.
-  const groups = new Map<string, SystemSettingDto[]>();
-  for (const setting of data) {
-    const group = setting.group ?? 'Other';
-    groups.set(group, [...(groups.get(group) ?? []), setting]);
-  }
+  // Per type, keep the server's order: groups appear in the order of their first setting.
+  const groupsOf = (type: string) => {
+    const groups = new Map<string, SystemSettingDto[]>();
+    for (const setting of data.filter((s) => (s.settingType ?? 'CONFIG') === type)) {
+      const group = setting.group ?? 'Other';
+      groups.set(group, [...(groups.get(group) ?? []), setting]);
+    }
+    return groups;
+  };
+  const changesOf = (type: string) =>
+    data.filter((s) => (s.settingType ?? 'CONFIG') === type && s.key! in changes).length;
 
   return (
     <>
@@ -270,31 +323,67 @@ function SystemSettingsSections({ after }: { after: Record<string, ReactNode> })
           </Group>
         </Group>
       </Paper>
-      {[...groups.entries()].map(([group, settings]) => (
-        <Fragment key={group}>
-          <Section
-            title={group}
-            description={
-              group === 'Workspace limits'
-                ? 'Apply to every workspace. Values start from the properties files; a value saved here overrides them.'
-                : 'Values start from the properties files; a value saved here overrides them, also after restarts.'
-            }
-          >
+      <Tabs
+        value={tab}
+        onChange={openTab}
+        orientation={narrow ? 'horizontal' : 'vertical'}
+        variant="pills"
+        keepMounted={false}
+      >
+        <Tabs.List
+          mb={narrow ? 'md' : undefined}
+          mr={narrow ? undefined : 'lg'}
+          miw={narrow ? undefined : 180}
+        >
+          {SETTING_TYPES.map(({ type, tab: value, label, icon: TabIcon }) => {
+            const unsaved = changesOf(type);
+            return (
+              <Tabs.Tab
+                key={value}
+                value={value}
+                leftSection={<TabIcon size={16} />}
+                rightSection={
+                  unsaved > 0 && (
+                    <Tooltip label={`${unsaved} unsaved ${unsaved === 1 ? 'change' : 'changes'}`}>
+                      <Badge size="xs" variant="filled" color="yellow" circle>
+                        {unsaved}
+                      </Badge>
+                    </Tooltip>
+                  )
+                }
+              >
+                {label}
+              </Tabs.Tab>
+            );
+          })}
+        </Tabs.List>
+        {SETTING_TYPES.map(({ type, tab: value, description }) => (
+          <Tabs.Panel key={value} value={value} style={{ minWidth: 0 }}>
             <Stack gap="lg">
-              {settings.map((setting) => (
-                <SettingRow
-                  key={setting.key}
-                  setting={setting}
-                  draft={draftOf(setting)}
-                  onChange={(value) => setDrafts((current) => ({ ...current, [setting.key!]: value }))}
-                />
+              {[...groupsOf(type).entries()].map(([group, settings]) => (
+                <Fragment key={group}>
+                  <Section title={group} description={description}>
+                    <Stack gap="lg">
+                      {settings.map((setting) => (
+                        <SettingRow
+                          key={setting.key}
+                          setting={setting}
+                          draft={draftOf(setting)}
+                          onChange={(value) =>
+                            setDrafts((current) => ({ ...current, [setting.key!]: value }))
+                          }
+                        />
+                      ))}
+                    </Stack>
+                  </Section>
+                  {/* E.g. the token prices right under the AI models. */}
+                  {after[group]}
+                </Fragment>
               ))}
             </Stack>
-          </Section>
-          {/* E.g. the token prices right under the AI models. */}
-          {after[group]}
-        </Fragment>
-      ))}
+          </Tabs.Panel>
+        ))}
+      </Tabs>
     </>
   );
 }
