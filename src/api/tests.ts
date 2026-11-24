@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
+import { accountKeys } from './account';
 import { api, unwrap, unwrapVoid } from './client';
 import type { TestDto, TestInput } from './types';
 
@@ -56,8 +57,12 @@ export function useGenerateTest() {
         message: `${test.name ?? `Test #${test.id}`} is ready.`,
       });
     },
-    // A failed generation still creates a FAILED test, so refresh the list either way.
-    onSettled: () => queryClient.invalidateQueries({ queryKey: testKeys.all }),
+    // A failed generation still creates a FAILED test, so refresh the list either way; the tokens it used
+    // count towards the monthly limit (limit banner, usage page).
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: testKeys.all });
+      queryClient.invalidateQueries({ queryKey: accountKeys.usage });
+    },
   });
 }
 

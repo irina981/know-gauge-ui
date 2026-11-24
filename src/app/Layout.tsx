@@ -32,6 +32,7 @@ import { useApplyStoredTheme } from '@/shared/themePreference';
 import { FEEDBACK_MAILTO, PRIVACY_URL, TERMS_URL } from '@/shared/siteLinks';
 import { useMe } from '@/api/account';
 import { BetaBanner } from './BetaBanner';
+import { LimitBanner } from './LimitBanner';
 import { useSession } from './auth';
 
 /** Left navigation. `isActive` decides which entry is highlighted for the current URL. */
@@ -295,6 +296,7 @@ export function Layout() {
       <AppShell.Main>
         {/* Wide cap so very large screens keep readable line lengths; below it the content uses the full width. */}
         <Box maw={1800} mx="auto" px={{ base: 0, sm: 'sm' }}>
+          <LimitBanner />
           <BetaBanner />
           <Outlet />
         </Box>

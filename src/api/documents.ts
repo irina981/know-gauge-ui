@@ -5,6 +5,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
+import { accountKeys } from './account';
 import { api, postMultipart, unwrap, unwrapVoid } from './client';
 import { topicKeys } from './topics';
 import type { DocumentDto, Page } from './types';
@@ -71,6 +72,8 @@ export function useUploadDocument() {
       return postMultipart<DocumentDto>('/api/content/documents', form);
     },
     onSuccess: (_, { topicId }) => queryClient.invalidateQueries({ queryKey: documentKeys.byTopic(topicId) }),
+    // Storage used (the limit banner and the usage page), also after a refused upload.
+    onSettled: () => queryClient.invalidateQueries({ queryKey: accountKeys.usage }),
   });
 }
 
@@ -109,6 +112,7 @@ export function useDeleteDocument() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: documentKeys.all });
       queryClient.invalidateQueries({ queryKey: topicKeys.ingestedCounts });
+      queryClient.invalidateQueries({ queryKey: accountKeys.usage });
     },
   });
 }
