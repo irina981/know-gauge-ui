@@ -2,7 +2,7 @@ import { Center, Loader } from '@mantine/core';
 import type { ReactNode } from 'react';
 import { AuthProvider } from 'react-oidc-context';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useMe } from '@/api/account';
+import { isOrganizationAdmin, useMe } from '@/api/account';
 import { userManager, useSession } from './auth';
 
 /** Keeps the signed-in user (sign-in on); passes children through unchanged when sign-in is off. */
@@ -52,6 +52,23 @@ export function RequireAdmin() {
     );
   }
   if (!me?.roles?.includes('ADMIN')) return <Navigate to="/library" replace />;
+  return <Outlet />;
+}
+
+/**
+ * Pages of an organization workspace for its tenant admins (sidebar → Users, Workspace settings). Others go to
+ * their Library.
+ */
+export function RequireOrganizationAdmin() {
+  const { data: me, isPending } = useMe();
+  if (isPending) {
+    return (
+      <Center mih={200}>
+        <Loader />
+      </Center>
+    );
+  }
+  if (!isOrganizationAdmin(me)) return <Navigate to="/library" replace />;
   return <Outlet />;
 }
 

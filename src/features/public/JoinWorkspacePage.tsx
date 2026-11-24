@@ -50,7 +50,7 @@ export function JoinWorkspacePage() {
     return <ErrorAlert error={error ?? 'Not found'} title="Could not open the invitation" />;
   }
 
-  const kind = KIND[invitation.workspaceType ?? ''] ?? 'workspace';
+  const kind = KIND[invitation.tenantType ?? ''] ?? 'workspace';
   const returnTo = `/join/${token}`;
 
   if (!signedIn) {
@@ -59,12 +59,12 @@ export function JoinWorkspacePage() {
         <Group gap="sm" mb="xs" wrap="nowrap">
           <IconBuildingCommunity size={26} color="var(--mantine-primary-color-filled)" />
           <Title order={2} fz={22}>
-            Join “{invitation.workspaceName}”
+            Join “{invitation.tenantName}”
           </Title>
         </Group>
         <Text c="dimmed" mb="lg">
-          You are invited to the {kind} “{invitation.workspaceName}” on KnowGauge. Sign in, or create an
-          account, with <b>{invitation.email}</b> to accept.
+          You are invited to the {kind} “{invitation.tenantName}” on KnowGauge. Sign in, or create an account,
+          with <b>{invitation.email}</b> to accept.
         </Text>
         <Group>
           <Button variant="gradient" onClick={() => session.signUp(returnTo)}>
@@ -93,7 +93,7 @@ export function JoinWorkspacePage() {
             <Group gap="sm" mb="xs">
               <IconCircleCheck size={24} color="var(--mantine-color-teal-6)" />
               <Title order={2} fz={22}>
-                You're a member of “{invitation.workspaceName}”
+                You're a member of “{invitation.tenantName}”
               </Title>
             </Group>
             <Text c="dimmed" mb="lg">
@@ -141,13 +141,14 @@ export function JoinWorkspacePage() {
       <Group gap="sm" mb="xs" wrap="nowrap">
         <IconBuildingCommunity size={26} color="var(--mantine-primary-color-filled)" />
         <Title order={2} fz={22}>
-          Join “{invitation.workspaceName}”
+          Join “{invitation.tenantName}”
         </Title>
       </Group>
       <Stack>
         <Text c="dimmed">
-          You are invited to the {kind} “{invitation.workspaceName}”
-          {invitation.workspaceType === 'ORGANIZATION' ? ' as one of its administrators' : ', as its owner'}.
+          You are invited to the {kind} “{invitation.tenantName}”
+          {/* An organization's invitation may give any role (ADR016), which the preview does not carry. */}
+          {invitation.tenantType === 'ORGANIZATION' ? '' : ', as its owner'}.
         </Text>
         {leaving && (
           <Alert
@@ -168,7 +169,7 @@ export function JoinWorkspacePage() {
             onClick={() =>
               accept.mutate(undefined, {
                 onSuccess: (joined) => {
-                  notifications.show({ color: 'teal', message: `You joined ${joined.workspaceName}` });
+                  notifications.show({ color: 'teal', message: `You joined ${joined.tenantName}` });
                   navigate('/library', { replace: true });
                 },
               })

@@ -25,18 +25,28 @@ import {
   IconLogout,
   IconShieldCheck,
   IconSparkles,
+  IconUsers,
 } from '@tabler/icons-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { ColorSchemeToggle, Wordmark } from '@/shared/components';
 import { useApplyStoredTheme } from '@/shared/themePreference';
 import { FEEDBACK_MAILTO, PRIVACY_URL, TERMS_URL } from '@/shared/siteLinks';
-import { useMe } from '@/api/account';
+import { isOrganizationAdmin, useMe } from '@/api/account';
 import { BetaBanner } from './BetaBanner';
 import { LimitBanner } from './LimitBanner';
 import { useSession } from './auth';
 
-/** Left navigation. `isActive` decides which entry is highlighted for the current URL. */
-const NAV = [
+/**
+ * Left navigation. `isActive` decides which entry is highlighted for the current URL; `organizationAdminOnly`
+ * entries are shown to tenant admins of an organization workspace only.
+ */
+const NAV: {
+  to: string;
+  label: string;
+  icon: typeof IconBooks;
+  isActive: (p: string) => boolean;
+  organizationAdminOnly?: boolean;
+}[] = [
   { to: '/library', label: 'Library', icon: IconBooks, isActive: (p: string) => p.startsWith('/library') },
   {
     to: '/tests',
@@ -49,6 +59,20 @@ const NAV = [
     label: 'Attempts',
     icon: IconClipboardCheck,
     isActive: (p: string) => p.startsWith('/attempts'),
+  },
+  {
+    to: '/workspace/users',
+    label: 'Users',
+    icon: IconUsers,
+    isActive: (p: string) => p.startsWith('/workspace/users'),
+    organizationAdminOnly: true,
+  },
+  {
+    to: '/workspace/settings',
+    label: 'Workspace settings',
+    icon: IconAdjustments,
+    isActive: (p: string) => p.startsWith('/workspace/settings'),
+    organizationAdminOnly: true,
   },
   { to: '/about', label: 'About', icon: IconInfoCircle, isActive: (p: string) => p === '/about' },
 ];
@@ -174,6 +198,7 @@ export function Layout() {
   const isMobile = useMediaQuery('(max-width: 48em)');
   const { data: me } = useMe();
   const isAdmin = !!me?.roles?.includes('ADMIN');
+  const nav = NAV.filter((item) => !item.organizationAdminOnly || isOrganizationAdmin(me));
 
   return (
     <AppShell
@@ -242,7 +267,7 @@ export function Layout() {
             >
               Generate test
             </Button>
-            {NAV.map(({ to, label, icon: Icon, isActive }) => (
+            {nav.map(({ to, label, icon: Icon, isActive }) => (
               <NavLink
                 key={to}
                 component={Link}

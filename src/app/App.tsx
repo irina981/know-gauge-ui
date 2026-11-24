@@ -19,7 +19,15 @@ import { WorkspaceScope } from './WorkspaceScope';
 import { GenerateTestPage } from '@/features/tests/GenerateTestPage';
 import { TestsPage } from '@/features/tests/TestsPage';
 import { TestReviewPage } from '@/features/review/TestReviewPage';
-import { AuthCallbackPage, KgAuthProvider, RequireAdmin, RequireAuth } from './AuthRoutes';
+import { WorkspaceSettingsPage } from '@/features/workspace/WorkspaceSettingsPage';
+import { WorkspaceUsersPage } from '@/features/workspace/WorkspaceUsersPage';
+import {
+  AuthCallbackPage,
+  KgAuthProvider,
+  RequireAdmin,
+  RequireAuth,
+  RequireOrganizationAdmin,
+} from './AuthRoutes';
 import { Layout } from './Layout';
 import { queryClient } from './queryClient';
 import { theme } from './theme';
@@ -57,6 +65,14 @@ const router = createBrowserRouter([
           { path: 'attempts', element: <AttemptsPage /> },
           { path: 'attempts/:attemptId', element: <AttemptPage /> },
           { path: 'about', element: <AboutPage /> },
+          // Tenant admins of an organization workspace only; everyone else is sent to their Library.
+          {
+            element: <RequireOrganizationAdmin />,
+            children: [
+              { path: 'workspace/users', element: <WorkspaceUsersPage /> },
+              { path: 'workspace/settings', element: <WorkspaceSettingsPage /> },
+            ],
+          },
           { path: 'settings', element: <Navigate to="/settings/profile" replace /> },
           { path: 'settings/:tab', element: <SettingsPage /> },
           // Admins only (ADR013): everyone else is sent to their Library (the API would refuse them too).

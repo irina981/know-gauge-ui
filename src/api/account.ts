@@ -37,3 +37,9 @@ export function useUpdatePreferences() {
 export function useUsage() {
   return useQuery({ queryKey: accountKeys.usage, queryFn: () => unwrap(api.GET('/api/me/usage')) });
 }
+
+/** A tenant admin of an organization workspace (ADR015), who sees its Users and Workspace settings. */
+export function isOrganizationAdmin(me: { tenantType?: string; roles?: string[] } | undefined) {
+  return me?.tenantType === 'ORGANIZATION' && !!me.roles?.includes('TENANT_ADMIN');
+}
+

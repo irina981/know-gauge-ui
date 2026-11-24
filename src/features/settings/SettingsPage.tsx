@@ -1,7 +1,6 @@
 import {
   Anchor,
   Avatar,
-  Badge,
   Box,
   Button,
   Group,
@@ -45,6 +44,7 @@ import { useSession } from '@/app/auth';
 import { config } from '@/app/config';
 import { ErrorAlert, PageHeader, PageLoader } from '@/shared/components';
 import { formatBytes } from '@/shared/format';
+import { RoleBadges } from '@/shared/RoleBadges';
 import { SUPPORT_EMAIL } from '@/shared/siteLinks';
 import { useThemePreference } from '@/shared/themePreference';
 
@@ -150,7 +150,7 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
       <Text size="sm" c="dimmed" w={130} style={{ flexShrink: 0 }}>
         {label}
       </Text>
-      <Text size="sm" fw={500} style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
+      <Text component="div" size="sm" fw={500} style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
         {children}
       </Text>
     </Group>
@@ -169,7 +169,6 @@ function ProfileTab() {
 
   const name = me?.displayName ?? session.name;
   const email = me?.email ?? session.email;
-  const admin = me?.roles?.includes('ADMIN');
 
   return (
     <Stack gap="lg">
@@ -181,11 +180,6 @@ function ProfileTab() {
               <Text fw={700} fz="xl" truncate="end">
                 {name ?? (session.enabled ? email : 'Local user')}
               </Text>
-              {admin && (
-                <Badge variant="light" color="violet">
-                  Application admin
-                </Badge>
-              )}
             </Group>
             {email && name && (
               <Text c="dimmed" size="sm" truncate="end">
@@ -196,6 +190,8 @@ function ProfileTab() {
         </Group>
         <Stack gap="xs">
           <Field label="Library">{me?.tenantName ?? '—'}</Field>
+          {/* What the user may do (ADR012, ADR016); hovering a role explains it. */}
+          <Field label="Roles">{me?.roles?.length ? <RoleBadges roles={me.roles} /> : '—'}</Field>
           {session.enabled && <Field label="Member since">{formatDate(me?.createdAt)}</Field>}
           <Field label="Plan">Free beta</Field>
         </Stack>

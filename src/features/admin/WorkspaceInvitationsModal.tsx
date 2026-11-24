@@ -14,7 +14,7 @@ import {
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconCopy, IconMailForward, IconSend, IconTrash } from '@tabler/icons-react';
 import { useState } from 'react';
-import type { TenantSummaryDto, WorkspaceInvitationDto } from '@/api/types';
+import type { TenantSummaryDto, TenantInvitationDto } from '@/api/types';
 import {
   useInviteToWorkspace,
   useResendWorkspaceInvitation,
@@ -26,7 +26,8 @@ import { confirmDelete } from '@/shared/confirm';
 import { countUnique, parseEmails } from '@/shared/emails';
 import { formatDateTime } from '@/shared/format';
 
-function InvitationStatus({ invitation: inv }: { invitation: WorkspaceInvitationDto }) {
+/** Joined, not delivered (with the error), sent or not sent yet. Also on the Users page of an organization. */
+export function InvitationStatus({ invitation: inv }: { invitation: TenantInvitationDto }) {
   if (inv.acceptedAt)
     return (
       <Tooltip label={`Joined ${formatDateTime(inv.acceptedAt)}`}>

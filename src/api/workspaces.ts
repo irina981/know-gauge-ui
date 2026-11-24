@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminKeys } from './admin';
 import { api, unwrap, unwrapVoid } from './client';
-import type { TenantCreateInput, WorkspaceInviteInput } from './types';
+import type { TenantCreateInput, TenantInviteInput } from './types';
 
 /** Workspaces an ADMIN creates and the invitations to them (ADR015). */
 export const workspaceKeys = {
@@ -31,7 +31,7 @@ export function useWorkspaceInvitations(tenantId: number | null) {
 export function useInviteToWorkspace(tenantId: number) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: WorkspaceInviteInput) =>
+    mutationFn: (input: TenantInviteInput) =>
       unwrap(
         api.POST('/api/admin/tenants/{id}/invitations', { params: { path: { id: tenantId } }, body: input }),
       ),
@@ -73,8 +73,7 @@ export function useRevokeWorkspaceInvitation(tenantId: number) {
 export function useWorkspaceInvitationPreview(token: string, enabled = true) {
   return useQuery({
     queryKey: workspaceKeys.preview(token),
-    queryFn: () =>
-      unwrap(api.GET('/api/public/workspace-invitations/{token}', { params: { path: { token } } })),
+    queryFn: () => unwrap(api.GET('/api/public/tenant-invitations/{token}', { params: { path: { token } } })),
     retry: false,
     enabled,
   });
@@ -88,7 +87,7 @@ export function useAcceptWorkspaceInvitation(token: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () =>
-      unwrap(api.POST('/api/me/workspace-invitations/{token}/accept', { params: { path: { token } } })),
+      unwrap(api.POST('/api/me/tenant-invitations/{token}/accept', { params: { path: { token } } })),
     onSuccess: () => queryClient.clear(),
   });
 }

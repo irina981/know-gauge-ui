@@ -34,8 +34,8 @@ export type TestInvitationDto = Schemas['TestInvitationDto'];
 export type InviteInput = Schemas['InviteInput'];
 
 export type TenantCreateInput = Schemas['TenantCreateInput'];
-export type WorkspaceInviteInput = Schemas['WorkspaceInviteInput'];
-export type WorkspaceInvitationDto = Schemas['WorkspaceInvitationDto'];
+export type TenantInviteInput = Schemas['TenantInviteInput'];
+export type TenantInvitationDto = Schemas['TenantInvitationDto'];
 
 /** A topic with its sub-topics, built in the browser from the flat topic lists the API returns. */
 export interface TopicNode {
@@ -77,3 +77,4 @@ export type TokenPriceDto = Schemas['TokenPriceDto'];
 export type TokenPricesDto = Schemas['TokenPricesDto'];
 export type TokenPriceInput = Schemas['TokenPriceInput'];
 export type TokenPriceSuggestionDto = Schemas['TokenPriceSuggestionDto'];
+export type TenantUserDto = Schemas['TenantUserDto'];

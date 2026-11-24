@@ -1,27 +1,12 @@
-import {
-  Autocomplete,
-  Badge,
-  Button,
-  defaultOptionsFilter,
-  Group,
-  Modal,
-  NumberInput,
-  Select,
-  Stack,
-  Tabs,
-  Text,
-  TextInput,
-  Title,
-  Tooltip,
-} from '@mantine/core';
+import { Badge, Button, Group, Modal, Stack, Tabs, Text, Title, Tooltip } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconGauge, IconSettings, type Icon } from '@tabler/icons-react';
-import { Fragment, useEffect, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useResetWorkspaceSettings, useSaveWorkspaceSettings, useWorkspaceSettings } from '@/api/admin';
 import type { TenantSummaryDto, TenantSettingDto } from '@/api/types';
+import { SettingInput } from '@/features/settings/SettingInput';
+import { settingHint, settingTypeOf } from '@/features/settings/settingValues';
 import { ErrorAlert, PageLoader } from '@/shared/components';
-
-const integerFormat = new Intl.NumberFormat();
 
 /** The setting types, one vertical tab each, as on the System settings page. */
 const SETTING_TYPES: { type: string; tab: string; label: string; icon: Icon; intro: string }[] = [
@@ -41,25 +26,8 @@ const SETTING_TYPES: { type: string; tab: string; label: string; icon: Icon; int
   },
 ];
 
-const typeOf = (setting: TenantSettingDto) => setting.settingType ?? 'LIMIT';
-
-/** A value as text: "no limit" for a limit of 0, thousands separators for numbers, "—" when empty. */
-function valueText(setting: TenantSettingDto, value?: string | null): string {
-  if (value == null || value === '') return typeOf(setting) === 'LIMIT' ? 'no limit' : '—';
-  if (setting.type !== 'INTEGER') return value;
-  if (typeOf(setting) === 'LIMIT' && Number(value) === 0) return 'no limit';
-  return integerFormat.format(Number(value));
-}
-
-/** What a field means: the workspace's own value, or the system value it falls back to. */
-function hint(setting: TenantSettingDto, draft: string): string {
-  const system = valueText(setting, setting.systemValue);
-  if (draft === '') return `Uses the system value: ${system}.`;
-  if (typeOf(setting) === 'LIMIT' && setting.type === 'INTEGER' && Number(draft) === 0) {
-    return `Own value: no limit (system: ${system}).`;
-  }
-  return `Own value (system: ${system}).`;
-}
+const typeOf = settingTypeOf;
+const hint = settingHint;
 
 /**
  * A workspace's own settings (ADR014), which win over the System settings: configuration (models, defaults of new
@@ -86,88 +54,6 @@ export function WorkspaceLimitsModal({
         <SettingsForm key={tenant.tenantId} tenantId={tenant.tenantId} onClose={onClose} />
       )}
     </Modal>
-  );
-}
-
-/** One setting's input: a select for a choice, a field with suggestions for text, a number input. */
-function SettingInput({
-  setting,
-  draft,
-  onChange,
-}: {
-  setting: TenantSettingDto;
-  draft: string;
-  onChange: (value: string) => void;
-}) {
-  const label: ReactNode = (
-    <Group gap={6}>
-      <span>{setting.label}</span>
-      {draft !== '' && (
-        <Badge size="xs" variant="light" color="violet">
-          Own value
-        </Badge>
-      )}
-    </Group>
-  );
-  const placeholder = `System: ${valueText(setting, setting.systemValue)}`;
-
-  if (setting.type === 'CHOICE') {
-    return (
-      <Select
-        label={label}
-        placeholder={placeholder}
-        data={setting.options ?? []}
-        value={draft || null}
-        onChange={(value) => onChange(value ?? '')}
-        clearable
-        w={260}
-      />
-    );
-  }
-  if (setting.type === 'INTEGER') {
-    return (
-      <NumberInput
-        label={label}
-        placeholder={placeholder}
-        min={setting.min ?? undefined}
-        max={setting.max ?? undefined}
-        thousandSeparator=","
-        allowDecimal={false}
-        allowNegative={false}
-        value={draft === '' ? '' : Number(draft)}
-        onChange={(value) => onChange(value === '' ? '' : String(value))}
-        w={260}
-      />
-    );
-  }
-  if (setting.suggestions?.length) {
-    return (
-      <Autocomplete
-        label={label}
-        placeholder={placeholder}
-        data={setting.suggestions}
-        value={draft}
-        onChange={onChange}
-        // Autocomplete filters by the text in the field; while it still holds the saved value, offer the whole list.
-        filter={(input) =>
-          defaultOptionsFilter(
-            input.search.trim() === (setting.ownValue ?? '') ? { ...input, search: '' } : input,
-          )
-        }
-        limit={200}
-        maxDropdownHeight={280}
-        w={260}
-      />
-    );
-  }
-  return (
-    <TextInput
-      label={label}
-      placeholder={placeholder}
-      value={draft}
-      onChange={(event) => onChange(event.currentTarget.value)}
-      w={260}
-    />
   );
 }
 

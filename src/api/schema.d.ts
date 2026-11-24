@@ -24,6 +24,34 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/tenant/settings': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List the workspace's configuration
+     * @description The configuration (CONFIG settings) a workspace may have a value of its own for (ADR014): the system value, the workspace's own value and the value in effect. Its limits are not listed: only an ADMIN sets them.
+     */
+    get: operations['tenantSettings'];
+    /**
+     * Save the workspace's configuration
+     * @description Saves the workspace's own values of CONFIG settings, which override the system values for it and apply at once. An empty value removes the workspace's own value. All values are checked first: if one does not fit, nothing is saved.
+     */
+    put: operations['saveTenantSettings'];
+    post?: never;
+    /**
+     * Reset the workspace's configuration
+     * @description Removes the workspace's own CONFIG values, so the system values apply to it again. Its limits stay.
+     */
+    delete: operations['resetTenantSettings'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/me/preferences': {
     parameters: {
       query?: never;
@@ -81,18 +109,18 @@ export interface paths {
      * List a tenant's settings
      * @description The tenant-level settings (for now the tenant limits) of one tenant: the system value, the tenant's own value if it has one, and the value in effect (ADR014).
      */
-    get: operations['tenantSettings'];
+    get: operations['tenantSettings_1'];
     /**
      * Save a tenant's settings
      * @description Saves the tenant's own values, which override the system values for it and apply at once. An empty value removes the tenant's own value. For a limit, 0 means no limit. All values are checked first: if one does not fit, nothing is saved.
      */
-    put: operations['saveTenantSettings'];
+    put: operations['saveTenantSettings_1'];
     post?: never;
     /**
      * Reset a tenant's settings
      * @description Removes all of the tenant's own values, so the system values apply to it again.
      */
-    delete: operations['resetTenantSettings'];
+    delete: operations['resetTenantSettings_1'];
     options?: never;
     head?: never;
     patch?: never;
@@ -378,6 +406,50 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/tenant/invitations': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List the workspace's invitations
+     * @description Oldest first, with the role each gives and whether it was delivered and accepted.
+     */
+    get: operations['tenantInvitations'];
+    put?: never;
+    /**
+     * Invite people to the workspace
+     * @description Emails each address a link to join as TENANT_ADMIN (default), TENANT_USER or TENANT_VIEWER (ADR016). An address invited before gets its link again with the new role; one that already joined is returned unchanged. Someone who accepts leaves their current workspace (ADR015).
+     */
+    post: operations['inviteToTenant'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tenant/invitations/{invitationId}/resend': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Send a workspace invitation again
+     * @description Same link as before.
+     */
+    post: operations['resendTenantInvitation'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/public/tests/{testToken}/attempts': {
     parameters: {
       query?: never;
@@ -438,7 +510,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/me/workspace-invitations/{token}/accept': {
+  '/api/me/tenant-invitations/{token}/accept': {
     parameters: {
       query?: never;
       header?: never;
@@ -761,7 +833,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/public/workspace-invitations/{token}': {
+  '/api/tests/defaults': {
     parameters: {
       query?: never;
       header?: never;
@@ -769,10 +841,30 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Look at a workspace invitation
-     * @description Public: the workspace's name and type and the invited address, so the join page can show them before signing in.
+     * Get the defaults of a new test
+     * @description What POST /api/tests uses for each field the request leaves empty, for the current workspace: its own configuration (ADR014), else the system values. The Generate test form starts from these.
      */
-    get: operations['preview'];
+    get: operations['getTestDefaults'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tenant/users': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List the workspace's users
+     * @description The users of the current organization workspace with their roles, by name.
+     */
+    get: operations['tenantUsers'];
     put?: never;
     post?: never;
     delete?: never;
@@ -793,6 +885,26 @@ export interface paths {
      * @description The test behind a shared link. The link works only while the test is published.
      */
     get: operations['getTest'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/public/tenant-invitations/{token}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Look at a workspace invitation
+     * @description Public: the workspace's name and type and the invited address, so the join page can show them before signing in.
+     */
+    get: operations['preview'];
     put?: never;
     post?: never;
     delete?: never;
@@ -873,6 +985,26 @@ export interface paths {
      * @description What the user's own workspace holds (topics, documents, storage) and what it used this calendar month (UTC): tests, AI-written questions, submitted attempts and LLM tokens. The shared library is not counted.
      */
     get: operations['usage'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/dev/focus-suggestions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Focus suggestions for the demo topics
+     * @description Topic id to example focus texts for FOCUSED tests. The client offers the suggestions of the selected topics, their parents and their sub-topics. Only available when the dev seed is enabled.
+     */
+    get: operations['getFocusSuggestions'];
     put?: never;
     post?: never;
     delete?: never;
@@ -1110,6 +1242,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/tenant/invitations/{invitationId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Revoke a workspace invitation
+     * @description Deletes an invitation nobody accepted yet; its link stops working.
+     */
+    delete: operations['revokeTenantInvitation'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/admin/tenants/{id}/invitations/{invitationId}': {
     parameters: {
       query?: never;
@@ -1271,6 +1423,57 @@ export interface components {
        * @example dGhpcy1pcy1hLXRva2Vu
        */
       publicToken?: string;
+      /**
+       * Format: int64
+       * @description User who created the test
+       * @example 7
+       */
+      createdBy?: number;
+      /**
+       * @description True when the caller may not change the test: a viewer, a TENANT_USER for a test someone else created, or an ADMIN viewing another workspace (ADR013, ADR017)
+       * @example false
+       */
+      readOnly?: boolean;
+    };
+    /** @description A tenant's own setting values (the Limits dialog's Save) */
+    TenantSettingsInput: {
+      /** @description Values as text by setting key; an empty value removes the tenant's own value, so the system value applies. For a limit, 0 means no limit */
+      values: {
+        [key: string]: string;
+      };
+    };
+    /** @description A tenant-level setting of one tenant (ADR014): the system value, the tenant's own value, and the value in effect for it */
+    TenantSettingDto: {
+      /** @description The property name, e.g. kg.settings.tenant.monthly-token-limit */
+      key?: string;
+      /** @description Section of the dialog, as on the System settings page, e.g. AI models */
+      group?: string;
+      label?: string;
+      description?: string;
+      /** @description INTEGER, TEXT or CHOICE */
+      type?: string;
+      /**
+       * Format: int64
+       * @description Smallest allowed INTEGER
+       */
+      min?: number;
+      /**
+       * Format: int64
+       * @description Largest allowed INTEGER
+       */
+      max?: number;
+      /** @description Allowed values of a CHOICE */
+      options?: string[];
+      /** @description Values to offer for a TEXT setting, e.g. model names from the price catalog; other text is allowed */
+      suggestions?: string[];
+      /** @description CONFIG (a configuration value) or LIMIT, from setting_configs; the dialog shows each on a tab of its own */
+      settingType?: string;
+      /** @description The system value in effect; null when empty */
+      systemValue?: string;
+      /** @description The tenant's own value; null when it uses the system value */
+      ownValue?: string;
+      /** @description The value in effect for the tenant */
+      value?: string;
     };
     /** @description Settings the user chose for the app. A null field was never chosen: the app uses its default. */
     UserPreferencesDto: {
@@ -1329,46 +1532,6 @@ export interface components {
       /** @description Direct child topics */
       children?: components['schemas']['TopicDto'][];
     };
-    /** @description A tenant's own setting values (the Limits dialog's Save) */
-    TenantSettingsInput: {
-      /** @description Values as text by setting key; an empty value removes the tenant's own value, so the system value applies. For a limit, 0 means no limit */
-      values: {
-        [key: string]: string;
-      };
-    };
-    /** @description A tenant-level setting of one tenant (ADR014): the system value, the tenant's own value, and the value in effect for it */
-    TenantSettingDto: {
-      /** @description The property name, e.g. kg.settings.tenant.monthly-token-limit */
-      key?: string;
-      /** @description Section of the dialog, as on the System settings page, e.g. AI models */
-      group?: string;
-      label?: string;
-      description?: string;
-      /** @description INTEGER, TEXT or CHOICE */
-      type?: string;
-      /**
-       * Format: int64
-       * @description Smallest allowed INTEGER
-       */
-      min?: number;
-      /**
-       * Format: int64
-       * @description Largest allowed INTEGER
-       */
-      max?: number;
-      /** @description Allowed values of a CHOICE */
-      options?: string[];
-      /** @description Values to offer for a TEXT setting, e.g. model names from the price catalog; other text is allowed */
-      suggestions?: string[];
-      /** @description CONFIG (a configuration value) or LIMIT, from setting_configs; the dialog shows each on a tab of its own */
-      settingType?: string;
-      /** @description The system value in effect; null when empty */
-      systemValue?: string;
-      /** @description The tenant's own value; null when it uses the system value */
-      ownValue?: string;
-      /** @description The value in effect for the tenant */
-      value?: string;
-    };
     /** @description New values for system settings (the page's Save) */
     SystemSettingInput: {
       /** @description Values as text by setting key; an empty value means empty for an optional setting (e.g. no limit) */
@@ -1380,7 +1543,7 @@ export interface components {
     SystemSettingDto: {
       /** @description The property name, e.g. kg.testgen.defaults.generation-model */
       key?: string;
-      /** @description Section of the page, e.g. Workspace limits */
+      /** @description Section of the page, e.g. System limits */
       group?: string;
       label?: string;
       description?: string;
@@ -1410,9 +1573,9 @@ export interface components {
       value?: string;
       /** @description Values to offer for a TEXT setting, e.g. model names from the price catalog; other text is allowed */
       suggestions?: string[];
-      /** @description Whether a tenant may have a value of its own, overriding this one (ADR014) */
+      /** @description Whether a tenant may have a value of its own, overriding this one: a TENANT owner in setting_config_owners (ADR014) */
       tenantLevel?: boolean;
-      /** @description CONFIG (a configuration value) or LIMIT (a limit on what a workspace or user may use); the page shows each on a tab of its own */
+      /** @description CONFIG (a configuration value) or LIMIT (a limit on what a workspace or user may use), from setting_configs; the page shows each on a tab of its own */
       settingType?: string;
     };
     /** @description The price of a model, in US dollars per million tokens */
@@ -1897,6 +2060,73 @@ export interface components {
       /** @description Why the answer is correct (after scoring) */
       explanation?: string;
     };
+    /** @description People to invite to a workspace (ADR015); an address invited before gets its link again */
+    TenantInviteInput: {
+      /**
+       * @description Email addresses; duplicates are merged
+       * @example [
+       *       "ana@example.com"
+       *     ]
+       */
+      emails: string[];
+      /** @description Optional note added to the email */
+      message?: string;
+      /**
+       * @description Role the invitees get on accepting (ADR016): TENANT_ADMIN (default), TENANT_USER or TENANT_VIEWER. A personal workspace takes only TENANT_ADMIN
+       * @example TENANT_USER
+       */
+      role?: string;
+    };
+    /** @description An invitation to join a workspace (ADR015) */
+    TenantInvitationDto: {
+      /**
+       * Format: int64
+       * @description Invitation id
+       * @example 7
+       */
+      id?: number;
+      /**
+       * Format: int64
+       * @description Workspace (tenant)
+       * @example 12
+       */
+      tenantId?: number;
+      /**
+       * @description Invited address (lower-cased)
+       * @example ana@example.com
+       */
+      email?: string;
+      /**
+       * @description Role the invitee gets on accepting
+       * @example TENANT_ADMIN
+       */
+      role?: string;
+      /** @description The link to accept */
+      link?: string;
+      /**
+       * Format: date-time
+       * @description When it was invited (UTC)
+       */
+      createdAt?: string;
+      /**
+       * Format: date-time
+       * @description Last successful send (UTC); empty if never delivered
+       */
+      sentAt?: string;
+      /**
+       * Format: int32
+       * @description How often a send was attempted
+       * @example 1
+       */
+      sendCount?: number;
+      /** @description Error of the last send; empty after a successful one */
+      sendError?: string;
+      /**
+       * Format: date-time
+       * @description When it was accepted (UTC); empty while pending
+       */
+      acceptedAt?: string;
+    };
     /** @description Who takes the test through the shared link */
     StartPublicAttemptInput: {
       /**
@@ -1986,7 +2216,7 @@ export interface components {
       answers: components['schemas']['Answer'][];
     };
     /** @description The workspace the user joined by accepting an invitation */
-    WorkspaceJoinedDto: {
+    TenantJoinedDto: {
       /**
        * Format: int64
        * @description The workspace (tenant) the user now works in
@@ -1997,7 +2227,7 @@ export interface components {
        * @description Its name
        * @example Acme Training
        */
-      workspaceName?: string;
+      tenantName?: string;
       /**
        * Format: int64
        * @description The workspace the user left; empty if none
@@ -2169,7 +2399,7 @@ export interface components {
     TenantCreatedDto: {
       tenant?: components['schemas']['TenantSummaryDto'];
       /** @description One per invitee; a failed send has its error */
-      invitations?: components['schemas']['WorkspaceInvitationDto'][];
+      invitations?: components['schemas']['TenantInvitationDto'][];
     };
     /** @description A tenant for admins: type, owner and how much content it holds (ADR013) */
     TenantSummaryDto: {
@@ -2223,68 +2453,6 @@ export interface components {
       concurrentGenerationsLimit?: number;
       /** @description Whether the tenant has limits of its own, overriding the system settings (ADR014) */
       ownLimits?: boolean;
-    };
-    /** @description An invitation to join a workspace (ADR015) */
-    WorkspaceInvitationDto: {
-      /**
-       * Format: int64
-       * @description Invitation id
-       * @example 7
-       */
-      id?: number;
-      /**
-       * Format: int64
-       * @description Workspace (tenant)
-       * @example 12
-       */
-      tenantId?: number;
-      /**
-       * @description Invited address (lower-cased)
-       * @example ana@example.com
-       */
-      email?: string;
-      /**
-       * @description Role the invitee gets on accepting
-       * @example TENANT_ADMIN
-       */
-      role?: string;
-      /** @description The link to accept */
-      link?: string;
-      /**
-       * Format: date-time
-       * @description When it was invited (UTC)
-       */
-      createdAt?: string;
-      /**
-       * Format: date-time
-       * @description Last successful send (UTC); empty if never delivered
-       */
-      sentAt?: string;
-      /**
-       * Format: int32
-       * @description How often a send was attempted
-       * @example 1
-       */
-      sendCount?: number;
-      /** @description Error of the last send; empty after a successful one */
-      sendError?: string;
-      /**
-       * Format: date-time
-       * @description When it was accepted (UTC); empty while pending
-       */
-      acceptedAt?: string;
-    };
-    /** @description People to invite to a workspace (ADR015); an address invited before gets its link again */
-    WorkspaceInviteInput: {
-      /**
-       * @description Email addresses; duplicates are merged
-       * @example [
-       *       "ana@example.com"
-       *     ]
-       */
-      emails: string[];
-      /** @description Optional note added to the email */
-      message?: string;
     };
     /** @description A model's prices as a price catalog lists them, not saved. Third-party data: check before saving. */
     TokenPriceSuggestionDto: {
@@ -2493,25 +2661,59 @@ export interface components {
        */
       createdAt?: string;
     };
-    /** @description What a workspace invitation link leads to (public, no ids) */
-    WorkspaceInvitationPreviewDto: {
+    /** @description What a new test of the current workspace gets for each field its request leaves empty: the workspace's own configuration, else the system values (ADR014) */
+    TestDefaultsDto: {
       /**
-       * @description Name of the workspace
-       * @example Acme Training
+       * Format: int32
+       * @description Number of questions
+       * @example 10
        */
-      workspaceName?: string;
+      questionCount?: number;
       /**
-       * @description PERSONAL or ORGANIZATION
-       * @example ORGANIZATION
+       * @description EASY, MEDIUM or HARD
+       * @example MEDIUM
        */
-      workspaceType?: string;
+      difficulty?: string;
       /**
-       * @description The invited address
-       * @example ana@example.com
+       * @description SINGLE_CORRECT or MULTIPLE_CORRECT
+       * @example SINGLE_CORRECT
        */
+      answerCardinality?: string;
+      /**
+       * @description Coverage strategy
+       * @example BALANCED_PER_DOC_CHUNKS
+       */
+      coverageMode?: string;
+      /**
+       * @description Language of the questions
+       * @example EN
+       */
+      language?: string;
+      /**
+       * @description Model that writes the questions
+       * @example gpt-4.1-mini
+       */
+      generationModel?: string;
+    };
+    /** @description A user of the current organization workspace, as its tenant admins see them (ADR016) */
+    TenantUserDto: {
+      /** Format: int64 */
+      id?: number;
+      /** @description Email from the identity provider at the last sign-in */
       email?: string;
-      /** @description Whether it has been accepted */
-      accepted?: boolean;
+      displayName?: string;
+      /** @description The user's roles from user_roles, e.g. TENANT_ADMIN (ADR012) */
+      roles?: string[];
+      /**
+       * Format: date-time
+       * @description When the user first signed in to KnowGauge
+       */
+      createdAt?: string;
+      /**
+       * Format: date-time
+       * @description When the user was last seen; null if never
+       */
+      lastSeenAt?: string;
     };
     /** @description What a participant sees before starting a test from a link */
     PublicTestDto: {
@@ -2533,6 +2735,26 @@ export interface components {
        * @example SINGLE_CORRECT
        */
       answerCardinality?: string;
+    };
+    /** @description What a workspace invitation link leads to (public, no ids) */
+    TenantInvitationPreviewDto: {
+      /**
+       * @description Name of the workspace
+       * @example Acme Training
+       */
+      tenantName?: string;
+      /**
+       * @description PERSONAL or ORGANIZATION
+       * @example ORGANIZATION
+       */
+      tenantType?: string;
+      /**
+       * @description The invited address
+       * @example ana@example.com
+       */
+      email?: string;
+      /** @description Whether it has been accepted */
+      accepted?: boolean;
     };
     /** @description What a personal invitation link shows before the participant starts */
     PublicInvitationDto: {
@@ -2786,6 +3008,124 @@ export interface operations {
       };
     };
   };
+  tenantSettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Configuration returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
+      /** @description Not signed in */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
+      /** @description Not a TENANT_ADMIN, or not an organization workspace */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
+    };
+  };
+  saveTenantSettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TenantSettingsInput'];
+      };
+    };
+    responses: {
+      /** @description Configuration saved; the workspace's configuration returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
+      /** @description A value does not fit, or the setting applies to the whole system only */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
+      /** @description Not a TENANT_ADMIN, not an organization workspace, or a limit */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
+      /** @description No such setting */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
+    };
+  };
+  resetTenantSettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Configuration reset; the workspace's configuration returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
+      /** @description Not a TENANT_ADMIN, or not an organization workspace */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
+    };
+  };
   preferences: {
     parameters: {
       query?: never;
@@ -2961,7 +3301,7 @@ export interface operations {
       };
     };
   };
-  tenantSettings: {
+  tenantSettings_1: {
     parameters: {
       query?: never;
       header?: never;
@@ -3001,7 +3341,7 @@ export interface operations {
       };
     };
   };
-  saveTenantSettings: {
+  saveTenantSettings_1: {
     parameters: {
       query?: never;
       header?: never;
@@ -3054,7 +3394,7 @@ export interface operations {
       };
     };
   };
-  resetTenantSettings: {
+  resetTenantSettings_1: {
     parameters: {
       query?: never;
       header?: never;
@@ -3841,6 +4181,126 @@ export interface operations {
       };
     };
   };
+  tenantInvitations: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Invitations returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantInvitationDto'][];
+        };
+      };
+      /** @description Not a TENANT_ADMIN, or not an organization workspace */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantInvitationDto'][];
+        };
+      };
+    };
+  };
+  inviteToTenant: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TenantInviteInput'];
+      };
+    };
+    responses: {
+      /** @description Invitations sent; one per address */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantInvitationDto'][];
+        };
+      };
+      /** @description Invalid address or role, or too many addresses at once */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantInvitationDto'][];
+        };
+      };
+      /** @description Not a TENANT_ADMIN, or not an organization workspace */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantInvitationDto'][];
+        };
+      };
+    };
+  };
+  resendTenantInvitation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        invitationId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Sent, or the send error is on the invitation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantInvitationDto'];
+        };
+      };
+      /** @description Not a TENANT_ADMIN, or not an organization workspace */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantInvitationDto'];
+        };
+      };
+      /** @description No such invitation in this workspace */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantInvitationDto'];
+        };
+      };
+      /** @description Already accepted */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantInvitationDto'];
+        };
+      };
+    };
+  };
   startFromLink: {
     parameters: {
       query?: never;
@@ -4008,7 +4468,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceJoinedDto'];
+          '*/*': components['schemas']['TenantJoinedDto'];
         };
       };
       /** @description Not signed in */
@@ -4017,7 +4477,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceJoinedDto'];
+          '*/*': components['schemas']['TenantJoinedDto'];
         };
       };
       /** @description Another or an unverified email */
@@ -4026,7 +4486,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceJoinedDto'];
+          '*/*': components['schemas']['TenantJoinedDto'];
         };
       };
       /** @description Unknown or revoked link */
@@ -4035,7 +4495,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceJoinedDto'];
+          '*/*': components['schemas']['TenantJoinedDto'];
         };
       };
       /** @description Accepted by someone else, or the personal workspace has another owner */
@@ -4044,7 +4504,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceJoinedDto'];
+          '*/*': components['schemas']['TenantJoinedDto'];
         };
       };
     };
@@ -4317,7 +4777,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+          '*/*': components['schemas']['TenantInvitationDto'][];
         };
       };
       /** @description Not an ADMIN */
@@ -4326,7 +4786,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+          '*/*': components['schemas']['TenantInvitationDto'][];
         };
       };
       /** @description No such workspace */
@@ -4335,7 +4795,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+          '*/*': components['schemas']['TenantInvitationDto'][];
         };
       };
     };
@@ -4351,7 +4811,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['WorkspaceInviteInput'];
+        'application/json': components['schemas']['TenantInviteInput'];
       };
     };
     responses: {
@@ -4361,7 +4821,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+          '*/*': components['schemas']['TenantInvitationDto'][];
         };
       };
       /** @description Invalid address, or the wrong number for the type */
@@ -4370,7 +4830,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+          '*/*': components['schemas']['TenantInvitationDto'][];
         };
       };
       /** @description Not an ADMIN */
@@ -4379,7 +4839,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+          '*/*': components['schemas']['TenantInvitationDto'][];
         };
       };
       /** @description No such workspace */
@@ -4388,7 +4848,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+          '*/*': components['schemas']['TenantInvitationDto'][];
         };
       };
       /** @description The personal workspace already has its owner or an invitation to someone else */
@@ -4397,7 +4857,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+          '*/*': components['schemas']['TenantInvitationDto'][];
         };
       };
     };
@@ -4420,7 +4880,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationDto'];
+          '*/*': components['schemas']['TenantInvitationDto'];
         };
       };
       /** @description Not an ADMIN */
@@ -4429,7 +4889,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationDto'];
+          '*/*': components['schemas']['TenantInvitationDto'];
         };
       };
       /** @description No such workspace or invitation */
@@ -4438,7 +4898,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationDto'];
+          '*/*': components['schemas']['TenantInvitationDto'];
         };
       };
       /** @description Already accepted */
@@ -4447,7 +4907,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationDto'];
+          '*/*': components['schemas']['TenantInvitationDto'];
         };
       };
     };
@@ -4687,33 +5147,60 @@ export interface operations {
       };
     };
   };
-  preview: {
+  getTestDefaults: {
     parameters: {
       query?: never;
       header?: never;
-      path: {
-        token: string;
-      };
+      path?: never;
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description Invitation returned */
+      /** @description Defaults returned */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationPreviewDto'];
+          '*/*': components['schemas']['TestDefaultsDto'];
         };
       };
-      /** @description Unknown or revoked link */
-      404: {
+    };
+  };
+  tenantUsers: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Users returned */
+      200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          '*/*': components['schemas']['WorkspaceInvitationPreviewDto'];
+          '*/*': components['schemas']['TenantUserDto'][];
+        };
+      };
+      /** @description Not signed in */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantUserDto'][];
+        };
+      };
+      /** @description Not a TENANT_ADMIN, or not an organization workspace */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantUserDto'][];
         };
       };
     };
@@ -4745,6 +5232,37 @@ export interface operations {
         };
         content: {
           '*/*': components['schemas']['PublicTestDto'];
+        };
+      };
+    };
+  };
+  preview: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        token: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Invitation returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantInvitationPreviewDto'];
+        };
+      };
+      /** @description Unknown or revoked link */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantInvitationPreviewDto'];
         };
       };
     };
@@ -4865,6 +5383,28 @@ export interface operations {
         };
         content: {
           '*/*': components['schemas']['UsageSummaryDto'];
+        };
+      };
+    };
+  };
+  getFocusSuggestions: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': {
+            [key: string]: string[];
+          };
         };
       };
     };
@@ -5203,6 +5743,47 @@ export interface operations {
         content: {
           '*/*': components['schemas']['EmbeddingInfoDto'];
         };
+      };
+    };
+  };
+  revokeTenantInvitation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        invitationId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Revoked */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Not a TENANT_ADMIN, or not an organization workspace */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description No such invitation in this workspace */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Already accepted */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };
