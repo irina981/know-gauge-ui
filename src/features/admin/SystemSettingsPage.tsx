@@ -170,7 +170,10 @@ function SettingRow({
     <Stack gap={4}>
       {input}
       <Text size="xs" c="dimmed">
-        {setting.description} Default from the properties files: {display(setting, setting.defaultValue)}
+        {setting.description}
+        {/* The database decides per setting whether a workspace may have its own value (ADR014). */}
+        {setting.tenantLevel && ' A workspace may also have its own value (Workspaces → Limits).'} Default
+        from the properties files: {display(setting, setting.defaultValue)}
         {setting.min != null &&
           ` · ${setting.max != null ? `${integerFormat.format(setting.min)}–${integerFormat.format(setting.max)}` : `at least ${integerFormat.format(setting.min)}`}`}
         .{' '}
@@ -201,11 +204,6 @@ const SETTING_TYPES: { type: string; tab: string; label: string; icon: Icon; des
       'Values start from the properties files; a value saved here overrides them, also after restarts.',
   },
 ];
-
-/** Added to the introduction of one section: the workspace limits may have a workspace's own value (ADR014). */
-const SECTION_NOTES: Record<string, string> = {
-  'Workspace limits': 'A workspace may also have values of its own (Workspaces → Limits).',
-};
 
 /**
  * Settings that start from the properties files and can be overridden here, on one vertical tab per setting type.
@@ -360,12 +358,7 @@ function SystemSettingsSections({ after }: { after: Record<string, ReactNode> })
             <Stack gap="lg">
               {[...groupsOf(type).entries()].map(([group, settings]) => (
                 <Fragment key={group}>
-                  <Section
-                    title={group}
-                    description={
-                      SECTION_NOTES[group] ? `${description} ${SECTION_NOTES[group]}` : description
-                    }
-                  >
+                  <Section title={group} description={description}>
                     <Stack gap="lg">
                       {settings.map((setting) => (
                         <SettingRow
