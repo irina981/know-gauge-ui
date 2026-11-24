@@ -74,6 +74,27 @@ body {
   border: 1px solid rgba(219, 225, 255, 0.14);
 }
 
+/* On the account settings pages: the user box is their only entry point, so it shows as the current place. */
+.kg-sidebar-user[data-active] {
+  background: rgba(116, 143, 252, 0.16);
+  border-color: rgba(116, 143, 252, 0.45);
+}
+
+/* Administration: a rule under it keeps it apart from the user's own workspace section. */
+.kg-sidebar-admin {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.kg-sidebar-admin::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: -20px;
+  border-bottom: 1px solid rgba(219, 225, 255, 0.12);
+}
+
 .kg-sidebar-card {
   border-radius: var(--mantine-radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.08);

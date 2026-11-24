@@ -2,6 +2,7 @@ import { Center, Loader } from '@mantine/core';
 import type { ReactNode } from 'react';
 import { AuthProvider } from 'react-oidc-context';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useMe } from '@/api/account';
 import { userManager, useSession } from './auth';
 
 /** Keeps the signed-in user (sign-in on); passes children through unchanged when sign-in is off. */
@@ -34,6 +35,23 @@ export function RequireAuth() {
   if (!session.isAuthenticated) {
     return <Navigate to="/" replace state={{ returnTo: location.pathname + location.search }} />;
   }
+  return <Outlet />;
+}
+
+/**
+ * Admin pages (ADR013), for users with the ADMIN role only; the API refuses everyone else (403). Others go to their
+ * Library, e.g. a user who registered from a sign-in that an admin's expired session had started on an admin page.
+ */
+export function RequireAdmin() {
+  const { data: me, isPending } = useMe();
+  if (isPending) {
+    return (
+      <Center mih={200}>
+        <Loader />
+      </Center>
+    );
+  }
+  if (!me?.roles?.includes('ADMIN')) return <Navigate to="/library" replace />;
   return <Outlet />;
 }
 

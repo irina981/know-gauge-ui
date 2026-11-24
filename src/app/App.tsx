@@ -17,7 +17,7 @@ import { WorkspaceScope } from './WorkspaceScope';
 import { GenerateTestPage } from '@/features/tests/GenerateTestPage';
 import { TestsPage } from '@/features/tests/TestsPage';
 import { TestReviewPage } from '@/features/review/TestReviewPage';
-import { AuthCallbackPage, KgAuthProvider, RequireAuth } from './AuthRoutes';
+import { AuthCallbackPage, KgAuthProvider, RequireAdmin, RequireAuth } from './AuthRoutes';
 import { Layout } from './Layout';
 import { queryClient } from './queryClient';
 import { theme } from './theme';
@@ -55,20 +55,25 @@ const router = createBrowserRouter([
           { path: 'about', element: <AboutPage /> },
           { path: 'settings', element: <Navigate to="/settings/profile" replace /> },
           { path: 'settings/:tab', element: <SettingsPage /> },
-          // Admins only (ADR013); the API refuses everyone else.
-          { path: 'admin/workspaces', element: <WorkspacesPage /> },
-          // Another user's workspace, read-only: the same pages under the workspace's own address.
+          // Admins only (ADR013): everyone else is sent to their Library (the API would refuse them too).
           {
-            path: 'admin/workspaces/:tenantId',
-            element: <WorkspaceScope />,
+            element: <RequireAdmin />,
             children: [
-              { index: true, element: <Navigate to="library" replace /> },
-              { path: 'library', element: <LibraryPage /> },
-              { path: 'library/topics/:topicId', element: <LibraryPage /> },
-              { path: 'tests', element: <TestsPage /> },
-              { path: 'tests/:testId', element: <TestReviewPage /> },
-              { path: 'attempts', element: <AttemptsPage /> },
-              { path: 'attempts/:attemptId', element: <AttemptPage /> },
+              { path: 'admin/workspaces', element: <WorkspacesPage /> },
+              // Another user's workspace, read-only: the same pages under the workspace's own address.
+              {
+                path: 'admin/workspaces/:tenantId',
+                element: <WorkspaceScope />,
+                children: [
+                  { index: true, element: <Navigate to="library" replace /> },
+                  { path: 'library', element: <LibraryPage /> },
+                  { path: 'library/topics/:topicId', element: <LibraryPage /> },
+                  { path: 'tests', element: <TestsPage /> },
+                  { path: 'tests/:testId', element: <TestReviewPage /> },
+                  { path: 'attempts', element: <AttemptsPage /> },
+                  { path: 'attempts/:attemptId', element: <AttemptPage /> },
+                ],
+              },
             ],
           },
           { path: '*', element: <Navigate to="/library" replace /> },

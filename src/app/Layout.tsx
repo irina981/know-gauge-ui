@@ -23,7 +23,6 @@ import {
   IconInfoCircle,
   IconLogout,
   IconShieldCheck,
-  IconSettings,
   IconSparkles,
 } from '@tabler/icons-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
@@ -50,12 +49,6 @@ const NAV = [
     isActive: (p: string) => p.startsWith('/attempts'),
   },
   { to: '/about', label: 'About', icon: IconInfoCircle, isActive: (p: string) => p === '/about' },
-  {
-    to: '/settings',
-    label: 'Settings',
-    icon: IconSettings,
-    isActive: (p: string) => p.startsWith('/settings'),
-  },
 ];
 
 /**
@@ -84,40 +77,54 @@ function Brand({ large = false }: { large?: boolean }) {
 }
 
 /**
- * The signed-in user and Sign out: the last block of the sidebar, framed so it stands apart from the content
- * above it. Not shown when sign-in is off.
+ * The user and Sign out: the last block of the sidebar, framed so it stands apart from the content above it. The
+ * name opens the account settings, the only way to them. With sign-in off the box shows the fixed user, without
+ * Sign out.
  */
-function UserBox({ onNavigate }: { onNavigate: () => void }) {
+function UserBox({ onNavigate, active }: { onNavigate: () => void; active: boolean }) {
   const session = useSession();
-  if (!session.enabled) return null;
-  const label = session.name ?? session.email ?? 'Signed in';
+  const { data: me } = useMe();
+  const label = session.enabled
+    ? (session.name ?? session.email ?? 'Signed in')
+    : (me?.displayName ?? me?.email ?? 'Local user');
+  const email = session.enabled ? session.email : me?.email;
   return (
-    <Group gap="sm" wrap="nowrap" className="kg-sidebar-user">
-      {/* Name and avatar open the account settings. */}
-      <UnstyledButton
-        component={Link}
-        to="/settings/profile"
-        onClick={onNavigate}
-        className="kg-sidebar-user-link"
-        aria-label="Account settings"
-      >
-        <Avatar size={34} radius="xl" color="needle" variant="filled" name={label} />
-        <Box style={{ flex: 1, minWidth: 0 }}>
-          <Text size="sm" fw={600} c="white" truncate="end">
-            {label}
-          </Text>
-          {session.email && session.email !== label && (
-            <Text size="xs" c="rgba(219,225,255,0.6)" truncate="end">
-              {session.email}
+    <Group gap="sm" wrap="nowrap" className="kg-sidebar-user" data-active={active || undefined}>
+      {/* Name and avatar open the account settings; the tooltip says so on hover. */}
+      <Tooltip label="Account settings" position="top" withArrow openDelay={300}>
+        <UnstyledButton
+          component={Link}
+          to="/settings/profile"
+          onClick={onNavigate}
+          className="kg-sidebar-user-link"
+          aria-label="Account settings"
+        >
+          <Avatar size={34} radius="xl" color="needle" variant="filled" name={label} />
+          <Box style={{ flex: 1, minWidth: 0 }}>
+            <Text size="sm" fw={600} c="white" truncate="end">
+              {label}
             </Text>
-          )}
-        </Box>
-      </UnstyledButton>
-      <Tooltip label="Sign out">
-        <ActionIcon variant="subtle" color="gray.3" size="lg" onClick={session.signOut} aria-label="Sign out">
-          <IconLogout size={18} />
-        </ActionIcon>
+            {email && email !== label && (
+              <Text size="xs" c="rgba(219,225,255,0.6)" truncate="end">
+                {email}
+              </Text>
+            )}
+          </Box>
+        </UnstyledButton>
       </Tooltip>
+      {session.enabled && (
+        <Tooltip label="Sign out">
+          <ActionIcon
+            variant="subtle"
+            color="gray.3"
+            size="lg"
+            onClick={session.signOut}
+            aria-label="Sign out"
+          >
+            <IconLogout size={18} />
+          </ActionIcon>
+        </Tooltip>
+      )}
     </Group>
   );
 }
@@ -178,39 +185,10 @@ export function Layout() {
             <Brand large />
           </Box>
 
-          <Button
-            component={Link}
-            to="/tests/new"
-            variant="gradient"
-            gradient={{ from: 'brand.5', to: 'violet.5', deg: 135 }}
-            leftSection={<IconSparkles size={18} />}
-            size="md"
-            fullWidth
-            onClick={close}
-            style={{ boxShadow: '0 8px 24px rgba(121, 80, 242, 0.35)' }}
-          >
-            Generate test
-          </Button>
-
-          <Stack gap={4}>
-            <NavHeading>Workspace</NavHeading>
-            {NAV.map(({ to, label, icon: Icon, isActive }) => (
-              <NavLink
-                key={to}
-                component={Link}
-                to={to}
-                label={label}
-                className="kg-nav-link"
-                leftSection={<Icon size={20} stroke={1.6} />}
-                active={isActive(pathname)}
-                onClick={close}
-              />
-            ))}
-          </Stack>
-
-          {/* Admins look into every workspace, read-only (ADR013). */}
+          {/* Admins first: they look into every workspace, read-only (ADR013). Set apart by a rule, so
+              it reads as its own section and not as part of the user's workspace below. */}
           {isAdmin && (
-            <Stack gap={4}>
+            <Stack gap={4} className="kg-sidebar-admin">
               <NavHeading>Administration</NavHeading>
               <NavLink
                 component={Link}
@@ -224,6 +202,38 @@ export function Layout() {
               />
             </Stack>
           )}
+
+          {/* The user's own workspace; Generate test belongs to it, so it sits under the heading. */}
+          <Stack gap={4}>
+            <NavHeading>My workspace</NavHeading>
+            <Button
+              component={Link}
+              to="/tests/new"
+              variant="gradient"
+              gradient={{ from: 'brand.5', to: 'violet.5', deg: 135 }}
+              leftSection={<IconSparkles size={18} />}
+              size="md"
+              fullWidth
+              mt={4}
+              mb={8}
+              onClick={close}
+              style={{ boxShadow: '0 8px 24px rgba(121, 80, 242, 0.35)' }}
+            >
+              Generate test
+            </Button>
+            {NAV.map(({ to, label, icon: Icon, isActive }) => (
+              <NavLink
+                key={to}
+                component={Link}
+                to={to}
+                label={label}
+                className="kg-nav-link"
+                leftSection={<Icon size={20} stroke={1.6} />}
+                active={isActive(pathname)}
+                onClick={close}
+              />
+            ))}
+          </Stack>
 
           <Box mt="auto" className="kg-sidebar-card">
             <Group gap="xs" mb={6} wrap="nowrap">
@@ -251,7 +261,7 @@ export function Layout() {
           </Box>
 
           <Stack gap={10}>
-            <UserBox onNavigate={close} />
+            <UserBox onNavigate={close} active={pathname.startsWith('/settings')} />
             {/* Legal pages (on knowgauge.com) and feedback, under the user. The theme is chosen in Settings →
                 Appearance (and with the switch in the top bar on phones). */}
             <Group gap={6} wrap="nowrap" px={10}>
