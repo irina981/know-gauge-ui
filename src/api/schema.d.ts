@@ -70,6 +70,34 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/tenants/{id}/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List a workspace's settings
+         * @description The workspace-level settings (for now the workspace limits) of one workspace: the system value, the workspace's own value if it has one, and the value in effect (ADR014).
+         */
+        get: operations["tenantSettings"];
+        /**
+         * Save a workspace's settings
+         * @description Saves the workspace's own values, which override the system values for it and apply at once. An empty value removes the workspace's own value. For a limit, 0 means no limit. All values are checked first: if one does not fit, nothing is saved.
+         */
+        put: operations["saveTenantSettings"];
+        post?: never;
+        /**
+         * Reset a workspace's settings
+         * @description Removes all of the workspace's own values, so the system values apply to it again.
+         */
+        delete: operations["resetTenantSettings"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/settings/values": {
         parameters: {
             query?: never;
@@ -963,7 +991,7 @@ export interface paths {
         };
         /**
          * Get one tenant
-         * @description A tenant with its type, owner and content counts (ADR013).
+         * @description A tenant with its type, owner, content counts and limits in effect (ADR013, ADR014).
          */
         get: operations["tenant"];
         put?: never;
@@ -1213,6 +1241,38 @@ export interface components {
             /** @description Direct child topics */
             children?: components["schemas"]["TopicDto"][];
         };
+        /** @description A workspace's own setting values (the Limits dialog's Save) */
+        WorkspaceSettingsInput: {
+            /** @description Values as text by setting key; an empty value removes the workspace's own value, so the system value applies. For a limit, 0 means no limit */
+            values: {
+                [key: string]: string;
+            };
+        };
+        /** @description A workspace-level setting of one workspace (ADR014): the system value, the workspace's own value, and the value in effect for it */
+        WorkspaceSettingDto: {
+            /** @description The property name, e.g. kg.settings.tenant.monthly-token-limit */
+            key?: string;
+            label?: string;
+            description?: string;
+            /** @description INTEGER, TEXT or CHOICE */
+            type?: string;
+            /**
+             * Format: int64
+             * @description Smallest allowed INTEGER
+             */
+            min?: number;
+            /**
+             * Format: int64
+             * @description Largest allowed INTEGER
+             */
+            max?: number;
+            /** @description The system value in effect; null when empty */
+            systemValue?: string;
+            /** @description The workspace's own value; null when it uses the system value */
+            ownValue?: string;
+            /** @description The value in effect for the workspace */
+            value?: string;
+        };
         /** @description New values for system settings (the page's Save) */
         SystemSettingInput: {
             /** @description Values as text by setting key; an empty value means empty for an optional setting (e.g. no limit) */
@@ -1254,6 +1314,8 @@ export interface components {
             value?: string;
             /** @description Values to offer for a TEXT setting, e.g. model names from the price catalog; other text is allowed */
             suggestions?: string[];
+            /** @description Whether a workspace may have a value of its own, overriding this one (ADR014) */
+            workspaceLevel?: boolean;
         };
         /** @description The price of a model, in US dollars per million tokens */
         TokenPriceInput: {
@@ -2355,7 +2417,7 @@ export interface components {
             storageBytes?: number;
             /**
              * Format: int64
-             * @description Bytes of documents every tenant may keep; null when there is none (always for the library). Over it uploads are refused
+             * @description Bytes of documents the tenant may keep (its own limit, else the system one); null when there is none (always for the library). Over it uploads are refused
              */
             storageLimitBytes?: number;
             /**
@@ -2365,9 +2427,16 @@ export interface components {
             tokensThisMonth?: number;
             /**
              * Format: int64
-             * @description Monthly token limit every tenant shares; null when there is none. At the limit new tests and regenerations are refused
+             * @description LLM tokens the tenant may use per month (its own limit, else the system one); null when there is none. At the limit new tests and regenerations are refused
              */
             tokenLimit?: number;
+            /**
+             * Format: int32
+             * @description Tests one user of the tenant may generate at once; null when there is no limit
+             */
+            concurrentGenerationsLimit?: number;
+            /** @description Whether the tenant has limits of its own, overriding the system settings (ADR014) */
+            ownLimits?: boolean;
         };
         /** @description The token prices, and the model names to offer when adding one */
         TokenPricesDto: {
@@ -2640,6 +2709,139 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    tenantSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Settings returned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                };
+            };
+            /** @description Not an ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                };
+            };
+            /** @description No such tenant */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                };
+            };
+        };
+    };
+    saveTenantSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkspaceSettingsInput"];
+            };
+        };
+        responses: {
+            /** @description Settings saved; the workspace's settings returned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                };
+            };
+            /** @description A value does not fit, or the setting applies to the whole system only */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                };
+            };
+            /** @description Not an ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                };
+            };
+            /** @description No such tenant or setting */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                };
+            };
+        };
+    };
+    resetTenantSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Settings reset; the workspace's settings returned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                };
+            };
+            /** @description Not an ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                };
+            };
+            /** @description No such tenant */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WorkspaceSettingDto"][];
+                };
             };
         };
     };

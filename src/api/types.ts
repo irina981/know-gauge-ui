@@ -67,6 +67,7 @@ export type UsageSummaryDto = Schemas['UsageSummaryDto'];
 export type ThemePreference = 'LIGHT' | 'DARK' | 'SYSTEM';
 export type TenantSummaryDto = Schemas['TenantSummaryDto'];
 export type SystemSettingDto = Schemas['SystemSettingDto'];
+export type WorkspaceSettingDto = Schemas['WorkspaceSettingDto'];
 export type EmbeddingInfoDto = Schemas['EmbeddingInfoDto'];
 export type TokenPriceDto = Schemas['TokenPriceDto'];
 export type TokenPricesDto = Schemas['TokenPricesDto'];

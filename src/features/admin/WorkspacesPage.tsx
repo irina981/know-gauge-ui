@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Badge,
   Button,
   Checkbox,
@@ -17,6 +18,7 @@ import {
 } from '@mantine/core';
 import { useDebouncedValue, useLocalStorage } from '@mantine/hooks';
 import {
+  IconAdjustmentsHorizontal,
   IconArrowDown,
   IconArrowUp,
   IconArrowsSort,
@@ -32,6 +34,7 @@ import { useTenantList } from '@/api/admin';
 import type { TenantSummaryDto } from '@/api/types';
 import { EmptyState, ErrorAlert, PageHeader, PageLoader } from '@/shared/components';
 import { formatBytes, formatDateTime } from '@/shared/format';
+import { WorkspaceLimitsModal } from './WorkspaceLimitsModal';
 
 const PAGE_SIZE = 20;
 
@@ -137,7 +140,14 @@ function LimitCell({
   reachedHint: string;
 }) {
   if (limit == null) {
-    return <Text size="sm">{format(used)}</Text>;
+    return (
+      <div>
+        <Text size="sm">{format(used)}</Text>
+        <Text size="xs" c="dimmed">
+          no limit
+        </Text>
+      </div>
+    );
   }
   const share = limit > 0 ? (used / limit) * 100 : 100;
   const reached = used >= limit;
@@ -209,6 +219,7 @@ export function WorkspacesPage() {
   const [type, setType] = useState<string | null>(null);
   const [sort, setSort] = useState<SortState>({ key: 'name', ascending: true });
   const [page, setPage] = useState(0);
+  const [limitsOf, setLimitsOf] = useState<TenantSummaryDto | null>(null);
   const [hiddenColumns, setHiddenColumns] = useLocalStorage<ColumnKey[]>({
     key: HIDDEN_COLUMNS_KEY,
     defaultValue: [],
@@ -313,6 +324,13 @@ export function WorkspacesPage() {
                             You
                           </Badge>
                         )}
+                        {tenant.ownLimits && (
+                          <Tooltip label="This workspace has limits of its own, which win over the System settings">
+                            <Badge variant="light" color="violet" size="sm">
+                              Own limits
+                            </Badge>
+                          </Tooltip>
+                        )}
                       </Group>
                     </Table.Td>
                     {shown('type') && (
@@ -380,7 +398,23 @@ export function WorkspacesPage() {
                       </Table.Td>
                     )}
                     <Table.Td>
-                      <IconChevronRight size={16} color="var(--mantine-color-dimmed)" />
+                      <Group gap={4} wrap="nowrap" justify="flex-end">
+                        <Tooltip label="Limits of this workspace">
+                          <ActionIcon
+                            variant="subtle"
+                            color="gray"
+                            aria-label={`Limits of ${tenant.name}`}
+                            onClick={(event) => {
+                              // The row opens the workspace; this opens its limits instead.
+                              event.stopPropagation();
+                              setLimitsOf(tenant);
+                            }}
+                          >
+                            <IconAdjustmentsHorizontal size={18} />
+                          </ActionIcon>
+                        </Tooltip>
+                        <IconChevronRight size={16} color="var(--mantine-color-dimmed)" />
+                      </Group>
                     </Table.Td>
                   </Table.Tr>
                 ))}
@@ -402,6 +436,7 @@ export function WorkspacesPage() {
           </Group>
         </Paper>
       )}
+      <WorkspaceLimitsModal tenant={limitsOf} onClose={() => setLimitsOf(null)} />
     </div>
   );
 }

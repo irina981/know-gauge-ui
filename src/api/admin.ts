@@ -15,6 +15,7 @@ export const adminKeys = {
   tenants: ['admin', 'tenants'] as const,
   tenantList: (params: TenantListParams) => ['admin', 'tenants', 'list', params] as const,
   tenant: (id: number) => ['admin', 'tenants', 'one', id] as const,
+  tenantSettings: (id: number) => ['admin', 'tenants', 'settings', id] as const,
 };
 
 /** One page of tenants (user workspaces and libraries), filtered and sorted on the server. ADMIN only (ADR013). */
@@ -48,6 +49,49 @@ export function useTenant(tenantId: number) {
   });
 }
 
+/** A workspace's own settings (for now its limits) next to the system values (ADR014). ADMIN only. */
+export function useWorkspaceSettings(tenantId: number | null) {
+  return useQuery({
+    queryKey: adminKeys.tenantSettings(tenantId ?? 0),
+    queryFn: () =>
+      unwrap(api.GET('/api/admin/tenants/{id}/settings', { params: { path: { id: tenantId ?? 0 } } })),
+    enabled: tenantId != null,
+  });
+}
+
+/**
+ * Saves a workspace's own values: an empty value goes back to the system value, 0 means no limit. The list and the
+ * usage (the admin's own workspace may be the one changed) show the new limits.
+ */
+export function useSaveWorkspaceSettings(tenantId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (values: Record<string, string>) =>
+      unwrap(
+        api.PUT('/api/admin/tenants/{id}/settings', { params: { path: { id: tenantId } }, body: { values } }),
+      ),
+    onSuccess: (settings) => {
+      queryClient.setQueryData(adminKeys.tenantSettings(tenantId), settings);
+      void queryClient.invalidateQueries({ queryKey: adminKeys.tenants });
+      void queryClient.invalidateQueries({ queryKey: ['me', 'usage'] });
+    },
+  });
+}
+
+/** Removes all of a workspace's own values, so the system values apply to it again. */
+export function useResetWorkspaceSettings(tenantId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      unwrap(api.DELETE('/api/admin/tenants/{id}/settings', { params: { path: { id: tenantId } } })),
+    onSuccess: (settings) => {
+      queryClient.setQueryData(adminKeys.tenantSettings(tenantId), settings);
+      void queryClient.invalidateQueries({ queryKey: adminKeys.tenants });
+      void queryClient.invalidateQueries({ queryKey: ['me', 'usage'] });
+    },
+  });
+}
+
 export const settingsKeys = {
   values: ['admin', 'settings', 'values'] as const,
   tokenPrices: ['admin', 'settings', 'token-prices'] as const,
@@ -78,8 +122,9 @@ export function useSaveSystemSettings() {
       unwrap(api.PUT('/api/admin/settings/values', { body: { values } })),
     onSuccess: (settings) => {
       queryClient.setQueryData(settingsKeys.values, settings);
-      // The usage page shows the token limit, the price list the models in effect.
+      // The usage page and the workspace list show the limits, the price list the models in effect.
       void queryClient.invalidateQueries({ queryKey: ['me', 'usage'] });
+      void queryClient.invalidateQueries({ queryKey: adminKeys.tenants });
       void queryClient.invalidateQueries({ queryKey: settingsKeys.tokenPrices });
     },
   });
@@ -93,6 +138,7 @@ export function useResetSystemSettings() {
     onSuccess: (settings) => {
       queryClient.setQueryData(settingsKeys.values, settings);
       void queryClient.invalidateQueries({ queryKey: ['me', 'usage'] });
+      void queryClient.invalidateQueries({ queryKey: adminKeys.tenants });
       void queryClient.invalidateQueries({ queryKey: settingsKeys.tokenPrices });
     },
   });
