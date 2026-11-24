@@ -25,6 +25,7 @@ import {
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { isGenerating, useDeleteTest, useTests } from '@/api/tests';
+import { usePermissions } from '@/api/account';
 import { useViewedWorkspace, useWorkspacePath } from '@/app/viewedWorkspace';
 import { topicPathLabel, useTopicTree } from '@/api/topics';
 import { EmptyState, ErrorAlert, PageHeader, PageLoader, StatTile, StatusBadge } from '@/shared/components';
@@ -89,6 +90,7 @@ export function TestsPage() {
   const remove = useDeleteTest();
   // An admin viewing another workspace only looks (ADR013).
   const viewed = useViewedWorkspace();
+  const { canCreateTests } = usePermissions();
   const navigate = useNavigate();
   const wp = useWorkspacePath();
 
@@ -131,7 +133,7 @@ export function TestsPage() {
         description="Every test generated from your library: review the flagged answers, then publish."
         icon={IconChecklist}
         actions={
-          viewed ? null : (
+          viewed || !canCreateTests ? null : (
             <Button
               component={Link}
               to="/tests/new"
@@ -276,7 +278,7 @@ export function TestsPage() {
                               Share
                             </Button>
                           )}
-                          {!viewed && (
+                          {!viewed && !t.readOnly && (
                             <Tooltip label="Delete test">
                               <ActionIcon
                                 variant="subtle"

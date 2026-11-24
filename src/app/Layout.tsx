@@ -31,7 +31,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { ColorSchemeToggle, Wordmark } from '@/shared/components';
 import { useApplyStoredTheme } from '@/shared/themePreference';
 import { FEEDBACK_MAILTO, PRIVACY_URL, TERMS_URL } from '@/shared/siteLinks';
-import { isOrganizationAdmin, useMe } from '@/api/account';
+import { isOrganizationAdmin, useMe, usePermissions } from '@/api/account';
 import { BetaBanner } from './BetaBanner';
 import { LimitBanner } from './LimitBanner';
 import { useSession } from './auth';
@@ -198,6 +198,8 @@ export function Layout() {
   const isMobile = useMediaQuery('(max-width: 48em)');
   const { data: me } = useMe();
   const isAdmin = !!me?.roles?.includes('ADMIN');
+  // A viewer generates no tests (ADR017), so the button is not shown to them.
+  const { canCreateTests } = usePermissions();
   const nav = NAV.filter((item) => !item.organizationAdminOnly || isOrganizationAdmin(me));
 
   return (
@@ -252,21 +254,23 @@ export function Layout() {
           {/* The user's own workspace; Generate test belongs to it, so it sits under the heading. */}
           <Stack gap={4}>
             <WorkspaceHeading type={me?.tenantType} name={me?.tenantName} />
-            <Button
-              component={Link}
-              to="/tests/new"
-              variant="gradient"
-              gradient={{ from: 'brand.5', to: 'violet.5', deg: 135 }}
-              leftSection={<IconSparkles size={18} />}
-              size="md"
-              fullWidth
-              mt={4}
-              mb={8}
-              onClick={close}
-              style={{ boxShadow: '0 8px 24px rgba(121, 80, 242, 0.35)' }}
-            >
-              Generate test
-            </Button>
+            {canCreateTests && (
+              <Button
+                component={Link}
+                to="/tests/new"
+                variant="gradient"
+                gradient={{ from: 'brand.5', to: 'violet.5', deg: 135 }}
+                leftSection={<IconSparkles size={18} />}
+                size="md"
+                fullWidth
+                mt={4}
+                mb={8}
+                onClick={close}
+                style={{ boxShadow: '0 8px 24px rgba(121, 80, 242, 0.35)' }}
+              >
+                Generate test
+              </Button>
+            )}
             {nav.map(({ to, label, icon: Icon, isActive }) => (
               <NavLink
                 key={to}

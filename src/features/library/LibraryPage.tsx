@@ -37,7 +37,7 @@ import {
   useIngestedDocumentCounts,
   useTopicTree,
 } from '@/api/topics';
-import { useMe } from '@/api/account';
+import { useMe, usePermissions } from '@/api/account';
 import { useLibraries } from '@/api/admin';
 import type { TopicNode } from '@/api/types';
 import { DocumentsPanel } from '@/features/documents/DocumentsPanel';
@@ -74,6 +74,8 @@ function saveLibraryView(view: LibraryView) {
  */
 export function LibraryPage() {
   const viewed = useViewedWorkspace();
+  // Users and viewers read the library; only its admins change it (ADR017).
+  const { canChangeLibrary, canCreateTests } = usePermissions();
   const params = useParams();
   const selectedId = params.topicId ? Number(params.topicId) : undefined;
   const navigate = useNavigate();
@@ -118,7 +120,8 @@ export function LibraryPage() {
   // A topic stands for its whole subtree in test generation, so a parent topic without documents of its own can
   // be used as long as an ingested document exists somewhere below it. The counts refresh after ingestion.
   const { data: ingestedCounts } = useIngestedDocumentCounts();
-  const canGenerate = !viewed && !!selected && !!ingestedCounts && subtreeCount(selected, ingestedCounts) > 0;
+  const canGenerate =
+    !viewed && canCreateTests && !!selected && !!ingestedCounts && subtreeCount(selected, ingestedCounts) > 0;
 
   const handleDelete = (topic: TopicNode) =>
     confirmDelete({
@@ -143,7 +146,7 @@ export function LibraryPage() {
         }
         icon={IconBooks}
         actions={
-          viewed ? null : (
+          viewed || !canChangeLibrary ? null : (
             <>
               <Button
                 variant="default"

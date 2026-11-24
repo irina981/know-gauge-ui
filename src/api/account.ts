@@ -43,3 +43,17 @@ export function isOrganizationAdmin(me: { tenantType?: string; roles?: string[] 
   return me?.tenantType === 'ORGANIZATION' && !!me.roles?.includes('TENANT_ADMIN');
 }
 
+/**
+ * What the signed-in user's role allows in their own workspace (ADR017), to hide what the server would refuse:
+ * tenant admins (and application admins) change the library; users and admins create and take tests. A single test
+ * says itself whether the user may change it (`TestDto.readOnly`: a user changes only their own).
+ */
+export function usePermissions() {
+  const { data: me } = useMe();
+  const roles = me?.roles ?? [];
+  const admin = roles.includes('TENANT_ADMIN') || roles.includes('ADMIN');
+  return {
+    canChangeLibrary: admin,
+    canCreateTests: admin || roles.includes('TENANT_USER'),
+  };
+}

@@ -131,8 +131,10 @@ export function TestReviewPage() {
     return <ErrorAlert error={error ?? 'Test not found'} title={`Could not load test #${testId}`} />;
   }
 
-  // An admin viewing another workspace only looks (ADR013).
-  const canReview = !viewed && REVIEWABLE_TEST_STATUSES.includes(test.status ?? '');
+  // An admin viewing another workspace only looks (ADR013); a viewer, or a user for a colleague's test, too
+  // (ADR017: the server marks the test readOnly).
+  const locked = !!viewed || !!test.readOnly;
+  const canReview = !locked && REVIEWABLE_TEST_STATUSES.includes(test.status ?? '');
   const published = test.status === 'PUBLISHED';
   const sorted = [...(questions ?? [])].sort((a, b) => (a.questionIndex ?? 0) - (b.questionIndex ?? 0));
   const needsReview = sorted.filter((q) => q.status === 'NEEDS_REVIEW');
@@ -211,7 +213,7 @@ export function TestReviewPage() {
               </Title>
               <StatusBadge info={testStatus(test.status)} busy={generating} />
               {/* Name and description stay editable until the test is published. */}
-              {!published && !viewed && (
+              {!published && !locked && (
                 <Tooltip label="Edit name and description">
                   <ActionIcon
                     variant="subtle"
@@ -258,7 +260,7 @@ export function TestReviewPage() {
                 <Button component={Link} to={wp(`/attempts?testId=${testId}`)} variant="default">
                   Attempts
                 </Button>
-                {!viewed && (
+                {!locked && (
                   <Tooltip label={unpublishBlockedReason} disabled={!unpublishBlockedReason}>
                     <span>
                       <Button
@@ -382,9 +384,11 @@ export function TestReviewPage() {
                 <Text size="xs" c="dimmed">
                   {viewed
                     ? 'Read-only: another user’s workspace.'
-                    : published
-                      ? 'Published tests can’t be changed.'
-                      : 'Review actions are available once the test is generated.'}
+                    : test.readOnly
+                      ? 'Read-only: your role cannot change this test.'
+                      : published
+                        ? 'Published tests can’t be changed.'
+                        : 'Review actions are available once the test is generated.'}
                 </Text>
               )}
             </Group>
@@ -414,7 +418,7 @@ export function TestReviewPage() {
 
         {published && (
           <Tabs.Panel value="share" pt="md">
-            <SharePanel testId={testId} publicToken={test.publicToken} readOnly={!!viewed} />
+            <SharePanel testId={testId} publicToken={test.publicToken} readOnly={locked} />
           </Tabs.Panel>
         )}
 
