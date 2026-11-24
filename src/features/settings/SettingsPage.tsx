@@ -168,7 +168,7 @@ function ProfileTab() {
 
   const name = me?.displayName ?? session.name;
   const email = me?.email ?? session.email;
-  const admin = me?.roles?.includes('APPLICATION_ADMIN');
+  const admin = me?.roles?.includes('ADMIN');
 
   return (
     <Stack gap="lg">

@@ -1983,7 +1983,7 @@ export interface components {
             tenantName?: string;
             email?: string;
             displayName?: string;
-            /** @description APPLICATION_ADMIN (Keycloak realm role) and the role in the tenant (TENANT_ADMIN) */
+            /** @description The user's roles from user_roles, e.g. ADMIN and TENANT_ADMIN (ADR012) */
             roles?: string[];
             /** @description fixed (no sign-in, one tenant per deployment) or oidc (Keycloak) */
             securityMode?: string;
