@@ -40,7 +40,13 @@ import { isGenerating, testKeys, useTest } from '@/api/tests';
 import { topicPathLabel, useTopicTree } from '@/api/topics';
 import type { TestQuestionDto } from '@/api/types';
 import { EmptyState, ErrorAlert, PageLoader, StatusBadge } from '@/shared/components';
-import { coverageModeLabel, humanize, PUBLISHABLE_TEST_STATUSES, REVIEWABLE_TEST_STATUSES, testStatus } from '@/shared/enums';
+import {
+  coverageModeLabel,
+  humanize,
+  PUBLISHABLE_TEST_STATUSES,
+  REVIEWABLE_TEST_STATUSES,
+  testStatus,
+} from '@/shared/enums';
 import { formatDateTime, formatDuration } from '@/shared/format';
 import { useNow } from '@/shared/useNow';
 import { CommentActionModal } from './CommentActionModal';
@@ -49,6 +55,7 @@ import { GenerationRunsPanel } from './GenerationRunsPanel';
 import { ManualEditModal } from './ManualEditModal';
 import { QuestionCard, type ReviewActionKind } from './QuestionCard';
 import { SharePanel } from './SharePanel';
+import { useViewedWorkspace, useWorkspacePath } from '@/app/viewedWorkspace';
 import { TestDetailsModal } from './TestDetailsModal';
 import { VersionHistoryDrawer } from './VersionHistoryDrawer';
 
@@ -84,6 +91,8 @@ const TABS = ['questions', 'share', 'activity', 'runs'];
 
 export function TestReviewPage() {
   const testId = Number(useParams().testId);
+  const viewed = useViewedWorkspace();
+  const wp = useWorkspacePath();
   // The open tab is in the URL (?tab=share), so the Tests list can link straight to sharing.
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: test, isLoading, error } = useTest(testId);
@@ -122,7 +131,8 @@ export function TestReviewPage() {
     return <ErrorAlert error={error ?? 'Test not found'} title={`Could not load test #${testId}`} />;
   }
 
-  const canReview = REVIEWABLE_TEST_STATUSES.includes(test.status ?? '');
+  // An admin viewing another workspace only looks (ADR013).
+  const canReview = !viewed && REVIEWABLE_TEST_STATUSES.includes(test.status ?? '');
   const published = test.status === 'PUBLISHED';
   const sorted = [...(questions ?? [])].sort((a, b) => (a.questionIndex ?? 0) - (b.questionIndex ?? 0));
   const needsReview = sorted.filter((q) => q.status === 'NEEDS_REVIEW');
@@ -186,7 +196,7 @@ export function TestReviewPage() {
 
   return (
     <Stack gap="lg">
-      <Anchor component={Link} to="/tests" size="sm" c="dimmed">
+      <Anchor component={Link} to={wp('/tests')} size="sm" c="dimmed">
         <Group gap={4}>
           <IconArrowLeft size={14} /> All tests
         </Group>
@@ -201,7 +211,7 @@ export function TestReviewPage() {
               </Title>
               <StatusBadge info={testStatus(test.status)} busy={generating} />
               {/* Name and description stay editable until the test is published. */}
-              {!published && (
+              {!published && !viewed && (
                 <Tooltip label="Edit name and description">
                   <ActionIcon
                     variant="subtle"
@@ -245,22 +255,24 @@ export function TestReviewPage() {
             {published && (
               <Group gap="xs" mb="xs">
                 {/* No "Take test" here: this page shows the answer key. Participants use the links on the Share tab. */}
-                <Button component={Link} to={`/attempts?testId=${testId}`} variant="default">
+                <Button component={Link} to={wp(`/attempts?testId=${testId}`)} variant="default">
                   Attempts
                 </Button>
-                <Tooltip label={unpublishBlockedReason} disabled={!unpublishBlockedReason}>
-                  <span>
-                    <Button
-                      variant="default"
-                      leftSection={<IconArrowBackUp size={16} />}
-                      disabled={!!unpublishBlockedReason}
-                      loading={unpublish.isPending}
-                      onClick={() => setUnpublishOpen(true)}
-                    >
-                      Unpublish
-                    </Button>
-                  </span>
-                </Tooltip>
+                {!viewed && (
+                  <Tooltip label={unpublishBlockedReason} disabled={!unpublishBlockedReason}>
+                    <span>
+                      <Button
+                        variant="default"
+                        leftSection={<IconArrowBackUp size={16} />}
+                        disabled={!!unpublishBlockedReason}
+                        loading={unpublish.isPending}
+                        onClick={() => setUnpublishOpen(true)}
+                      >
+                        Unpublish
+                      </Button>
+                    </span>
+                  </Tooltip>
+                )}
               </Group>
             )}
             <Text size="sm">
@@ -368,9 +380,11 @@ export function TestReviewPage() {
               />
               {!canReview && (
                 <Text size="xs" c="dimmed">
-                  {published
-                    ? 'Published tests can’t be changed.'
-                    : 'Review actions are available once the test is generated.'}
+                  {viewed
+                    ? 'Read-only: another user’s workspace.'
+                    : published
+                      ? 'Published tests can’t be changed.'
+                      : 'Review actions are available once the test is generated.'}
                 </Text>
               )}
             </Group>
@@ -400,7 +414,7 @@ export function TestReviewPage() {
 
         {published && (
           <Tabs.Panel value="share" pt="md">
-            <SharePanel testId={testId} publicToken={test.publicToken} />
+            <SharePanel testId={testId} publicToken={test.publicToken} readOnly={!!viewed} />
           </Tabs.Panel>
         )}
 

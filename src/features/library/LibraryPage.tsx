@@ -14,10 +14,8 @@ import {
   Tooltip,
 } from '@mantine/core';
 import {
-  IconArrowLeft,
   IconBooks,
   IconDots,
-  IconEye,
   IconFileImport,
   IconFolderOpen,
   IconFolderPlus,
@@ -40,6 +38,7 @@ import {
 } from '@/api/topics';
 import type { TopicNode } from '@/api/types';
 import { DocumentsPanel } from '@/features/documents/DocumentsPanel';
+import { useViewedWorkspace, useWorkspacePath } from '@/app/viewedWorkspace';
 import { ImportTreeModal } from '@/features/topics/ImportTreeModal';
 import { TopicFormModal, type TopicFormTarget } from '@/features/topics/TopicFormModal';
 import { TopicTree } from '@/features/topics/TopicTree';
@@ -66,28 +65,23 @@ function saveLibraryView(view: LibraryView) {
   }
 }
 
-/** Another user's library an admin is viewing, read-only (ADR013). */
-export interface ViewedLibrary {
-  tenantId: number;
-  name: string;
-}
-
 /**
- * Topics on the left, the selected topic and its documents on the right. With `viewed`, an admin looks at another
- * user's library: the same view, read-only, without the shared library.
+ * Topics on the left, the selected topic and its documents on the right. While an admin views another user's
+ * workspace (ADR013), it shows their library only, read-only.
  */
-export function LibraryPage({ viewed }: { viewed?: ViewedLibrary } = {}) {
+export function LibraryPage() {
+  const viewed = useViewedWorkspace();
   const params = useParams();
   const selectedId = params.topicId ? Number(params.topicId) : undefined;
   const navigate = useNavigate();
+  const wp = useWorkspacePath();
   const { data: tree, isLoading, error } = useTopicTree();
   const deleteTopic = useDeleteTopic();
 
   const [formTarget, setFormTarget] = useState<TopicFormTarget | null>(null);
   const [importOpen, setImportOpen] = useState(false);
 
-  const basePath = viewed ? `/admin/libraries/${viewed.tenantId}` : '/library';
-  const select = (id: number) => navigate(`${basePath}/topics/${id}`);
+  const select = (id: number) => navigate(wp(`/library/topics/${id}`));
   const selected = selectedId != null ? tree?.byId.get(selectedId) : undefined;
 
   // The tree shows one library at a time: the user's own topics or the shared library (ADR010). An open topic
@@ -129,25 +123,16 @@ export function LibraryPage({ viewed }: { viewed?: ViewedLibrary } = {}) {
     // On desktop the page fills the window: both panels reach the bottom and scroll inside (brand.css).
     <div className="kg-library-page">
       <PageHeader
-        eyebrow={viewed ? 'Administration · read-only' : 'Knowledge base'}
+        eyebrow={viewed ? 'Knowledge base · read-only' : 'Knowledge base'}
         title={viewed ? `${viewed.name} · library` : 'Library'}
         description={
           viewed
-            ? 'You are viewing another user’s library as an admin. You can open and download, but not change anything.'
+            ? 'Another user’s library, viewed as an admin. You can open and download, but not change anything.'
             : 'Organise your source material in topics. Uploaded PDFs are indexed so every test is grounded in them.'
         }
-        icon={viewed ? IconEye : IconBooks}
+        icon={IconBooks}
         actions={
-          viewed ? (
-            <Button
-              component={Link}
-              to="/admin/libraries"
-              variant="default"
-              leftSection={<IconArrowLeft size={16} />}
-            >
-              All libraries
-            </Button>
-          ) : (
+          viewed ? null : (
             <>
               <Button
                 variant="default"

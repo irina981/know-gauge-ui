@@ -8,31 +8,34 @@ import { EmptyState, ErrorAlert, PageHeader, PageLoader } from '@/shared/compone
 import { formatDateTime } from '@/shared/format';
 
 /**
- * Admins only (ADR013): every library (tenant). Opening one shows it like the normal Library page, read-only. The
- * admin's own library and the shared library open the normal Library page.
+ * Admins only (ADR013): every workspace (tenant). Opening another user's workspace shows their library, tests and
+ * attempts, read-only, on pages of their own. The admin's own and the shared library open the normal Library.
  */
-export function LibrariesPage() {
+export function WorkspacesPage() {
   const navigate = useNavigate();
   const { data: me } = useMe();
   const { data: tenants, isLoading, error } = useTenants();
 
-  const open = (tenant: TenantSummaryDto) => {
-    if (tenant.type === 'LIBRARY' || tenant.tenantId === me?.tenantId) navigate('/library');
-    else navigate(`/admin/libraries/${tenant.tenantId}`);
-  };
+  // The own and the shared library open the normal Library; any other workspace its own read-only pages.
+  const open = (tenant: TenantSummaryDto) =>
+    navigate(
+      tenant.type === 'LIBRARY' || tenant.tenantId === me?.tenantId
+        ? '/library'
+        : `/admin/workspaces/${tenant.tenantId}/library`,
+    );
 
   return (
     <div>
       <PageHeader
         eyebrow="Administration"
-        title="Libraries"
-        description="Every user's library and the shared library. Open one to look through its topics and documents, read-only."
+        title="Workspaces"
+        description="Every user's workspace and the shared library. Open one to look through its library, tests and attempts, read-only."
         icon={IconBuildingWarehouse}
       />
       {isLoading && <PageLoader />}
-      {error && <ErrorAlert error={error} title="Could not load the libraries" />}
+      {error && <ErrorAlert error={error} title="Could not load the workspaces" />}
       {tenants && tenants.length === 0 && (
-        <EmptyState title="No libraries yet">Nobody has signed in yet.</EmptyState>
+        <EmptyState title="No workspaces yet">Nobody has signed in yet.</EmptyState>
       )}
       {tenants && tenants.length > 0 && (
         <Paper p="sm">
@@ -40,7 +43,7 @@ export function LibrariesPage() {
             <Table verticalSpacing="sm" highlightOnHover>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th>Library</Table.Th>
+                  <Table.Th>Workspace</Table.Th>
                   <Table.Th>Topics</Table.Th>
                   <Table.Th>Documents</Table.Th>
                   <Table.Th>Created</Table.Th>
@@ -57,7 +60,7 @@ export function LibrariesPage() {
                         </Text>
                         {tenant.type === 'LIBRARY' && (
                           <Badge variant="light" color="gray" size="sm">
-                            Shared
+                            Shared library
                           </Badge>
                         )}
                         {tenant.tenantId === me?.tenantId && (

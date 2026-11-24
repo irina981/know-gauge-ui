@@ -38,7 +38,16 @@ import { scoreColor } from '@/features/attempts/attemptUtils';
  * How participants reach a published test (ADR009): the shared link (name + email, no attempt limit)
  * and personal invitations sent by email (one link per address, usable once).
  */
-export function SharePanel({ testId, publicToken }: { testId: number; publicToken?: string }) {
+/** `readOnly`: an admin viewing another workspace (ADR013) sees the link and invitations but changes nothing. */
+export function SharePanel({
+  testId,
+  publicToken,
+  readOnly = false,
+}: {
+  testId: number;
+  publicToken?: string;
+  readOnly?: boolean;
+}) {
   const link = publicToken ? `${window.location.origin}/t/${publicToken}` : '';
   const [inviteOpen, setInviteOpen] = useState(false);
   const { data: invitations, isLoading, error } = useInvitations(testId);
@@ -77,30 +86,38 @@ export function SharePanel({ testId, publicToken }: { testId: number; publicToke
           <Group gap="xs" wrap="nowrap">
             <TextInput value={link} readOnly style={{ flex: 1 }} onFocus={(e) => e.currentTarget.select()} />
             <CopyLinkButton value={link} />
-            <Tooltip label="Open as a participant">
-              <ActionIcon
-                component="a"
-                href={link}
-                target="_blank"
-                rel="noreferrer"
-                variant="default"
-                size="lg"
-                aria-label="Open the shared link"
-              >
-                <IconExternalLink size={18} />
-              </ActionIcon>
-            </Tooltip>
-            <Tooltip label="Replace with a new link; the current one stops working">
-              <Button
-                variant="default"
-                leftSection={<IconRefresh size={16} />}
-                loading={createLink.isPending}
-                onClick={confirmRegenerate}
-              >
-                Regenerate
-              </Button>
-            </Tooltip>
+            {!readOnly && (
+              <Tooltip label="Open as a participant">
+                <ActionIcon
+                  component="a"
+                  href={link}
+                  target="_blank"
+                  rel="noreferrer"
+                  variant="default"
+                  size="lg"
+                  aria-label="Open the shared link"
+                >
+                  <IconExternalLink size={18} />
+                </ActionIcon>
+              </Tooltip>
+            )}
+            {!readOnly && (
+              <Tooltip label="Replace with a new link; the current one stops working">
+                <Button
+                  variant="default"
+                  leftSection={<IconRefresh size={16} />}
+                  loading={createLink.isPending}
+                  onClick={confirmRegenerate}
+                >
+                  Regenerate
+                </Button>
+              </Tooltip>
+            )}
           </Group>
+        ) : readOnly ? (
+          <Text size="sm" c="dimmed">
+            No shared link yet.
+          </Text>
         ) : (
           <Button
             variant="light"
@@ -124,9 +141,15 @@ export function SharePanel({ testId, publicToken }: { testId: number; publicToke
               recorded under that address.
             </Text>
           </div>
-          <Button leftSection={<IconMail size={16} />} variant="gradient" onClick={() => setInviteOpen(true)}>
-            Invite by email
-          </Button>
+          {!readOnly && (
+            <Button
+              leftSection={<IconMail size={16} />}
+              variant="gradient"
+              onClick={() => setInviteOpen(true)}
+            >
+              Invite by email
+            </Button>
+          )}
         </Group>
 
         {isLoading && <PageLoader />}
@@ -167,7 +190,7 @@ export function SharePanel({ testId, publicToken }: { testId: number; publicToke
                     <Table.Td>
                       <Group gap={4} justify="flex-end" wrap="nowrap">
                         <CopyLinkButton value={inv.link ?? ''} label="Copy personal link" small />
-                        {!inv.attemptStatus && (
+                        {!inv.attemptStatus && !readOnly && (
                           <Tooltip label="Send the link again">
                             <ActionIcon
                               variant="subtle"

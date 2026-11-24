@@ -15,6 +15,7 @@ import {
 import { IconCheck, IconX } from '@tabler/icons-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useWorkspacePath } from '@/app/viewedWorkspace';
 import type { AttemptDetailDto, AttemptQuestionDto } from '@/api/types';
 import { EmptyState } from '@/shared/components';
 import { formatDateTime, formatDuration } from '@/shared/format';
@@ -22,6 +23,7 @@ import { optionLetters, participantLabel, scoreColor } from './attemptUtils';
 
 /** Score summary and a question-by-question review of a scored attempt. */
 export function AttemptResult({ detail }: { detail: AttemptDetailDto }) {
+  const wp = useWorkspacePath();
   const attempt = detail.attempt!;
   const [filter, setFilter] = useState<'all' | 'wrong'>('all');
   const questions = [...(detail.questions ?? [])].sort(
@@ -59,7 +61,7 @@ export function AttemptResult({ detail }: { detail: AttemptDetailDto }) {
               <Stat label="Wrong or unanswered" value={attempt.wrongCount} color="red" />
             </SimpleGrid>
             <Group gap="xs" mt="lg">
-              <Button component={Link} to={`/attempts?testId=${attempt.testId}`} variant="default">
+              <Button component={Link} to={wp(`/attempts?testId=${attempt.testId}`)} variant="default">
                 All attempts at this test
               </Button>
             </Group>

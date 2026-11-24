@@ -40,8 +40,8 @@ async function authorizationFor(url: string): Promise<string | undefined> {
 }
 
 /**
- * The library (tenant) an admin is viewing read-only, or undefined for the user's own (ADR013). Set by the admin
- * library view; content requests then carry it in the X-KG-Tenant header.
+ * The workspace (tenant) an admin is viewing read-only, or undefined for the user's own (ADR013). Set by
+ * app/viewedWorkspace.ts; workspace API requests then carry it in the X-KG-Tenant header.
  */
 let viewedTenantId: number | undefined;
 
@@ -49,11 +49,20 @@ export function setViewedTenant(tenantId: number | undefined) {
   viewedTenantId = tenantId;
 }
 
-/** The header that makes a content request read the viewed library; only content requests carry it. */
+/**
+ * The header that makes a request read the viewed workspace. Like the backend, only the workspace APIs take it:
+ * not the own account (/api/me), administration or the participants' public API.
+ */
 function tenantHeaderFor(url: string): string | undefined {
   if (viewedTenantId === undefined) return undefined;
   const path = new URL(url, window.location.origin).pathname;
-  return path.startsWith('/api/content/') ? String(viewedTenantId) : undefined;
+  const workspaceApi =
+    path.startsWith('/api/') &&
+    path !== '/api/me' &&
+    !path.startsWith('/api/me/') &&
+    !path.startsWith('/api/admin/') &&
+    !path.startsWith('/api/public/');
+  return workspaceApi ? String(viewedTenantId) : undefined;
 }
 
 export const TENANT_HEADER = 'X-KG-Tenant';

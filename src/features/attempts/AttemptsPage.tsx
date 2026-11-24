@@ -2,6 +2,7 @@ import { Anchor, Badge, Button, Group, Paper, Select, Stack, Table, Text } from 
 import { IconClipboardCheck, IconFilterOff } from '@tabler/icons-react';
 import { useMemo } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useWorkspacePath } from '@/app/viewedWorkspace';
 import { useAttempts } from '@/api/attempts';
 import { useTests } from '@/api/tests';
 import type { AttemptDto } from '@/api/types';
@@ -18,6 +19,7 @@ export function AttemptsPage() {
   const testFilter = searchParams.get('testId');
   const participantFilter = searchParams.get('participant');
   const navigate = useNavigate();
+  const wp = useWorkspacePath();
 
   const { data: attempts, isLoading, error } = useAttempts();
   const { data: tests } = useTests();
@@ -136,7 +138,7 @@ export function AttemptsPage() {
             <Paper key={testId} p="lg">
               <Group justify="space-between" align="flex-start" mb="sm">
                 <div>
-                  <Anchor component={Link} to={`/tests/${testId}`} fw={700} fz="lg">
+                  <Anchor component={Link} to={wp(`/tests/${testId}`)} fw={700} fz="lg">
                     {testName(testId)}
                   </Anchor>
                   <Text size="sm" c="dimmed">
@@ -144,7 +146,7 @@ export function AttemptsPage() {
                     {Math.max(...scores)}%
                   </Text>
                 </div>
-                <Button component={Link} to={`/tests/${testId}`} variant="light" size="xs">
+                <Button component={Link} to={wp(`/tests/${testId}`)} variant="light" size="xs">
                   Open test
                 </Button>
               </Group>
@@ -165,7 +167,7 @@ export function AttemptsPage() {
                       <Table.Tr
                         key={a.id}
                         style={{ cursor: 'pointer' }}
-                        onClick={() => navigate(`/attempts/${a.id}`)}
+                        onClick={() => navigate(wp(`/attempts/${a.id}`))}
                       >
                         <Table.Td>
                           <Text size="sm" c="dimmed">

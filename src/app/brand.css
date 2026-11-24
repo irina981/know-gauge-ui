@@ -839,3 +839,18 @@ body {
 .kg-theme-preview-system > .kg-theme-preview-dark {
   clip-path: polygon(62% 0, 100% 0, 100% 100%, 46% 100%);
 }
+
+/* ---------- Admin viewing another user's workspace (ADR013) ---------- */
+.kg-workspace-view-bar {
+  padding: 10px 12px;
+  margin-bottom: var(--mantine-spacing-lg);
+  border-radius: var(--mantine-radius-md);
+  border: 1px solid rgba(121, 80, 242, 0.35);
+  background: var(--mantine-color-violet-light);
+}
+
+.kg-workspace-view-tabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}

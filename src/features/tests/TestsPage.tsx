@@ -10,6 +10,7 @@ import {
 } from '@tabler/icons-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { isGenerating, useDeleteTest, useTests } from '@/api/tests';
+import { useViewedWorkspace, useWorkspacePath } from '@/app/viewedWorkspace';
 import { topicPathLabel, useTopicTree } from '@/api/topics';
 import { EmptyState, ErrorAlert, PageHeader, PageLoader, StatTile, StatusBadge } from '@/shared/components';
 import { confirmDelete } from '@/shared/confirm';
@@ -24,7 +25,10 @@ export function TestsPage() {
   const { data: tests, isLoading, error } = useTests(status);
   const { data: tree } = useTopicTree();
   const remove = useDeleteTest();
+  // An admin viewing another workspace only looks (ADR013).
+  const viewed = useViewedWorkspace();
   const navigate = useNavigate();
+  const wp = useWorkspacePath();
 
   // All tests (not filtered), for the numbers at the top.
   const { data: allTests } = useTests();
@@ -44,14 +48,16 @@ export function TestsPage() {
         description="Every test generated from your library: review the flagged answers, then publish."
         icon={IconChecklist}
         actions={
-          <Button
-            component={Link}
-            to="/tests/new"
-            variant="gradient"
-            leftSection={<IconSparkles size={16} />}
-          >
-            Generate test
-          </Button>
+          viewed ? null : (
+            <Button
+              component={Link}
+              to="/tests/new"
+              variant="gradient"
+              leftSection={<IconSparkles size={16} />}
+            >
+              Generate test
+            </Button>
+          )
         }
       />
 
@@ -120,7 +126,7 @@ export function TestsPage() {
                   <Table.Tr
                     key={t.id}
                     style={{ cursor: 'pointer' }}
-                    onClick={() => navigate(`/tests/${t.id}`)}
+                    onClick={() => navigate(wp(`/tests/${t.id}`))}
                   >
                     <Table.Td>
                       <Text size="sm" c="dimmed">
@@ -173,7 +179,7 @@ export function TestsPage() {
                         {t.status === 'PUBLISHED' && (
                           <Button
                             component={Link}
-                            to={`/tests/${t.id}?tab=share`}
+                            to={wp(`/tests/${t.id}?tab=share`)}
                             size="xs"
                             variant="light"
                             leftSection={<IconShare size={14} />}
@@ -181,22 +187,24 @@ export function TestsPage() {
                             Share
                           </Button>
                         )}
-                        <Tooltip label="Delete test">
-                          <ActionIcon
-                            variant="subtle"
-                            color="red"
-                            aria-label="Delete test"
-                            onClick={() =>
-                              confirmDelete({
-                                title: 'Delete test',
-                                message: `Delete test #${t.id} with all its questions and history?`,
-                                onConfirm: () => remove.mutate(t.id!),
-                              })
-                            }
-                          >
-                            <IconTrash size={18} />
-                          </ActionIcon>
-                        </Tooltip>
+                        {!viewed && (
+                          <Tooltip label="Delete test">
+                            <ActionIcon
+                              variant="subtle"
+                              color="red"
+                              aria-label="Delete test"
+                              onClick={() =>
+                                confirmDelete({
+                                  title: 'Delete test',
+                                  message: `Delete test #${t.id} with all its questions and history?`,
+                                  onConfirm: () => remove.mutate(t.id!),
+                                })
+                              }
+                            >
+                              <IconTrash size={18} />
+                            </ActionIcon>
+                          </Tooltip>
+                        )}
                       </Group>
                     </Table.Td>
                   </Table.Tr>

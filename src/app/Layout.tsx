@@ -208,17 +208,18 @@ export function Layout() {
             ))}
           </Stack>
 
-          {/* Admins look into every library, read-only (ADR013). */}
+          {/* Admins look into every workspace, read-only (ADR013). */}
           {isAdmin && (
             <Stack gap={4}>
               <NavHeading>Administration</NavHeading>
               <NavLink
                 component={Link}
-                to="/admin/libraries"
-                label="Libraries"
+                to="/admin/workspaces"
+                label="Workspaces"
                 className="kg-nav-link"
                 leftSection={<IconBuildingWarehouse size={20} stroke={1.6} />}
-                active={pathname.startsWith('/admin/libraries')}
+                // Also while one is open: its Library / Tests / Attempts tabs are in the page (WorkspaceViewBar).
+                active={pathname.startsWith('/admin/workspaces')}
                 onClick={close}
               />
             </Stack>
