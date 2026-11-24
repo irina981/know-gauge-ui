@@ -28,7 +28,7 @@ export function ColumnResizer({
     event.preventDefault();
     event.stopPropagation();
     event.currentTarget.setPointerCapture(event.pointerId);
-    const base = state.measured();
+    const base = state.measured(event.currentTarget.closest('tr'));
     drag.current = { startX: event.clientX, startWidth: base[column] ?? minWidth, base };
     setDragging(true);
     state.change(base, false);
@@ -48,7 +48,7 @@ export function ColumnResizer({
     const step = event.key === 'ArrowLeft' ? -KEY_STEP : event.key === 'ArrowRight' ? KEY_STEP : 0;
     if (step === 0) return;
     event.preventDefault();
-    const base = state.measured();
+    const base = state.measured(event.currentTarget.closest('tr'));
     state.change({ ...base, [column]: Math.max(minWidth, (base[column] ?? minWidth) + step) }, true);
   };
 

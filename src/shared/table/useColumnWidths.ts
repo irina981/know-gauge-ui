@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type RefObject } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 /** Column widths in pixels by column key; a table without any uses the browser's automatic layout. */
 export type ColumnWidths = Record<string, number>;
@@ -34,7 +34,7 @@ function saveWidths(storageKey: string, widths: ColumnWidths) {
  * layout as wide as its columns, and a column without a width of its own (shown again, or reset by a double-click on
  * its handle) takes the table's default for it. Resetting all widths goes back to the automatic layout.
  */
-export function useColumnWidths(storageKey: string, headerRowRef: RefObject<HTMLTableRowElement>) {
+export function useColumnWidths(storageKey: string) {
   const [widths, setWidths] = useState<ColumnWidths>(() => loadWidths(storageKey));
   const widthsRef = useRef(widths);
   widthsRef.current = widths;
@@ -48,15 +48,18 @@ export function useColumnWidths(storageKey: string, headerRowRef: RefObject<HTML
     [storageKey],
   );
 
-  /** The current widths plus the measured width of every visible column without one. */
-  const measured = useCallback((): ColumnWidths => {
+  /**
+   * The current widths plus the measured width of every visible column without one, from the header row the handle
+   * is in (a page may show several tables with the same columns).
+   */
+  const measured = useCallback((headerRow: HTMLTableRowElement | null): ColumnWidths => {
     const next = { ...widthsRef.current };
-    headerRowRef.current?.querySelectorAll<HTMLElement>('[data-column]').forEach((cell) => {
+    headerRow?.querySelectorAll<HTMLElement>('[data-column]').forEach((cell) => {
       const key = cell.dataset.column!;
       if (next[key] == null) next[key] = Math.round(cell.getBoundingClientRect().width);
     });
     return next;
-  }, [headerRowRef]);
+  }, []);
 
   const reset = useCallback(
     (key?: string) => {
