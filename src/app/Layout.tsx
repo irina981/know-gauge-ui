@@ -16,6 +16,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import {
+  IconAdjustments,
   IconBooks,
   IconBuildingWarehouse,
   IconChecklist,
@@ -198,6 +199,15 @@ export function Layout() {
                 leftSection={<IconBuildingWarehouse size={20} stroke={1.6} />}
                 // Also while one is open: its Library / Tests / Attempts tabs are in the page (WorkspaceViewBar).
                 active={pathname.startsWith('/admin/workspaces')}
+                onClick={close}
+              />
+              <NavLink
+                component={Link}
+                to="/admin/settings"
+                label="System settings"
+                className="kg-nav-link"
+                leftSection={<IconAdjustments size={20} stroke={1.6} />}
+                active={pathname.startsWith('/admin/settings')}
                 onClick={close}
               />
             </Stack>

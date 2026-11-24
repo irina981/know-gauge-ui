@@ -6,6 +6,7 @@ const TITLES: Record<number, string> = {
   400: 'Invalid request',
   404: 'Not found',
   409: 'Conflict',
+  429: 'Monthly AI limit reached',
   502: 'Model provider error',
   503: 'Service unavailable',
   504: 'Timed out',

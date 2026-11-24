@@ -12,6 +12,7 @@ import { PublicLayout } from '@/features/public/PublicLayout';
 import { PublicAttemptPage, PublicResultsPage } from '@/features/public/PublicAttemptPage';
 import { InvitationPage, SharedLinkPage } from '@/features/public/StartTestPage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
+import { SystemSettingsPage } from '@/features/admin/SystemSettingsPage';
 import { WorkspacesPage } from '@/features/admin/WorkspacesPage';
 import { WorkspaceScope } from './WorkspaceScope';
 import { GenerateTestPage } from '@/features/tests/GenerateTestPage';
@@ -60,6 +61,7 @@ const router = createBrowserRouter([
             element: <RequireAdmin />,
             children: [
               { path: 'admin/workspaces', element: <WorkspacesPage /> },
+              { path: 'admin/settings', element: <SystemSettingsPage /> },
               // Another user's workspace, read-only: the same pages under the workspace's own address.
               {
                 path: 'admin/workspaces/:tenantId',

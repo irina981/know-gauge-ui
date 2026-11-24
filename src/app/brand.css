@@ -875,3 +875,11 @@ body {
   overflow-x: auto;
   scrollbar-width: none;
 }
+
+/* System settings: the Save / Reset bar stays in view while the page scrolls. */
+.kg-settings-actions {
+  position: sticky;
+  top: calc(var(--app-shell-header-offset, 0px) + 12px);
+  z-index: 5;
+  background: var(--mantine-color-body);
+}

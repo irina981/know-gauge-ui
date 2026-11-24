@@ -66,3 +66,9 @@ export type UsageSummaryDto = Schemas['UsageSummaryDto'];
 /** The colour scheme a user can choose; SYSTEM follows the device. */
 export type ThemePreference = 'LIGHT' | 'DARK' | 'SYSTEM';
 export type TenantSummaryDto = Schemas['TenantSummaryDto'];
+export type SystemSettingDto = Schemas['SystemSettingDto'];
+export type EmbeddingInfoDto = Schemas['EmbeddingInfoDto'];
+export type TokenPriceDto = Schemas['TokenPriceDto'];
+export type TokenPricesDto = Schemas['TokenPricesDto'];
+export type TokenPriceInput = Schemas['TokenPriceInput'];
+export type TokenPriceSuggestionDto = Schemas['TokenPriceSuggestionDto'];

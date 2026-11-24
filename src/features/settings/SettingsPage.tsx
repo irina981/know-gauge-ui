@@ -6,6 +6,7 @@ import {
   Button,
   Group,
   Paper,
+  Progress,
   SimpleGrid,
   Stack,
   Tabs,
@@ -313,12 +314,15 @@ function Stat({
   label,
   value,
   detail,
+  extra,
   tone,
 }: {
   icon: TablerIcon;
   label: string;
   value: ReactNode;
   detail?: ReactNode;
+  /** Shown under the detail, e.g. a progress bar. */
+  extra?: ReactNode;
   tone: 'doc' | 'ai' | 'check' | 'people';
 }) {
   return (
@@ -327,7 +331,7 @@ function Stat({
         <ThemeIcon size={36} radius="md" className={`kg-tone kg-tone-${tone}`}>
           <Icon size={20} stroke={1.7} />
         </ThemeIcon>
-        <div style={{ minWidth: 0 }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
           <Text size="xs" c="dimmed" fw={600} tt="uppercase" style={{ letterSpacing: '0.06em' }}>
             {label}
           </Text>
@@ -339,6 +343,7 @@ function Stat({
               {detail}
             </Text>
           )}
+          {extra}
         </div>
       </Group>
     </Paper>
@@ -347,6 +352,10 @@ function Stat({
 
 const numberFormat = new Intl.NumberFormat();
 const count = (value?: number) => numberFormat.format(value ?? 0);
+const usdFormat = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' });
+/** Dollars with cents; amounts below a cent are shown as "< $0.01" rather than $0.00. */
+const usd = (value: number) =>
+  value > 0 && value < 0.01 ? '< ' + usdFormat.format(0.01) : usdFormat.format(value);
 
 function UsageTab() {
   const { data: usage, isLoading, error } = useUsage();
@@ -359,6 +368,9 @@ function UsageTab() {
     timeZone: 'UTC',
   });
   const tokens = (usage.llmInputTokens ?? 0) + (usage.llmOutputTokens ?? 0);
+  const limit = usage.llmTokenLimit ?? null;
+  const usedShare = limit ? Math.min(100, (tokens / limit) * 100) : 0;
+  const unpriced = usage.unpricedModels ?? [];
 
   return (
     <Stack gap="lg">
@@ -404,11 +416,37 @@ function UsageTab() {
             tone="check"
             label="AI tokens"
             value={count(tokens)}
-            detail="writing and checking questions"
+            detail={
+              <>
+                {limit ? `of ${count(limit)} this month` : 'writing and checking questions'}
+                {/* What the tokens cost, with the token prices an admin set (System settings). */}
+                <Text span display="block" size="sm" fw={600} c="var(--mantine-color-text)" mt={4}>
+                  {usd(usage.llmCostUsd ?? 0)} spent
+                </Text>
+                {unpriced.length > 0 && (
+                  <Text span display="block" size="xs" c="dimmed">
+                    Not included: {unpriced.join(', ')} (no price set)
+                  </Text>
+                )}
+              </>
+            }
+            extra={
+              limit ? (
+                <Progress
+                  value={usedShare}
+                  color={usedShare >= 100 ? 'red' : usedShare >= 80 ? 'yellow' : 'teal'}
+                  size="sm"
+                  mt={8}
+                  aria-label={`${Math.round(usedShare)}% of the monthly AI tokens used`}
+                />
+              ) : undefined
+            }
           />
         </SimpleGrid>
         <Text size="xs" c="dimmed" mt="md">
-          The free beta has no limits yet. Monthly allowances will show here once they apply.
+          {limit
+            ? `Each workspace may use ${count(limit)} AI tokens per month.`
+            : 'The free beta has no limits yet. Monthly allowances will show here once they apply.'}
         </Text>
       </Section>
     </Stack>
