@@ -58,8 +58,11 @@ const COLUMNS: TableColumn<ColumnKey>[] = [
   { key: 'createdAt', label: 'Created', width: 170, min: 100 },
 ];
 
-/** The last column, with the row's buttons, keeps its width. */
-const ACTIONS_WIDTH = 120;
+/** The last columns, with the row's buttons (invitations, settings, the arrow), keep their widths. */
+const INVITATIONS_WIDTH = 100;
+const SETTINGS_WIDTH = 84;
+const ARROW_WIDTH = 36;
+const ACTIONS_WIDTH = INVITATIONS_WIDTH + SETTINGS_WIDTH + ARROW_WIDTH;
 
 /**
  * Whether a row offers its invitations (ADR015): where some were sent, and where one can still be sent (an
@@ -232,7 +235,18 @@ export function WorkspacesPage() {
                   {layout.visibleColumns.map((c) => (
                     <ColumnHeader key={c.key} column={c} layout={layout} sort={sort} onSort={changeSort} />
                   ))}
-                  <Table.Th style={layout.actionsStyle} />
+                  {/* Titled button columns; their widths add up to ACTIONS_WIDTH once columns are resized. */}
+                  <Table.Th style={{ width: INVITATIONS_WIDTH, textAlign: 'center' }}>
+                    <Text size="sm" fw={600}>
+                      Invitations
+                    </Text>
+                  </Table.Th>
+                  <Table.Th style={{ width: SETTINGS_WIDTH, textAlign: 'center' }}>
+                    <Text size="sm" fw={600}>
+                      Settings
+                    </Text>
+                  </Table.Th>
+                  <Table.Th style={{ width: ARROW_WIDTH }} />
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -328,8 +342,9 @@ export function WorkspacesPage() {
                         <Text size="sm">{formatDateTime(tenant.createdAt)}</Text>
                       </Table.Td>
                     )}
+                    {/* Empty where the workspace has no invitations, so the columns stay aligned. */}
                     <Table.Td>
-                      <Group gap={4} wrap="nowrap" justify="flex-end">
+                      <Group justify="center" wrap="nowrap">
                         {hasInvitations(tenant) && (
                           <Tooltip label="Invitations to this workspace">
                             <ActionIcon
@@ -345,6 +360,10 @@ export function WorkspacesPage() {
                             </ActionIcon>
                           </Tooltip>
                         )}
+                      </Group>
+                    </Table.Td>
+                    <Table.Td>
+                      <Group justify="center" wrap="nowrap">
                         <Tooltip label="Settings for this workspace">
                           <ActionIcon
                             variant="subtle"
@@ -359,8 +378,10 @@ export function WorkspacesPage() {
                             <IconAdjustmentsHorizontal size={18} />
                           </ActionIcon>
                         </Tooltip>
-                        <IconChevronRight size={16} color="var(--mantine-color-dimmed)" />
                       </Group>
+                    </Table.Td>
+                    <Table.Td>
+                      <IconChevronRight size={16} color="var(--mantine-color-dimmed)" />
                     </Table.Td>
                   </Table.Tr>
                 ))}
