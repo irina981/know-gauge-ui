@@ -943,7 +943,7 @@ export interface paths {
         };
         /**
          * List tenants (filtered, sorted, paged)
-         * @description Tenants (user workspaces and libraries) with their type, owner and content counts. search matches the name and the owner's name or email; type keeps one tenant type. Sort by name (default), type, owner, topics, documents or createdAt. An ADMIN reads any of them through the normal content API: send the tenant id in the X-KG-Tenant header on GET requests to the workspace APIs, which then return that tenant's data, read-only (ADR013).
+         * @description Tenants (user workspaces and libraries) with their type, owner and content counts. search matches the name and the owner's name or email; type keeps one tenant type. Sort by name (default), type, owner, topics, documents, storage (bytes of documents), usage (this month's tokens) or createdAt. Each tenant comes with its storage and its LLM tokens this calendar month (UTC), each with its limit. An ADMIN reads any of them through the normal content API: send the tenant id in the X-KG-Tenant header on GET requests to the workspace APIs, which then return that tenant's data, read-only (ADR013).
          */
         get: operations["tenants"];
         put?: never;
@@ -2282,6 +2282,11 @@ export interface components {
              * @description LLM tokens (input + output) the workspace may use per month; null for no limit
              */
             llmTokenLimit?: number;
+            /**
+             * Format: int64
+             * @description Bytes of documents the workspace may keep; null for no limit. An upload over it is refused
+             */
+            storageLimitBytes?: number;
         };
         /** @description How many ingested documents a topic holds directly (sub-topics are counted separately) */
         TopicDocumentCountDto: {
@@ -2343,6 +2348,26 @@ export interface components {
             topics?: number;
             /** Format: int64 */
             documents?: number;
+            /**
+             * Format: int64
+             * @description Total size of the tenant's documents in bytes
+             */
+            storageBytes?: number;
+            /**
+             * Format: int64
+             * @description Bytes of documents every tenant may keep; null when there is none (always for the library). Over it uploads are refused
+             */
+            storageLimitBytes?: number;
+            /**
+             * Format: int64
+             * @description LLM tokens (input + output) of the tenant this calendar month (UTC)
+             */
+            tokensThisMonth?: number;
+            /**
+             * Format: int64
+             * @description Monthly token limit every tenant shares; null when there is none. At the limit new tests and regenerations are refused
+             */
+            tokenLimit?: number;
         };
         /** @description The token prices, and the model names to offer when adding one */
         TokenPricesDto: {

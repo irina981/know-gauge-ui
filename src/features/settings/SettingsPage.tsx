@@ -371,6 +371,8 @@ function UsageTab() {
   const limit = usage.llmTokenLimit ?? null;
   const usedShare = limit ? Math.min(100, (tokens / limit) * 100) : 0;
   const unpriced = usage.unpricedModels ?? [];
+  const storageLimit = usage.storageLimitBytes ?? null;
+  const storageShare = storageLimit ? Math.min(100, ((usage.storageBytes ?? 0) / storageLimit) * 100) : 0;
 
   return (
     <Stack gap="lg">
@@ -387,7 +389,24 @@ function UsageTab() {
             value={count(usage.documents)}
             detail={`${count(usage.ingestedDocuments)} ready for tests`}
           />
-          <Stat icon={IconFileText} tone="doc" label="Storage" value={formatBytes(usage.storageBytes)} />
+          <Stat
+            icon={IconFileText}
+            tone="doc"
+            label="Storage"
+            value={formatBytes(usage.storageBytes)}
+            detail={storageLimit ? `of ${formatBytes(storageLimit)}` : undefined}
+            extra={
+              storageLimit ? (
+                <Progress
+                  value={storageShare}
+                  color={storageShare >= 100 ? 'red' : storageShare >= 80 ? 'yellow' : 'teal'}
+                  size="sm"
+                  mt={8}
+                  aria-label={`${Math.round(storageShare)}% of the storage used`}
+                />
+              ) : undefined
+            }
+          />
         </SimpleGrid>
       </Section>
 
