@@ -27,16 +27,21 @@ import {
   IconColumns3,
   IconSearch,
 } from '@tabler/icons-react';
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMe } from '@/api/account';
 import { useTenantList } from '@/api/admin';
 import type { TenantSummaryDto } from '@/api/types';
+import { ColumnResizer } from '@/shared/ColumnResizer';
+import { useColumnWidths, type ColumnWidthsState } from '@/shared/useColumnWidths';
 import { EmptyState, ErrorAlert, PageHeader, PageLoader } from '@/shared/components';
 import { formatBytes, formatDateTime } from '@/shared/format';
 import { WorkspaceLimitsModal } from './WorkspaceLimitsModal';
 
-const PAGE_SIZE = 20;
+/** Rows per page the admin picks from, kept per browser; 20 until one is picked. */
+const PAGE_SIZES = [10, 20, 50, 100];
+const DEFAULT_PAGE_SIZE = 20;
+const PAGE_SIZE_KEY = 'kg.admin.workspaces.page-size';
 
 /** Tenant types as the UI names them (a tenant is a "library" there, its owner's "workspace"). */
 const TYPE_LABELS: Record<string, string> = {
@@ -57,26 +62,40 @@ const numberFormat = new Intl.NumberFormat();
 /** Columns an admin may hide; the workspace name always shows. */
 type ColumnKey = Exclude<SortKey, 'name'>;
 
-const COLUMNS: { key: ColumnKey; label: string }[] = [
-  { key: 'type', label: 'Type' },
-  { key: 'owner', label: 'Owner' },
-  { key: 'topics', label: 'Topics' },
-  { key: 'documents', label: 'Documents' },
-  { key: 'storage', label: 'Storage' },
-  { key: 'usage', label: 'AI tokens this month' },
-  { key: 'createdAt', label: 'Created' },
+/**
+ * `width` is the width a column gets once the table has been resized but this column has not; no column gets
+ * narrower than `min`.
+ */
+const COLUMNS: { key: ColumnKey; label: string; width: number; min: number }[] = [
+  { key: 'type', label: 'Type', width: 130, min: 80 },
+  { key: 'owner', label: 'Owner', width: 220, min: 100 },
+  { key: 'topics', label: 'Topics', width: 100, min: 70 },
+  { key: 'documents', label: 'Documents', width: 120, min: 70 },
+  { key: 'storage', label: 'Storage', width: 160, min: 120 },
+  { key: 'usage', label: 'AI tokens this month', width: 190, min: 120 },
+  { key: 'createdAt', label: 'Created', width: 170, min: 100 },
 ];
+
+const NAME_COLUMN = { key: 'name' as const, label: 'Workspace', width: 260, min: 140 };
+
+/** The last column, with the row's buttons, keeps its width. */
+const ACTIONS_WIDTH = 88;
 
 /** The hidden columns are kept per browser; a column added later shows until it is hidden. */
 const HIDDEN_COLUMNS_KEY = 'kg.admin.workspaces.hidden-columns';
+
+/** The column widths the admin dragged, also kept per browser. */
+const COLUMN_WIDTHS_KEY = 'kg.admin.workspaces.column-widths';
 
 /** Checkboxes that show or hide the table's columns. */
 function ColumnPicker({
   hidden,
   onChange,
+  widths,
 }: {
   hidden: ColumnKey[];
   onChange: (hidden: ColumnKey[]) => void;
+  widths: ColumnWidthsState;
 }) {
   const visible = COLUMNS.filter((c) => !hidden.includes(c.key)).map((c) => c.key);
   return (
@@ -115,6 +134,14 @@ function ColumnPicker({
             disabled={hidden.length === 0}
           >
             Show all
+          </Button>
+          <Button
+            variant="subtle"
+            size="compact-xs"
+            onClick={() => widths.reset()}
+            disabled={!widths.resized}
+          >
+            Reset widths
           </Button>
         </Group>
       </Popover.Dropdown>
@@ -184,24 +211,35 @@ function SortHeader({
   column,
   sort,
   onSort,
+  minWidth,
+  widths,
+  style,
 }: {
-  label: ReactNode;
+  label: string;
   column: SortKey;
   sort: SortState;
   onSort: (key: SortKey) => void;
+  minWidth: number;
+  widths: ColumnWidthsState;
+  style?: CSSProperties;
 }) {
   const active = sort.key === column;
   const Icon = !active ? IconArrowsSort : sort.ascending ? IconArrowUp : IconArrowDown;
   return (
-    <Table.Th>
-      <UnstyledButton onClick={() => onSort(column)} aria-label={`Sort by ${label}`}>
+    <Table.Th data-column={column} className="kg-resizable-th" style={style}>
+      <UnstyledButton onClick={() => onSort(column)} aria-label={`Sort by ${label}`} title={label} maw="100%">
         <Group gap={4} wrap="nowrap">
-          <Text size="sm" fw={600}>
+          <Text size="sm" fw={600} truncate={widths.resized}>
             {label}
           </Text>
-          <Icon size={14} color={active ? undefined : 'var(--mantine-color-dimmed)'} />
+          <Icon
+            size={14}
+            style={{ flexShrink: 0 }}
+            color={active ? undefined : 'var(--mantine-color-dimmed)'}
+          />
         </Group>
       </UnstyledButton>
+      <ColumnResizer column={column} label={label} minWidth={minWidth} state={widths} />
     </Table.Th>
   );
 }
@@ -225,17 +263,40 @@ export function WorkspacesPage() {
     defaultValue: [],
     getInitialValueInEffect: false,
   });
+  const [storedPageSize, setPageSize] = useLocalStorage<number>({
+    key: PAGE_SIZE_KEY,
+    defaultValue: DEFAULT_PAGE_SIZE,
+    getInitialValueInEffect: false,
+  });
+  // A value from storage that is not one of the choices falls back to the default.
+  const pageSize = PAGE_SIZES.includes(storedPageSize) ? storedPageSize : DEFAULT_PAGE_SIZE;
   const shown = (key: ColumnKey) => !hiddenColumns.includes(key);
+  const visibleColumns = COLUMNS.filter((c) => shown(c.key));
+
+  const headerRowRef = useRef<HTMLTableRowElement>(null);
+  const columnWidths = useColumnWidths(COLUMN_WIDTHS_KEY, headerRowRef);
+  // Once resized, the table has a fixed layout exactly as wide as its columns; until then the browser lays it out.
+  const widthOf = (column: { key: string; width: number }) => columnWidths.widths[column.key] ?? column.width;
+  const tableWidth = columnWidths.resized
+    ? [NAME_COLUMN, ...visibleColumns].reduce((sum, c) => sum + widthOf(c), ACTIONS_WIDTH)
+    : undefined;
+  const thStyle = (column: { key: string; width: number }): CSSProperties | undefined =>
+    columnWidths.resized ? { width: widthOf(column) } : undefined;
 
   const { data, isLoading, isFetching, error } = useTenantList({
     search: debouncedSearch,
     type: type ?? undefined,
     page,
-    size: PAGE_SIZE,
+    size: pageSize,
     sort: `${sort.key},${sort.ascending ? 'asc' : 'desc'}`,
   });
 
-  // A new filter or order starts at the first page.
+  // A new filter, order or page size starts at the first page.
+  const changePageSize = (value: string | null) => {
+    if (!value) return;
+    setPageSize(Number(value));
+    setPage(0);
+  };
   const changeSearch = (value: string) => {
     setSearch(value);
     setPage(0);
@@ -288,7 +349,7 @@ export function WorkspacesPage() {
           onChange={changeType}
           w={200}
         />
-        <ColumnPicker hidden={hiddenColumns} onChange={setHiddenColumns} />
+        <ColumnPicker hidden={hiddenColumns} onChange={setHiddenColumns} widths={columnWidths} />
       </Group>
 
       {isLoading && <PageLoader />}
@@ -300,15 +361,28 @@ export function WorkspacesPage() {
       )}
       {data && tenants.length > 0 && (
         <Paper p="sm" style={{ opacity: isFetching ? 0.7 : 1, transition: 'opacity 120ms ease' }}>
-          <Table.ScrollContainer minWidth={260 + 120 * (COLUMNS.length - hiddenColumns.length)}>
-            <Table verticalSpacing="sm" highlightOnHover>
+          <Table.ScrollContainer minWidth={tableWidth ?? 260 + 120 * visibleColumns.length}>
+            <Table
+              verticalSpacing="sm"
+              highlightOnHover
+              className={columnWidths.resized ? 'kg-resized-table' : undefined}
+              style={tableWidth ? { tableLayout: 'fixed', width: tableWidth } : undefined}
+            >
               <Table.Thead>
-                <Table.Tr>
-                  <SortHeader label="Workspace" column="name" sort={sort} onSort={changeSort} />
-                  {COLUMNS.filter((c) => shown(c.key)).map((c) => (
-                    <SortHeader key={c.key} label={c.label} column={c.key} sort={sort} onSort={changeSort} />
+                <Table.Tr ref={headerRowRef}>
+                  {[NAME_COLUMN, ...visibleColumns].map((c) => (
+                    <SortHeader
+                      key={c.key}
+                      label={c.label}
+                      column={c.key}
+                      sort={sort}
+                      onSort={changeSort}
+                      minWidth={c.min}
+                      widths={columnWidths}
+                      style={thStyle(c)}
+                    />
                   ))}
-                  <Table.Th />
+                  <Table.Th style={columnWidths.resized ? { width: ACTIONS_WIDTH } : undefined} />
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -316,17 +390,26 @@ export function WorkspacesPage() {
                   <Table.Tr key={tenant.tenantId} className="kg-doc-row" onClick={() => open(tenant)}>
                     <Table.Td>
                       <Group gap="xs" wrap="nowrap">
-                        <Text size="sm" fw={500}>
+                        <Text size="sm" fw={500} truncate={columnWidths.resized} title={tenant.name}>
                           {tenant.name}
                         </Text>
                         {tenant.tenantId === me?.tenantId && (
-                          <Badge variant="light" size="sm">
+                          <Badge
+                            variant="light"
+                            size="sm"
+                            style={columnWidths.resized ? { flexShrink: 0 } : undefined}
+                          >
                             You
                           </Badge>
                         )}
                         {tenant.ownLimits && (
                           <Tooltip label="This workspace has limits of its own, which win over the System settings">
-                            <Badge variant="light" color="violet" size="sm">
+                            <Badge
+                              variant="light"
+                              color="violet"
+                              size="sm"
+                              style={columnWidths.resized ? { flexShrink: 0 } : undefined}
+                            >
                               Own limits
                             </Badge>
                           </Tooltip>
@@ -354,9 +437,20 @@ export function WorkspacesPage() {
                       <Table.Td>
                         {tenant.ownerName || tenant.ownerEmail ? (
                           <>
-                            <Text size="sm">{tenant.ownerName ?? tenant.ownerEmail}</Text>
+                            <Text
+                              size="sm"
+                              truncate={columnWidths.resized}
+                              title={tenant.ownerName ?? tenant.ownerEmail}
+                            >
+                              {tenant.ownerName ?? tenant.ownerEmail}
+                            </Text>
                             {tenant.ownerName && tenant.ownerEmail && (
-                              <Text size="xs" c="dimmed">
+                              <Text
+                                size="xs"
+                                c="dimmed"
+                                truncate={columnWidths.resized}
+                                title={tenant.ownerEmail}
+                              >
                                 {tenant.ownerEmail}
                               </Text>
                             )}
@@ -422,9 +516,26 @@ export function WorkspacesPage() {
             </Table>
           </Table.ScrollContainer>
           <Group justify="space-between" mt="sm" px="xs">
-            <Text size="sm" c="dimmed">
-              {total} {total === 1 ? 'workspace' : 'workspaces'}
-            </Text>
+            <Group gap="md">
+              <Text size="sm" c="dimmed">
+                {total} {total === 1 ? 'workspace' : 'workspaces'}
+              </Text>
+              <Group gap="xs" wrap="nowrap">
+                <Text size="sm" c="dimmed" component="label" htmlFor="kg-workspaces-page-size">
+                  Rows per page
+                </Text>
+                <Select
+                  id="kg-workspaces-page-size"
+                  size="xs"
+                  w={80}
+                  data={PAGE_SIZES.map(String)}
+                  value={String(pageSize)}
+                  onChange={changePageSize}
+                  allowDeselect={false}
+                  comboboxProps={{ withinPortal: true }}
+                />
+              </Group>
+            </Group>
             {(data.page.totalPages ?? 0) > 1 && (
               <Pagination
                 total={data.page.totalPages ?? 1}

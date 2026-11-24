@@ -449,6 +449,55 @@ body {
   cursor: pointer;
 }
 
+/* ---------- Tables with resizable columns ---------- */
+
+.kg-resizable-th {
+  position: relative;
+}
+
+/* Once resized the columns keep their widths, so what does not fit is cut off. */
+.kg-resized-table th,
+.kg-resized-table td {
+  overflow: hidden;
+}
+
+/* A grab area on the header cell's right edge. */
+.kg-col-resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  cursor: col-resize;
+  touch-action: none;
+  outline: none;
+  z-index: 1;
+}
+
+/* No line at rest; one along the header edge on hover, focus and while dragging. */
+.kg-col-resizer::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  bottom: 20%;
+  right: 5px;
+  width: 2px;
+  border-radius: 2px;
+  background: transparent;
+  transition: background 120ms;
+}
+
+.kg-col-resizer:hover::before,
+.kg-col-resizer:focus-visible::before,
+.kg-col-resizer[data-dragging]::before {
+  background: var(--mantine-primary-color-filled);
+}
+
+body:has(.kg-col-resizer[data-dragging]) {
+  cursor: col-resize;
+  user-select: none;
+}
+
 .kg-doc-row[data-active] {
   background: var(--mantine-primary-color-light);
 }
