@@ -84,7 +84,7 @@ export function HomePage() {
               leftSection={<IconSparkles size={18} />}
               onClick={signUp}
             >
-              Create a free account
+              Try it for free
             </Button>
           }
         />
