@@ -12,7 +12,6 @@ import {
   Title,
   Tooltip,
   useComputedColorScheme,
-  useMantineColorScheme,
   type ActionIconProps,
 } from '@mantine/core';
 import {
@@ -25,13 +24,14 @@ import {
 } from '@tabler/icons-react';
 import type { ReactNode } from 'react';
 import type { EnumInfo } from './enums';
+import { useThemePreference } from './themePreference';
 
 /** Small reusable building blocks used across pages. */
 
 type IconComponent = TablerIcon;
 
 /**
- * Light/dark switch (remembered by Mantine in this browser). Defaults to the look of the always-dark sidebar;
+ * Light/dark switch, remembered in this browser and, when signed in, on the account (Settings → Appearance). Defaults to the look of the always-dark sidebar;
  * the public home page passes `variant="default"` for a bordered button like its Sign in button.
  */
 export function ColorSchemeToggle({
@@ -39,7 +39,7 @@ export function ColorSchemeToggle({
   color = 'gray.3',
   size = 'lg',
 }: Pick<ActionIconProps, 'variant' | 'color' | 'size'>) {
-  const { setColorScheme } = useMantineColorScheme();
+  const { setTheme } = useThemePreference();
   const scheme = useComputedColorScheme('light');
   const next = scheme === 'dark' ? 'light' : 'dark';
   return (
@@ -48,7 +48,7 @@ export function ColorSchemeToggle({
         variant={variant}
         color={color}
         size={size}
-        onClick={() => setColorScheme(next)}
+        onClick={() => setTheme(next === 'dark' ? 'DARK' : 'LIGHT')}
         aria-label="Toggle color scheme"
       >
         {scheme === 'dark' ? <IconSun size={18} /> : <IconMoon size={18} />}

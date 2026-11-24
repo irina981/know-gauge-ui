@@ -11,6 +11,7 @@ import { LibraryPage } from '@/features/library/LibraryPage';
 import { PublicLayout } from '@/features/public/PublicLayout';
 import { PublicAttemptPage, PublicResultsPage } from '@/features/public/PublicAttemptPage';
 import { InvitationPage, SharedLinkPage } from '@/features/public/StartTestPage';
+import { SettingsPage } from '@/features/settings/SettingsPage';
 import { GenerateTestPage } from '@/features/tests/GenerateTestPage';
 import { TestsPage } from '@/features/tests/TestsPage';
 import { TestReviewPage } from '@/features/review/TestReviewPage';
@@ -50,6 +51,8 @@ const router = createBrowserRouter([
           { path: 'attempts', element: <AttemptsPage /> },
           { path: 'attempts/:attemptId', element: <AttemptPage /> },
           { path: 'about', element: <AboutPage /> },
+          { path: 'settings', element: <Navigate to="/settings/profile" replace /> },
+          { path: 'settings/:tab', element: <SettingsPage /> },
           { path: '*', element: <Navigate to="/library" replace /> },
         ],
       },

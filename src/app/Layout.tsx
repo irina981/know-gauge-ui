@@ -12,6 +12,7 @@ import {
   Stack,
   Text,
   Tooltip,
+  UnstyledButton,
 } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import {
@@ -21,10 +22,12 @@ import {
   IconInfoCircle,
   IconLogout,
   IconShieldCheck,
+  IconSettings,
   IconSparkles,
 } from '@tabler/icons-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { ColorSchemeToggle, Wordmark } from '@/shared/components';
+import { useApplyStoredTheme } from '@/shared/themePreference';
 import { FEEDBACK_MAILTO, PRIVACY_URL, TERMS_URL } from '@/shared/siteLinks';
 import { BetaBanner } from './BetaBanner';
 import { useSession } from './auth';
@@ -45,6 +48,12 @@ const NAV = [
     isActive: (p: string) => p.startsWith('/attempts'),
   },
   { to: '/about', label: 'About', icon: IconInfoCircle, isActive: (p: string) => p === '/about' },
+  {
+    to: '/settings',
+    label: 'Settings',
+    icon: IconSettings,
+    isActive: (p: string) => p.startsWith('/settings'),
+  },
 ];
 
 /**
@@ -76,23 +85,32 @@ function Brand({ large = false }: { large?: boolean }) {
  * The signed-in user and Sign out: the last block of the sidebar, framed so it stands apart from the content
  * above it. Not shown when sign-in is off.
  */
-function UserBox() {
+function UserBox({ onNavigate }: { onNavigate: () => void }) {
   const session = useSession();
   if (!session.enabled) return null;
   const label = session.name ?? session.email ?? 'Signed in';
   return (
     <Group gap="sm" wrap="nowrap" className="kg-sidebar-user">
-      <Avatar size={34} radius="xl" color="needle" variant="filled" name={label} />
-      <Box style={{ flex: 1, minWidth: 0 }}>
-        <Text size="sm" fw={600} c="white" truncate="end">
-          {label}
-        </Text>
-        {session.email && session.email !== label && (
-          <Text size="xs" c="rgba(219,225,255,0.6)" truncate="end">
-            {session.email}
+      {/* Name and avatar open the account settings. */}
+      <UnstyledButton
+        component={Link}
+        to="/settings/profile"
+        onClick={onNavigate}
+        className="kg-sidebar-user-link"
+        aria-label="Account settings"
+      >
+        <Avatar size={34} radius="xl" color="needle" variant="filled" name={label} />
+        <Box style={{ flex: 1, minWidth: 0 }}>
+          <Text size="sm" fw={600} c="white" truncate="end">
+            {label}
           </Text>
-        )}
-      </Box>
+          {session.email && session.email !== label && (
+            <Text size="xs" c="rgba(219,225,255,0.6)" truncate="end">
+              {session.email}
+            </Text>
+          )}
+        </Box>
+      </UnstyledButton>
       <Tooltip label="Sign out">
         <ActionIcon variant="subtle" color="gray.3" size="lg" onClick={session.signOut} aria-label="Sign out">
           <IconLogout size={18} />
@@ -111,6 +129,8 @@ const SIDEBAR_LINKS = [
 
 /** The frame around every page: branded sidebar and the page itself (<Outlet />). */
 export function Layout() {
+  // The theme saved on the account wins over this browser's, e.g. after signing in on a new device.
+  useApplyStoredTheme();
   const [opened, { toggle, close }] = useDisclosure();
   const { pathname } = useLocation();
   // Below the "sm" breakpoint the sidebar is hidden behind a burger in a top bar.
@@ -223,7 +243,7 @@ export function Layout() {
             </Box>
           </Group>
 
-          <UserBox />
+          <UserBox onNavigate={close} />
         </Stack>
       </AppShell.Navbar>
 

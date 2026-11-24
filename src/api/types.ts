@@ -59,3 +59,9 @@ export interface Page<T> {
     totalPages: number;
   };
 }
+
+export type CurrentUserDto = Schemas['CurrentUserDto'];
+export type UserPreferencesDto = Schemas['UserPreferencesDto'];
+export type UsageSummaryDto = Schemas['UsageSummaryDto'];
+/** The colour scheme a user can choose; SYSTEM follows the device. */
+export type ThemePreference = 'LIGHT' | 'DARK' | 'SYSTEM';

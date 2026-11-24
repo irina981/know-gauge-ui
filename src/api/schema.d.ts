@@ -24,6 +24,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the current user's settings
+         * @description Settings the user chose for the app. Fields never chosen are null. With sign-in off and no stored user, all fields are null.
+         */
+        get: operations["preferences"];
+        /**
+         * Replace the current user's settings
+         * @description Stores all settings at once; a null field goes back to the app default.
+         */
+        put: operations["updatePreferences"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/content/topics/{id}": {
         parameters: {
             query?: never;
@@ -629,6 +653,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the current workspace's usage
+         * @description What the user's own workspace holds (topics, documents, storage) and what it used this calendar month (UTC): tests, AI-written questions, submitted attempts and LLM tokens. The shared library is not counted.
+         */
+        get: operations["usage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/dev/focus-suggestions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Focus suggestions for the demo topics
+         * @description Topic id to example focus texts for FOCUSED tests. The client offers the suggestions of the selected topics, their parents and their sub-topics. Only available when the dev seed is enabled.
+         */
+        get: operations["getFocusSuggestions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/content/topics/roots": {
         parameters: {
             query?: never;
@@ -939,6 +1003,15 @@ export interface components {
              * @example dGhpcy1pcy1hLXRva2Vu
              */
             publicToken?: string;
+        };
+        /** @description Settings the user chose for the app. A null field was never chosen: the app uses its default. */
+        UserPreferencesDto: {
+            /**
+             * @description Colour scheme; SYSTEM follows the device
+             * @example SYSTEM
+             * @enum {string}
+             */
+            theme?: "LIGHT" | "DARK" | "SYSTEM";
         };
         TopicUpdateInput: {
             /** Format: int64 */
@@ -1914,6 +1987,63 @@ export interface components {
             roles?: string[];
             /** @description fixed (no sign-in, one tenant per deployment) or oidc (Keycloak) */
             securityMode?: string;
+            /**
+             * Format: date-time
+             * @description When the user first signed in; null when sign-in is off
+             */
+            createdAt?: string;
+        };
+        /** @description What the user's workspace holds, and what it used in the current calendar month (UTC). The shared library is not counted. */
+        UsageSummaryDto: {
+            /**
+             * Format: date-time
+             * @description Start of the month, inclusive
+             */
+            periodStart?: string;
+            /**
+             * Format: date-time
+             * @description Start of the next month, exclusive
+             */
+            periodEnd?: string;
+            /** Format: int64 */
+            topics?: number;
+            /** Format: int64 */
+            documents?: number;
+            /**
+             * Format: int64
+             * @description Documents ready for test generation
+             */
+            ingestedDocuments?: number;
+            /**
+             * Format: int64
+             * @description Total size of the uploaded PDFs in bytes
+             */
+            storageBytes?: number;
+            /**
+             * Format: int64
+             * @description Tests created this month
+             */
+            tests?: number;
+            /**
+             * Format: int64
+             * @description Questions the AI wrote this month: new tests and regenerations
+             */
+            questions?: number;
+            /**
+             * Format: int64
+             * @description Attempts participants submitted this month
+             */
+            submittedAttempts?: number;
+            /**
+             * Format: int64
+             * @description LLM input tokens of question writing and checking this month
+             */
+            llmInputTokens?: number;
+            /**
+             * Format: int64
+             * @description LLM output tokens of question writing and checking this month
+             */
+            llmOutputTokens?: number;
         };
         /** @description How many ingested documents a topic holds directly (sub-topics are counted separately) */
         TopicDocumentCountDto: {
@@ -2009,6 +2139,86 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["TestDto"];
+                };
+            };
+        };
+    };
+    preferences: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Settings returned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UserPreferencesDto"];
+                };
+            };
+            /** @description Not signed in (security mode oidc) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UserPreferencesDto"];
+                };
+            };
+        };
+    };
+    updatePreferences: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserPreferencesDto"];
+            };
+        };
+        responses: {
+            /** @description Settings stored */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UserPreferencesDto"];
+                };
+            };
+            /** @description Unknown value, for example an unknown theme */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UserPreferencesDto"];
+                };
+            };
+            /** @description Not signed in (security mode oidc) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UserPreferencesDto"];
+                };
+            };
+            /** @description No stored user (sign-in off) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UserPreferencesDto"];
                 };
             };
         };
@@ -3280,6 +3490,57 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["CurrentUserDto"];
+                };
+            };
+        };
+    };
+    usage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Usage returned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UsageSummaryDto"];
+                };
+            };
+            /** @description Not signed in (security mode oidc) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UsageSummaryDto"];
+                };
+            };
+        };
+    };
+    getFocusSuggestions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": {
+                        [key: string]: string[];
+                    };
                 };
             };
         };

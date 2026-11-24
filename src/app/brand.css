@@ -703,3 +703,139 @@ body {
   background: linear-gradient(135deg, rgba(var(--kg-tone-rgb), 0.24), rgba(var(--kg-tone-rgb), 0.08));
   box-shadow: inset 0 0 0 1px rgba(var(--kg-tone-rgb), 0.28);
 }
+
+/* ---------- Sidebar user box: name and avatar open Settings ---------- */
+.kg-sidebar-user-link {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+  flex: 1;
+  min-width: 0;
+  margin: -4px;
+  padding: 4px;
+  border-radius: var(--mantine-radius-sm);
+}
+
+.kg-sidebar-user-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- Settings page ---------- */
+/* Side tabs: a fixed column on the left, the panel takes the rest. */
+.kg-settings-tabs[data-orientation='vertical'] .mantine-Tabs-list {
+  width: 200px;
+  flex-shrink: 0;
+  gap: 4px;
+  margin-right: var(--mantine-spacing-xl);
+  align-self: flex-start;
+  position: sticky;
+  top: var(--mantine-spacing-md);
+}
+
+.kg-settings-tabs[data-orientation='horizontal'] .mantine-Tabs-list {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  gap: 4px;
+  margin-bottom: var(--mantine-spacing-lg);
+}
+
+.kg-settings-tabs .mantine-Tabs-tab {
+  justify-content: flex-start;
+  font-weight: 500;
+  padding: 10px 14px;
+  flex-shrink: 0;
+}
+
+.kg-settings-tabs .mantine-Tabs-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Rows of the Security tab, divided by hairlines. */
+.kg-settings-row {
+  padding: var(--mantine-spacing-sm) 0;
+}
+
+.kg-settings-row + .kg-settings-row {
+  border-top: 1px solid var(--mantine-color-default-border);
+}
+
+.kg-settings-danger {
+  border-color: rgba(250, 82, 82, 0.35);
+}
+
+/* Theme choices: a small sketch of the app in each scheme. */
+.kg-theme-choice {
+  padding: var(--mantine-spacing-sm);
+  border-radius: var(--mantine-radius-md);
+  border: 1px solid var(--mantine-color-default-border);
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.kg-theme-choice:hover {
+  border-color: var(--mantine-color-brand-4);
+}
+
+.kg-theme-choice[data-checked] {
+  border-color: var(--mantine-color-brand-6);
+  box-shadow: 0 0 0 1px var(--mantine-color-brand-6);
+}
+
+.kg-theme-preview {
+  position: relative;
+  height: 72px;
+  border-radius: var(--mantine-radius-sm);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 28% 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 6px;
+  padding: 6px;
+}
+
+/* Sidebar, then two content cards. */
+.kg-theme-preview > span:first-child {
+  grid-row: 1 / 3;
+  border-radius: 4px;
+  background: linear-gradient(160deg, #1b2256, #2a1f5c);
+}
+
+.kg-theme-preview > span:not(:first-child) {
+  border-radius: 4px;
+}
+
+.kg-theme-preview-light {
+  background: #e6eaf5;
+}
+
+.kg-theme-preview-light > span:not(:first-child) {
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #e3e7f3;
+}
+
+.kg-theme-preview-dark {
+  background: #14161f;
+}
+
+.kg-theme-preview-dark > span:not(:first-child) {
+  background: #1f2230;
+  box-shadow: inset 0 0 0 1px #2c3042;
+}
+
+/* System: the light sketch, with the dark one over its right part, cut diagonally. */
+.kg-theme-preview-system {
+  position: relative;
+  height: 72px;
+}
+
+.kg-theme-preview-system > .kg-theme-preview {
+  position: absolute;
+  inset: 0;
+}
+
+.kg-theme-preview-system > .kg-theme-preview-dark {
+  clip-path: polygon(62% 0, 100% 0, 100% 100%, 46% 100%);
+}
