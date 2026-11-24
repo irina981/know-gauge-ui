@@ -1340,6 +1340,8 @@ export interface components {
     TenantSettingDto: {
       /** @description The property name, e.g. kg.settings.tenant.monthly-token-limit */
       key?: string;
+      /** @description Section of the dialog, as on the System settings page, e.g. AI models */
+      group?: string;
       label?: string;
       description?: string;
       /** @description INTEGER, TEXT or CHOICE */
@@ -1354,6 +1356,12 @@ export interface components {
        * @description Largest allowed INTEGER
        */
       max?: number;
+      /** @description Allowed values of a CHOICE */
+      options?: string[];
+      /** @description Values to offer for a TEXT setting, e.g. model names from the price catalog; other text is allowed */
+      suggestions?: string[];
+      /** @description CONFIG (a configuration value) or LIMIT, from setting_configs; the dialog shows each on a tab of its own */
+      settingType?: string;
       /** @description The system value in effect; null when empty */
       systemValue?: string;
       /** @description The tenant's own value; null when it uses the system value */

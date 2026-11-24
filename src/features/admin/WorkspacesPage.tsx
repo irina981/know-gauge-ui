@@ -345,13 +345,13 @@ export function WorkspacesPage() {
                             </ActionIcon>
                           </Tooltip>
                         )}
-                        <Tooltip label="Limits of this workspace">
+                        <Tooltip label="Settings for this workspace">
                           <ActionIcon
                             variant="subtle"
                             color="gray"
-                            aria-label={`Limits of ${tenant.name}`}
+                            aria-label={`Settings for ${tenant.name}`}
                             onClick={(event) => {
-                              // The row opens the workspace; this opens its limits instead.
+                              // The row opens the workspace; this opens its settings (configuration and limits) instead.
                               event.stopPropagation();
                               setLimitsOf(tenant);
                             }}
