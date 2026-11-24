@@ -222,9 +222,11 @@ export function Layout() {
             </Anchor>
           </Box>
 
-          {/* Legal pages (on knowgauge.com) and feedback; the theme switch is in the top bar on phones. */}
-          <Group justify="space-between" wrap="nowrap">
-            <Group gap={6} wrap="nowrap">
+          <Stack gap={10}>
+            <UserBox onNavigate={close} />
+            {/* Legal pages (on knowgauge.com) and feedback, under the user. The theme is chosen in Settings →
+                Appearance (and with the switch in the top bar on phones). */}
+            <Group gap={6} wrap="nowrap" px={10}>
               {SIDEBAR_LINKS.map(({ label, href }, i) => (
                 <Group key={label} gap={6} wrap="nowrap">
                   {i > 0 && (
@@ -238,12 +240,7 @@ export function Layout() {
                 </Group>
               ))}
             </Group>
-            <Box visibleFrom="sm">
-              <ColorSchemeToggle />
-            </Box>
-          </Group>
-
-          <UserBox onNavigate={close} />
+          </Stack>
         </Stack>
       </AppShell.Navbar>
 
