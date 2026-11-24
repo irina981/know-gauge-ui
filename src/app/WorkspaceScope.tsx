@@ -1,7 +1,7 @@
 import { useLayoutEffect, useState } from 'react';
 import { Navigate, Outlet, useParams } from 'react-router-dom';
 import { useMe } from '@/api/account';
-import { useTenants } from '@/api/admin';
+import { useTenant } from '@/api/admin';
 import { setViewedTenant } from '@/api/client';
 import { ErrorAlert, PageLoader } from '@/shared/components';
 import { queryClient } from './queryClient';
@@ -20,7 +20,7 @@ function forgetWorkspaceData() {
 export function WorkspaceScope() {
   const tenantId = Number(useParams().tenantId);
   const { data: me } = useMe();
-  const { data: tenants, isLoading, error } = useTenants();
+  const { data: tenant, isLoading, error } = useTenant(tenantId);
   const [ready, setReady] = useState<number | null>(null);
 
   useLayoutEffect(() => {
@@ -35,7 +35,6 @@ export function WorkspaceScope() {
 
   if (isLoading) return <PageLoader />;
   if (error) return <ErrorAlert error={error} title="Could not load the workspace" />;
-  const tenant = tenants?.find((t) => t.tenantId === tenantId);
   if (!tenant || tenant.type === 'LIBRARY' || tenant.tenantId === me?.tenantId) {
     return <Navigate to={tenant ? '/library' : '/admin/workspaces'} replace />;
   }

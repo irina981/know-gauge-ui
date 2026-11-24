@@ -70,6 +70,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/settings/values": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the system settings
+         * @description Every setting an admin may change, with its default from the properties files, the override saved here (if any) and the value in effect.
+         */
+        get: operations["settings"];
+        /**
+         * Save system settings
+         * @description Saves the given values as overrides and applies them at once; they also apply after a restart. All values are checked first: if one does not fit, nothing is saved. An empty value means empty for an optional setting (e.g. no limit).
+         */
+        put: operations["saveSettings"];
+        post?: never;
+        /**
+         * Reset all system settings to their defaults
+         * @description Removes every saved override from the database, so the values from the properties files apply again. Token prices are not touched.
+         */
+        delete: operations["resetSettings"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/settings/token-prices/{model}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set a model's token price
+         * @description Adds the price, or changes it. The model name matches recorded LLM calls exactly or as a prefix (e.g. gpt-4.1 for gpt-4.1-2025-04-14); the longest match wins.
+         */
+        put: operations["setTokenPrice"];
+        post?: never;
+        /**
+         * Remove a model's token price
+         * @description Its tokens are then shown as not priced.
+         */
+        delete: operations["deleteTokenPrice"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/tests": {
         parameters: {
             query?: never;
@@ -443,6 +495,26 @@ export interface paths {
          * @description Saves the answers and scores the attempt. A question is correct only if the chosen options exactly match the answer key; questions left out count as wrong.
          */
         post: operations["submit_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/settings/token-prices/suggestion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Look up a model's prices in the price catalog
+         * @description Looks the model up in LiteLLM's public price catalog (exact name, else a provider-prefixed name such as openai/<model>). Nothing is saved. Third-party data: check it against the provider's price list.
+         */
+        post: operations["suggestTokenPrice"];
         delete?: never;
         options?: never;
         head?: never;
@@ -870,10 +942,70 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * List all tenants
-         * @description Every tenant (user workspaces and libraries) with its type, owner and content counts, by name. An ADMIN reads any of them through the normal content API: send the tenant id in the X-KG-Tenant header on GET /api/content/** requests, which then return that tenant's content, read-only (ADR013).
+         * List tenants (filtered, sorted, paged)
+         * @description Tenants (user workspaces and libraries) with their type, owner and content counts. search matches the name and the owner's name or email; type keeps one tenant type. Sort by name (default), type, owner, topics, documents or createdAt. An ADMIN reads any of them through the normal content API: send the tenant id in the X-KG-Tenant header on GET requests to the workspace APIs, which then return that tenant's data, read-only (ADR013).
          */
         get: operations["tenants"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/tenants/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get one tenant
+         * @description A tenant with its type, owner and content counts (ADR013).
+         */
+        get: operations["tenant"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/settings/token-prices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the token prices
+         * @description Every model's price in US dollars per million tokens, used to show what the LLM tokens on the usage page cost, and the model names to offer when adding one.
+         */
+        get: operations["tokenPrices"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/settings/embedding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the embedding model
+         * @description Read-only: the embedding model, its vector size, its price in the price catalog and the stored embeddings per model. Changing the model means re-ingesting every document, so it is set in the properties files (kg.embedding.openai.model).
+         */
+        get: operations["embedding"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1080,6 +1212,67 @@ export interface components {
             shared?: boolean;
             /** @description Direct child topics */
             children?: components["schemas"]["TopicDto"][];
+        };
+        /** @description New values for system settings (the page's Save) */
+        SystemSettingInput: {
+            /** @description Values as text by setting key; an empty value means empty for an optional setting (e.g. no limit) */
+            values: {
+                [key: string]: string;
+            };
+        };
+        /** @description A system setting: its properties-file default, the override saved on the System settings page, and the value in effect */
+        SystemSettingDto: {
+            /** @description The property name, e.g. kg.testgen.defaults.generation-model */
+            key?: string;
+            /** @description Section of the page, e.g. Workspace limits */
+            group?: string;
+            label?: string;
+            description?: string;
+            /** @description INTEGER, TEXT or CHOICE */
+            type?: string;
+            /** @description Allowed values of a CHOICE */
+            options?: string[];
+            /**
+             * Format: int64
+             * @description Smallest allowed INTEGER
+             */
+            min?: number;
+            /**
+             * Format: int64
+             * @description Largest allowed INTEGER
+             */
+            max?: number;
+            /** @description Whether the setting may be empty (e.g. no limit) */
+            optional?: boolean;
+            /** @description Value from the properties files; null when empty */
+            defaultValue?: string;
+            /** @description Whether a value saved on the page overrides the default */
+            overridden?: boolean;
+            /** @description Value saved on the page; null when not overridden or saved empty */
+            overrideValue?: string;
+            /** @description Value in effect; null when empty */
+            value?: string;
+            /** @description Values to offer for a TEXT setting, e.g. model names from the price catalog; other text is allowed */
+            suggestions?: string[];
+        };
+        /** @description The price of a model, in US dollars per million tokens */
+        TokenPriceInput: {
+            inputUsdPerMillion: number;
+            outputUsdPerMillion: number;
+        };
+        /** @description What one LLM model costs (system setting). The model name matches recorded calls exactly or as a prefix; the longest match wins. */
+        TokenPriceDto: {
+            /** @description Model name or prefix, e.g. gpt-4.1 */
+            model?: string;
+            /** @description US dollars per million input tokens */
+            inputUsdPerMillion?: number;
+            /** @description US dollars per million output tokens */
+            outputUsdPerMillion?: number;
+            /**
+             * Format: date-time
+             * @description Last change
+             */
+            updatedAt?: string;
         };
         /** @description Input used to generate a new test */
         TestInput: {
@@ -1759,6 +1952,22 @@ export interface components {
             /** @description True when the document belongs to the shared library (a LIBRARY tenant), whoever is asking */
             shared?: boolean;
         };
+        /** @description A model's prices as a price catalog lists them, not saved. Third-party data: check before saving. */
+        TokenPriceSuggestionDto: {
+            model?: string;
+            /** @description False when the catalog does not list the model; the prices are then null */
+            known?: boolean;
+            /** @description US dollars per million input tokens */
+            inputUsdPerMillion?: number;
+            /** @description US dollars per million output tokens */
+            outputUsdPerMillion?: number;
+            /** @description The catalog entry the prices come from, e.g. openai/gpt-4.1 */
+            catalogModel?: string;
+            /** @description The provider the catalog names for the entry, e.g. openai */
+            provider?: string;
+            /** @description The catalog, e.g. LiteLLM price catalog */
+            source?: string;
+        };
         /** @description Immutable snapshot of a question's content */
         TestQuestionVersionDto: {
             /**
@@ -2064,6 +2273,15 @@ export interface components {
              * @description LLM output tokens of question writing and checking this month
              */
             llmOutputTokens?: number;
+            /** @description What this month's LLM tokens cost in US dollars, with the token prices an admin set; models in unpricedModels not included */
+            llmCostUsd?: number;
+            /** @description Models used this month that have no token price yet */
+            unpricedModels?: string[];
+            /**
+             * Format: int64
+             * @description LLM tokens (input + output) the workspace may use per month; null for no limit
+             */
+            llmTokenLimit?: number;
         };
         /** @description How many ingested documents a topic holds directly (sub-topics are counted separately) */
         TopicDocumentCountDto: {
@@ -2101,6 +2319,10 @@ export interface components {
             content?: components["schemas"]["DocumentDto"][];
             page?: components["schemas"]["PageMetadata"];
         };
+        PagedModelTenantSummaryDto: {
+            content?: components["schemas"]["TenantSummaryDto"][];
+            page?: components["schemas"]["PageMetadata"];
+        };
         /** @description A tenant for admins: type, owner and how much content it holds (ADR013) */
         TenantSummaryDto: {
             /**
@@ -2119,6 +2341,43 @@ export interface components {
             createdAt?: string;
             /** Format: int64 */
             topics?: number;
+            /** Format: int64 */
+            documents?: number;
+        };
+        /** @description The token prices, and the model names to offer when adding one */
+        TokenPricesDto: {
+            /** @description Every price, by model */
+            prices?: components["schemas"]["TokenPriceDto"][];
+            /** @description Configured models and every model recorded for an LLM call */
+            knownModels?: string[];
+            /** @description OpenAI chat models listed in the price catalog */
+            catalogModels?: string[];
+        };
+        /** @description The embedding model (read-only: changing it means re-ingesting every document) */
+        EmbeddingInfoDto: {
+            /** @description kg.embedding.openai.model */
+            model?: string;
+            /**
+             * Format: int32
+             * @description kg.embedding.dimension, also the vector column size
+             */
+            dimension?: number;
+            /** @description The price catalog entry, if listed */
+            catalogModel?: string;
+            /** @description US dollars per million tokens, from the price catalog; null when unknown */
+            inputUsdPerMillion?: number;
+            /**
+             * Format: int32
+             * @description Vector size the price catalog gives; null when unknown
+             */
+            catalogVectorSize?: number;
+            /** @description Stored embeddings per model; only those of the current model are used */
+            byModel?: components["schemas"]["EmbeddingModelCountDto"][];
+        };
+        EmbeddingModelCountDto: {
+            model?: string;
+            /** Format: int64 */
+            embeddings?: number;
             /** Format: int64 */
             documents?: number;
         };
@@ -2352,6 +2611,193 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Settings returned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SystemSettingDto"][];
+                };
+            };
+            /** @description Not an ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SystemSettingDto"][];
+                };
+            };
+        };
+    };
+    saveSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SystemSettingInput"];
+            };
+        };
+        responses: {
+            /** @description Settings saved; every setting returned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SystemSettingDto"][];
+                };
+            };
+            /** @description A value does not fit its setting (all problems in the message) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SystemSettingDto"][];
+                };
+            };
+            /** @description Not an ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SystemSettingDto"][];
+                };
+            };
+            /** @description Unknown setting */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SystemSettingDto"][];
+                };
+            };
+        };
+    };
+    resetSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Settings reset; every setting returned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SystemSettingDto"][];
+                };
+            };
+            /** @description Not an ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SystemSettingDto"][];
+                };
+            };
+        };
+    };
+    setTokenPrice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TokenPriceInput"];
+            };
+        };
+        responses: {
+            /** @description Price saved */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TokenPriceDto"];
+                };
+            };
+            /** @description Missing or negative price, or an invalid model name */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TokenPriceDto"];
+                };
+            };
+            /** @description Not an ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TokenPriceDto"];
+                };
+            };
+        };
+    };
+    deleteTokenPrice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Price removed */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The model has no price */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3227,6 +3673,55 @@ export interface operations {
             };
         };
     };
+    suggestTokenPrice: {
+        parameters: {
+            query: {
+                model: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Suggestion returned (known=false when the catalog does not list the model) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TokenPriceSuggestionDto"];
+                };
+            };
+            /** @description No model name */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TokenPriceSuggestionDto"];
+                };
+            };
+            /** @description Not an ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TokenPriceSuggestionDto"];
+                };
+            };
+            /** @description The price catalog could not be downloaded or read */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TokenPriceSuggestionDto"];
+                };
+            };
+        };
+    };
     getVersions: {
         parameters: {
             query?: never;
@@ -3827,7 +4322,11 @@ export interface operations {
     };
     tenants: {
         parameters: {
-            query?: never;
+            query: {
+                search?: string;
+                type?: string;
+                pageable: components["schemas"]["Pageable"];
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3840,7 +4339,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["TenantSummaryDto"][];
+                    "*/*": components["schemas"]["PagedModelTenantSummaryDto"];
+                };
+            };
+            /** @description Unknown type or sort property */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PagedModelTenantSummaryDto"];
                 };
             };
             /** @description Not signed in */
@@ -3849,7 +4357,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["TenantSummaryDto"][];
+                    "*/*": components["schemas"]["PagedModelTenantSummaryDto"];
                 };
             };
             /** @description Not an ADMIN */
@@ -3858,7 +4366,105 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["TenantSummaryDto"][];
+                    "*/*": components["schemas"]["PagedModelTenantSummaryDto"];
+                };
+            };
+        };
+    };
+    tenant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Tenant returned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TenantSummaryDto"];
+                };
+            };
+            /** @description Not an ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TenantSummaryDto"];
+                };
+            };
+            /** @description No such tenant */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TenantSummaryDto"];
+                };
+            };
+        };
+    };
+    tokenPrices: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Prices returned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TokenPricesDto"];
+                };
+            };
+            /** @description Not an ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TokenPricesDto"];
+                };
+            };
+        };
+    };
+    embedding: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Embedding model returned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["EmbeddingInfoDto"];
+                };
+            };
+            /** @description Not an ADMIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["EmbeddingInfoDto"];
                 };
             };
         };
