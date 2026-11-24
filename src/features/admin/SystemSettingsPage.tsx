@@ -107,13 +107,6 @@ function SettingRow({
           </Tooltip>
         )
       )}
-      {setting.tenantLevel && (
-        <Tooltip label="A workspace may have a value of its own, which wins over this one (Workspaces → Limits)">
-          <Badge size="xs" variant="light" color="gray">
-            Per workspace
-          </Badge>
-        </Tooltip>
-      )}
     </Group>
   );
 
@@ -205,9 +198,14 @@ const SETTING_TYPES: { type: string; tab: string; label: string; icon: Icon; des
     label: 'Limits',
     icon: IconGauge,
     description:
-      'Values start from the properties files; a value saved here overrides them, also after restarts. A setting marked Per workspace may also have a value of its own in a workspace (Workspaces → Limits).',
+      'Values start from the properties files; a value saved here overrides them, also after restarts.',
   },
 ];
+
+/** Added to the introduction of one section: the workspace limits may have a workspace's own value (ADR014). */
+const SECTION_NOTES: Record<string, string> = {
+  'Workspace limits': 'A workspace may also have values of its own (Workspaces → Limits).',
+};
 
 /**
  * Settings that start from the properties files and can be overridden here, on one vertical tab per setting type.
@@ -362,7 +360,12 @@ function SystemSettingsSections({ after }: { after: Record<string, ReactNode> })
             <Stack gap="lg">
               {[...groupsOf(type).entries()].map(([group, settings]) => (
                 <Fragment key={group}>
-                  <Section title={group} description={description}>
+                  <Section
+                    title={group}
+                    description={
+                      SECTION_NOTES[group] ? `${description} ${SECTION_NOTES[group]}` : description
+                    }
+                  >
                     <Stack gap="lg">
                       {settings.map((setting) => (
                         <SettingRow
