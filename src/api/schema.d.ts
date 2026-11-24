@@ -2185,6 +2185,11 @@ export interface components {
       documents?: number;
       /**
        * Format: int64
+       * @description Workspace invitations of the tenant (ADR015), accepted or not
+       */
+      invitations?: number;
+      /**
+       * Format: int64
        * @description Total size of the tenant's documents in bytes
        */
       storageBytes?: number;

@@ -62,6 +62,15 @@ const COLUMNS: TableColumn<ColumnKey>[] = [
 const ACTIONS_WIDTH = 120;
 
 /**
+ * Whether a row offers its invitations (ADR015): where some were sent, and where one can still be sent (an
+ * organization, a personal workspace without an owner). Workspaces made at sign-up and libraries have none.
+ */
+function hasInvitations(tenant: TenantSummaryDto): boolean {
+  if ((tenant.invitations ?? 0) > 0) return true;
+  return tenant.type === 'ORGANIZATION' || (tenant.type === 'PERSONAL' && tenant.ownerUserId == null);
+}
+
+/**
  * An amount against its limit: red once the limit is reached (the work it limits is refused then), yellow from 80 %.
  * Without a limit just the amount.
  */
@@ -321,7 +330,7 @@ export function WorkspacesPage() {
                     )}
                     <Table.Td>
                       <Group gap={4} wrap="nowrap" justify="flex-end">
-                        {tenant.type !== 'LIBRARY' && (
+                        {hasInvitations(tenant) && (
                           <Tooltip label="Invitations to this workspace">
                             <ActionIcon
                               variant="subtle"
