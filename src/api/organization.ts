@@ -73,7 +73,11 @@ export function useSaveOrganizationSettings() {
   return useMutation({
     mutationFn: (values: Record<string, string>) =>
       unwrap(api.PUT('/api/tenant/settings', { body: { values } })),
-    onSuccess: (settings) => queryClient.setQueryData(organizationKeys.settings, settings),
+    onSuccess: (settings) => {
+      queryClient.setQueryData(organizationKeys.settings, settings);
+      // New tests start from these values (Generate test form).
+      void queryClient.invalidateQueries({ queryKey: ['tests', 'defaults'] });
+    },
   });
 }
 
@@ -82,6 +86,10 @@ export function useResetOrganizationSettings() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => unwrap(api.DELETE('/api/tenant/settings')),
-    onSuccess: (settings) => queryClient.setQueryData(organizationKeys.settings, settings),
+    onSuccess: (settings) => {
+      queryClient.setQueryData(organizationKeys.settings, settings);
+      // New tests start from these values (Generate test form).
+      void queryClient.invalidateQueries({ queryKey: ['tests', 'defaults'] });
+    },
   });
 }

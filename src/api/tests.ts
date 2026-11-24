@@ -90,3 +90,14 @@ export function useCreateSharedLink(testId: number) {
     },
   });
 }
+
+/**
+ * What a new test of the user's workspace gets for each field left empty: the workspace's own configuration
+ * (Workspace settings), else the system values. The Generate test form starts from these.
+ */
+export function useTestDefaults() {
+  return useQuery({
+    queryKey: [...testKeys.all, 'defaults'] as const,
+    queryFn: () => unwrap(api.GET('/api/tests/defaults')),
+  });
+}

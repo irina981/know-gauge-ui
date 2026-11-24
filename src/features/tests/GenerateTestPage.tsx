@@ -31,7 +31,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTopicDocuments } from '@/api/documents';
-import { useGenerateTest } from '@/api/tests';
+import { useGenerateTest, useTestDefaults } from '@/api/tests';
 import {
   focusSuggestionsFor,
   useDevFocusSuggestions,
@@ -160,6 +160,25 @@ export function GenerateTestPage() {
         values.coverageMode === 'FOCUSED' && !v.trim() ? 'Describe what the questions should be about' : null,
     },
   });
+
+  // Start from the workspace's own defaults (Workspace settings, else the system values) once they load, for every
+  // field the user has not changed yet. The values above only fill the form until then.
+  const { data: defaults } = useTestDefaults();
+  useEffect(() => {
+    if (!defaults) return;
+    const fromServer: Partial<FormValues> = {
+      questionCount: defaults.questionCount ?? undefined,
+      difficulty: defaults.difficulty ?? undefined,
+      answerCardinality: defaults.answerCardinality ?? undefined,
+      coverageMode: defaults.coverageMode ?? undefined,
+      language: defaults.language ?? undefined,
+    };
+    const untouched = Object.fromEntries(
+      Object.entries(fromServer).filter(([field, value]) => value !== undefined && !form.isTouched(field)),
+    );
+    form.setValues(untouched);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaults]);
 
   // Documents of the chosen topic (first 100 is plenty for a picker).
   const docTopicId = form.values.documentTopicId ? Number(form.values.documentTopicId) : undefined;
