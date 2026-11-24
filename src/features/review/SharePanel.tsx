@@ -32,6 +32,7 @@ import { useCreateSharedLink } from '@/api/tests';
 import type { TestInvitationDto } from '@/api/types';
 import { EmptyState, ErrorAlert, PageLoader } from '@/shared/components';
 import { formatDateTime } from '@/shared/format';
+import { countUnique, parseEmails } from '@/shared/emails';
 import { scoreColor } from '@/features/attempts/attemptUtils';
 
 /**
@@ -282,20 +283,12 @@ function CopyLinkButton({
   );
 }
 
-/** Addresses separated by commas, semicolons, spaces or new lines. */
-function parseEmails(text: string): string[] {
-  return text
-    .split(/[\s,;]+/)
-    .map((e) => e.trim())
-    .filter(Boolean);
-}
-
 function InviteModal({ testId, opened, onClose }: { testId: number; opened: boolean; onClose: () => void }) {
   const [emails, setEmails] = useState('');
   const [message, setMessage] = useState('');
   const invite = useInvite(testId);
   const parsed = parseEmails(emails);
-  const unique = new Set(parsed.map((e) => e.toLowerCase())).size;
+  const unique = countUnique(parsed);
 
   const close = () => {
     invite.reset();

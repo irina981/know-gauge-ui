@@ -11,6 +11,7 @@ import { LibraryPage } from '@/features/library/LibraryPage';
 import { PublicLayout } from '@/features/public/PublicLayout';
 import { PublicAttemptPage, PublicResultsPage } from '@/features/public/PublicAttemptPage';
 import { InvitationPage, SharedLinkPage } from '@/features/public/StartTestPage';
+import { JoinWorkspacePage } from '@/features/public/JoinWorkspacePage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
 import { SystemSettingsPage } from '@/features/admin/SystemSettingsPage';
 import { WorkspacesPage } from '@/features/admin/WorkspacesPage';
@@ -37,6 +38,8 @@ const router = createBrowserRouter([
       { path: 'i/:token', element: <InvitationPage /> },
       { path: 'a/:token', element: <PublicAttemptPage /> },
       { path: 'r/:token', element: <PublicResultsPage /> },
+      // Workspace invitations (ADR015): shown before signing in, accepted after.
+      { path: 'join/:token', element: <JoinWorkspacePage /> },
     ],
   },
   // The app itself: needs a signed-in user (when sign-in is on).

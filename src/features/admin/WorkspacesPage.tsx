@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Badge,
+  Button,
   Group,
   Paper,
   Progress,
@@ -15,6 +16,8 @@ import {
   IconAdjustmentsHorizontal,
   IconBuildingWarehouse,
   IconChevronRight,
+  IconMailPlus,
+  IconPlus,
   IconSearch,
 } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -27,6 +30,8 @@ import { formatBytes, formatDateTime } from '@/shared/format';
 import { useSort } from '@/shared/table/sorting';
 import { ColumnHeader, ColumnPicker, TablePager } from '@/shared/table/TableControls';
 import { useTableLayout, type TableColumn } from '@/shared/table/useTableLayout';
+import { NewWorkspaceModal } from './NewWorkspaceModal';
+import { WorkspaceInvitationsModal } from './WorkspaceInvitationsModal';
 import { WorkspaceLimitsModal } from './WorkspaceLimitsModal';
 
 /** Tenant types as the UI names them (a tenant is a "library" there, its owner's "workspace"). */
@@ -54,7 +59,7 @@ const COLUMNS: TableColumn<ColumnKey>[] = [
 ];
 
 /** The last column, with the row's buttons, keeps its width. */
-const ACTIONS_WIDTH = 88;
+const ACTIONS_WIDTH = 120;
 
 /**
  * An amount against its limit: red once the limit is reached (the work it limits is refused then), yellow from 80 %.
@@ -127,6 +132,8 @@ export function WorkspacesPage() {
   // A new filter, order or page size starts at the first page.
   const { sort, changeSort } = useSort<ColumnKey>({ key: 'name', ascending: true }, () => setPage(0));
   const [limitsOf, setLimitsOf] = useState<TenantSummaryDto | null>(null);
+  const [invitationsOf, setInvitationsOf] = useState<TenantSummaryDto | null>(null);
+  const [creating, setCreating] = useState(false);
   const layout = useTableLayout({
     storageKey: 'kg.admin.workspaces',
     columns: COLUMNS,
@@ -168,8 +175,13 @@ export function WorkspacesPage() {
       <PageHeader
         eyebrow="Administration"
         title="Workspaces"
-        description="Every workspace: users' personal ones, organizations and the shared library. Open one to look through its library, tests and attempts, read-only."
+        description="Every workspace: users' personal ones, organizations and the shared libraries. Open one to look through its library, tests and attempts, read-only, or create a new one and invite people to it."
         icon={IconBuildingWarehouse}
+        actions={
+          <Button variant="gradient" leftSection={<IconPlus size={16} />} onClick={() => setCreating(true)}>
+            New workspace
+          </Button>
+        }
       />
 
       <Group gap="sm" mb="md" align="flex-end">
@@ -197,7 +209,9 @@ export function WorkspacesPage() {
       {error && <ErrorAlert error={error} title="Could not load the workspaces" />}
       {data && tenants.length === 0 && (
         <EmptyState title={filtered ? 'No matching workspaces' : 'No workspaces yet'}>
-          {filtered ? 'Try another search or type.' : 'Nobody has signed in yet.'}
+          {filtered
+            ? 'Try another search or type.'
+            : 'Create one with New workspace, or wait for someone to sign in.'}
         </EmptyState>
       )}
       {data && tenants.length > 0 && (
@@ -307,6 +321,21 @@ export function WorkspacesPage() {
                     )}
                     <Table.Td>
                       <Group gap={4} wrap="nowrap" justify="flex-end">
+                        {tenant.type !== 'LIBRARY' && (
+                          <Tooltip label="Invitations to this workspace">
+                            <ActionIcon
+                              variant="subtle"
+                              color="gray"
+                              aria-label={`Invitations to ${tenant.name}`}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                setInvitationsOf(tenant);
+                              }}
+                            >
+                              <IconMailPlus size={18} />
+                            </ActionIcon>
+                          </Tooltip>
+                        )}
                         <Tooltip label="Limits of this workspace">
                           <ActionIcon
                             variant="subtle"
@@ -340,6 +369,8 @@ export function WorkspacesPage() {
         </Paper>
       )}
       <WorkspaceLimitsModal tenant={limitsOf} onClose={() => setLimitsOf(null)} />
+      <WorkspaceInvitationsModal tenant={invitationsOf} onClose={() => setInvitationsOf(null)} />
+      <NewWorkspaceModal opened={creating} onClose={() => setCreating(false)} />
     </div>
   );
 }

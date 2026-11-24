@@ -8,9 +8,9 @@ export const accountKeys = {
   usage: ['me', 'usage'] as const,
 };
 
-/** The signed-in user, their workspace and roles. */
-export function useMe() {
-  return useQuery({ queryKey: accountKeys.me, queryFn: () => unwrap(api.GET('/api/me')) });
+/** The signed-in user, their workspace and roles; `enabled` is false on public pages while nobody is signed in. */
+export function useMe(enabled = true) {
+  return useQuery({ queryKey: accountKeys.me, queryFn: () => unwrap(api.GET('/api/me')), enabled });
 }
 
 /** Settings the user chose; `enabled` is false where there is no user to keep them for (sign-in off). */

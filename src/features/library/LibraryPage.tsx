@@ -25,6 +25,7 @@ import {
   IconPlus,
   IconSparkles,
   IconTrash,
+  IconBuildingCommunity,
   IconUser,
 } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -36,6 +37,8 @@ import {
   useIngestedDocumentCounts,
   useTopicTree,
 } from '@/api/topics';
+import { useMe } from '@/api/account';
+import { useLibraries } from '@/api/admin';
 import type { TopicNode } from '@/api/types';
 import { DocumentsPanel } from '@/features/documents/DocumentsPanel';
 import { useViewedWorkspace, useWorkspacePath } from '@/app/viewedWorkspace';
@@ -88,7 +91,13 @@ export function LibraryPage() {
   // decides which one (a link may point into either); otherwise the last choice, kept in this browser. A viewed
   // library shows only its own topics.
   const [chosenLibrary, setChosenLibrary] = useState<LibraryView>(loadLibraryView);
-  const hasShared = !viewed && !!tree?.roots.some((t) => t.shared);
+  // An admin fills the shared libraries (ADR015), so they see the switch as soon as one exists, even an empty one.
+  const { data: me } = useMe();
+  const isAdmin = !viewed && !!me?.roles?.includes('ADMIN');
+  // An organization's members share its library (ADR015): call it by the organization's name.
+  const organization = !viewed && me?.tenantType === 'ORGANIZATION' ? me.tenantName : undefined;
+  const { data: libraries = [] } = useLibraries(isAdmin);
+  const hasShared = !viewed && (!!tree?.roots.some((t) => t.shared) || (isAdmin && libraries.length > 0));
   const library: LibraryView = !hasShared
     ? 'mine'
     : selected
@@ -97,6 +106,8 @@ export function LibraryPage() {
         : 'mine'
       : chosenLibrary;
   const libraryRoots = tree ? tree.roots.filter((t) => t.shared === (library === 'shared')) : [];
+  // New topics and imported trees go into a library while an admin works on the shared view.
+  const editingLibraries = isAdmin && library === 'shared' && libraries.length > 0 ? libraries : undefined;
   const chooseLibrary = (view: LibraryView) => {
     setChosenLibrary(view);
     saveLibraryView(view);
@@ -173,8 +184,16 @@ export function LibraryPage() {
                   value: 'mine',
                   label: (
                     <Center style={{ gap: 6 }}>
-                      <IconUser size={15} />
-                      <span>My library</span>
+                      {organization ? <IconBuildingCommunity size={15} /> : <IconUser size={15} />}
+                      <Text
+                        span
+                        inherit
+                        truncate
+                        maw={160}
+                        title={organization ? `${organization} library` : undefined}
+                      >
+                        {organization ? `${organization} library` : 'My library'}
+                      </Text>
                     </Center>
                   ),
                 },
@@ -195,15 +214,23 @@ export function LibraryPage() {
               {viewed
                 ? `Topics and documents of ${viewed.name}.`
                 : library === 'shared'
-                  ? 'Sample topics for everyone. Generate tests from them; they can’t be changed.'
-                  : 'Your own topics and documents. Only you and KnowGauge admins can see them.'}
+                  ? isAdmin
+                    ? 'Topics every user can read and generate tests from. As an admin you add and change them here.'
+                    : 'Sample topics for everyone. Generate tests from them; they can’t be changed.'
+                  : organization
+                    ? `Topics and documents of ${organization}. Everyone in the organization and KnowGauge admins can see them.`
+                    : 'Your own topics and documents. Only you and KnowGauge admins can see them.'}
             </Text>
           )}
           {tree && libraryRoots.length === 0 && (
             <EmptyState title="No topics yet" icon={IconFolders}>
               {viewed
                 ? 'This library has no topics yet.'
-                : 'Create a topic with New topic to upload your own PDFs.'}
+                : library === 'shared'
+                  ? 'Create a topic with New topic, then upload PDFs into it.'
+                  : organization
+                    ? 'Create a topic with New topic to upload the organization’s PDFs.'
+                    : 'Create a topic with New topic to upload your own PDFs.'}
             </EmptyState>
           )}
           {tree && libraryRoots.length > 0 && (
@@ -243,7 +270,13 @@ export function LibraryPage() {
                           {selected.name}
                         </Title>
                         {selected.shared && (
-                          <Tooltip label="Sample content shared with everyone: you can generate tests from it, but not change it">
+                          <Tooltip
+                            label={
+                              selected.readOnly
+                                ? 'Sample content shared with everyone: you can generate tests from it, but not change it'
+                                : 'Shared with every user. As an admin you can change it.'
+                            }
+                          >
                             <Badge variant="light" color="gray" leftSection={<IconLock size={12} />}>
                               Shared library
                             </Badge>
@@ -331,8 +364,14 @@ export function LibraryPage() {
         target={formTarget}
         onClose={() => setFormTarget(null)}
         onSaved={(id) => formTarget?.mode === 'create' && select(id)}
+        libraries={editingLibraries}
       />
-      <ImportTreeModal opened={importOpen} onClose={() => setImportOpen(false)} onCreated={select} />
+      <ImportTreeModal
+        opened={importOpen}
+        onClose={() => setImportOpen(false)}
+        onCreated={select}
+        libraries={editingLibraries}
+      />
     </div>
   );
 }

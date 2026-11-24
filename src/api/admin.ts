@@ -41,6 +41,30 @@ export function useTenantList(params: TenantListParams) {
   });
 }
 
+/** A shared library an admin may add topics to (ADR015). */
+export interface LibraryChoice {
+  id: number;
+  name: string;
+}
+
+/** Every shared library, by name, for the admin's Library page; `enabled` is false for everyone else. */
+export function useLibraries(enabled: boolean) {
+  return useQuery({
+    queryKey: [...adminKeys.tenants, 'libraries'] as const,
+    queryFn: async (): Promise<LibraryChoice[]> => {
+      const query = new URLSearchParams({ type: 'LIBRARY', size: '200', sort: 'name,asc' });
+      const data = (await unwrap(
+        api.GET('/api/admin/tenants', {
+          params: { query: { pageable: {} } },
+          querySerializer: () => query.toString(),
+        }),
+      )) as unknown as Page<TenantSummaryDto>;
+      return data.content.map((t) => ({ id: t.tenantId!, name: t.name ?? `Library ${t.tenantId}` }));
+    },
+    enabled,
+  });
+}
+
 /** One tenant with its type, owner and content counts. ADMIN only (ADR013). */
 export function useTenant(tenantId: number) {
   return useQuery({

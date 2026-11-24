@@ -33,6 +33,10 @@ export type PublicInvitationDto = Schemas['PublicInvitationDto'];
 export type TestInvitationDto = Schemas['TestInvitationDto'];
 export type InviteInput = Schemas['InviteInput'];
 
+export type TenantCreateInput = Schemas['TenantCreateInput'];
+export type WorkspaceInviteInput = Schemas['WorkspaceInviteInput'];
+export type WorkspaceInvitationDto = Schemas['WorkspaceInvitationDto'];
+
 /** A topic with its sub-topics, built in the browser from the flat topic lists the API returns. */
 export interface TopicNode {
   id: number;

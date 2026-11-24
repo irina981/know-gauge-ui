@@ -4,4696 +4,5235 @@
  */
 
 export interface paths {
-    "/api/tests/{testId}/details": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Edit the test's name and description
-         * @description Allowed in every status except PUBLISHED. Recorded as a TEST_DETAILS_UPDATED event.
-         */
-        put: operations["updateDetails"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  '/api/tests/{testId}/details': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/me/preferences": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get the current user's settings
-         * @description Settings the user chose for the app. Fields never chosen are null. With sign-in off and no stored user, all fields are null.
-         */
-        get: operations["preferences"];
-        /**
-         * Replace the current user's settings
-         * @description Stores all settings at once; a null field goes back to the app default.
-         */
-        put: operations["updatePreferences"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    /**
+     * Edit the test's name and description
+     * @description Allowed in every status except PUBLISHED. Recorded as a TEST_DETAILS_UPDATED event.
+     */
+    put: operations['updateDetails'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/me/preferences': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/content/topics/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get topic by id */
-        get: operations["getTopic"];
-        /**
-         * Update topic name and description
-         * @description Null fields are left unchanged. The id in the body, if any, is ignored.
-         */
-        put: operations["updateTopic"];
-        post?: never;
-        /** Delete topic */
-        delete: operations["deleteTopic"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get the current user's settings
+     * @description Settings the user chose for the app. Fields never chosen are null. With sign-in off and no stored user, all fields are null.
+     */
+    get: operations['preferences'];
+    /**
+     * Replace the current user's settings
+     * @description Stores all settings at once; a null field goes back to the app default.
+     */
+    put: operations['updatePreferences'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/content/topics/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/admin/tenants/{id}/settings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List a tenant's settings
-         * @description The tenant-level settings (for now the tenant limits) of one tenant: the system value, the tenant's own value if it has one, and the value in effect (ADR014).
-         */
-        get: operations["tenantSettings"];
-        /**
-         * Save a tenant's settings
-         * @description Saves the tenant's own values, which override the system values for it and apply at once. An empty value removes the tenant's own value. For a limit, 0 means no limit. All values are checked first: if one does not fit, nothing is saved.
-         */
-        put: operations["saveTenantSettings"];
-        post?: never;
-        /**
-         * Reset a tenant's settings
-         * @description Removes all of the tenant's own values, so the system values apply to it again.
-         */
-        delete: operations["resetTenantSettings"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Get topic by id */
+    get: operations['getTopic'];
+    /**
+     * Update topic name and description
+     * @description Null fields are left unchanged. The id in the body, if any, is ignored.
+     */
+    put: operations['updateTopic'];
+    post?: never;
+    /** Delete topic */
+    delete: operations['deleteTopic'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/tenants/{id}/settings': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/admin/settings/values": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List the system settings
-         * @description Every setting an admin may change, with its default from the properties files, the override saved here (if any) and the value in effect.
-         */
-        get: operations["settings"];
-        /**
-         * Save system settings
-         * @description Saves the given values as overrides and applies them at once; they also apply after a restart. All values are checked first: if one does not fit, nothing is saved. An empty value means empty for an optional setting (e.g. no limit).
-         */
-        put: operations["saveSettings"];
-        post?: never;
-        /**
-         * Reset all system settings to their defaults
-         * @description Removes every saved override from the database, so the values from the properties files apply again. Token prices are not touched.
-         */
-        delete: operations["resetSettings"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List a tenant's settings
+     * @description The tenant-level settings (for now the tenant limits) of one tenant: the system value, the tenant's own value if it has one, and the value in effect (ADR014).
+     */
+    get: operations['tenantSettings'];
+    /**
+     * Save a tenant's settings
+     * @description Saves the tenant's own values, which override the system values for it and apply at once. An empty value removes the tenant's own value. For a limit, 0 means no limit. All values are checked first: if one does not fit, nothing is saved.
+     */
+    put: operations['saveTenantSettings'];
+    post?: never;
+    /**
+     * Reset a tenant's settings
+     * @description Removes all of the tenant's own values, so the system values apply to it again.
+     */
+    delete: operations['resetTenantSettings'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/settings/values': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/admin/settings/token-prices/{model}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Set a model's token price
-         * @description Adds the price, or changes it. The model name matches recorded LLM calls exactly or as a prefix (e.g. gpt-4.1 for gpt-4.1-2025-04-14); the longest match wins.
-         */
-        put: operations["setTokenPrice"];
-        post?: never;
-        /**
-         * Remove a model's token price
-         * @description Its tokens are then shown as not priced.
-         */
-        delete: operations["deleteTokenPrice"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List the system settings
+     * @description Every setting an admin may change, with its default from the properties files, the override saved here (if any) and the value in effect.
+     */
+    get: operations['settings'];
+    /**
+     * Save system settings
+     * @description Saves the given values as overrides and applies them at once; they also apply after a restart. All values are checked first: if one does not fit, nothing is saved. An empty value means empty for an optional setting (e.g. no limit).
+     */
+    put: operations['saveSettings'];
+    post?: never;
+    /**
+     * Reset all system settings to their defaults
+     * @description Removes every saved override from the database, so the values from the properties files apply again. Token prices are not touched.
+     */
+    delete: operations['resetSettings'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/settings/token-prices/{model}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List tests
-         * @description Returns all tests for the current tenant. Optionally filter by status.
-         */
-        get: operations["getAllTests"];
-        put?: never;
-        /**
-         * Generate a new test
-         * @description Creates a new test draft, runs generation, validates questions and returns the generated test metadata.
-         */
-        post: operations["generateTest"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    /**
+     * Set a model's token price
+     * @description Adds the price, or changes it. The model name matches recorded LLM calls exactly or as a prefix (e.g. gpt-4.1 for gpt-4.1-2025-04-14); the longest match wins.
+     */
+    put: operations['setTokenPrice'];
+    post?: never;
+    /**
+     * Remove a model's token price
+     * @description Its tokens are then shown as not priced.
+     */
+    delete: operations['deleteTokenPrice'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/unpublish": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Unpublish the test
-         * @description Returns a published test to the status it had before publishing (GENERATED or REVIEWED), so its questions can be reviewed again. Allowed only while no attempt exists for the test.
-         */
-        post: operations["unpublish"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List tests
+     * @description Returns all tests for the current tenant. Optionally filter by status.
+     */
+    get: operations['getAllTests'];
+    put?: never;
+    /**
+     * Generate a new test
+     * @description Creates a new test draft, runs generation, validates questions and returns the generated test metadata.
+     */
+    post: operations['generateTest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/unpublish': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/shared-link": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Create or regenerate the shared link
-         * @description Creates the test's shared link, or replaces it with a new one: the old link stops working. Attempts already started can still be finished.
-         */
-        post: operations["createOrRegenerate"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Unpublish the test
+     * @description Returns a published test to the status it had before publishing (GENERATED or REVIEWED), so its questions can be reviewed again. Allowed only while no attempt exists for the test.
+     */
+    post: operations['unpublish'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/shared-link': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/questions/{questionId}/regenerate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Regenerate the question
-         * @description Replaces the question with a newly generated one from the test's original context. The new version is verified again and may itself need review.
-         */
-        post: operations["regenerate"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Create or regenerate the shared link
+     * @description Creates the test's shared link, or replaces it with a new one: the old link stops working. Attempts already started can still be finished.
+     */
+    post: operations['createOrRegenerate'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/questions/{questionId}/regenerate': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/questions/{questionId}/manual-replace": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Replace the question manually
-         * @description Replaces the question with one written by the reviewer (question, options A-D with answer key, optional explanation). Validated with the non-LLM rules; not LLM-verified.
-         */
-        post: operations["manualReplace"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Regenerate the question
+     * @description Replaces the question with a newly generated one from the test's original context. The new version is verified again and may itself need review.
+     */
+    post: operations['regenerate'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/questions/{questionId}/manual-replace': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/questions/{questionId}/dismiss-flags": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Keep the question as it is
-         * @description Creates a new version with the same content and no flagged options, so a reviewer can overrule the verifier. The comment is required and kept in the history (ADR008).
-         */
-        post: operations["dismissFlags"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Replace the question manually
+     * @description Replaces the question with one written by the reviewer (question, options A-D with answer key, optional explanation). Validated with the non-LLM rules; not LLM-verified.
+     */
+    post: operations['manualReplace'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/questions/{questionId}/dismiss-flags': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/questions/{questionId}/accept-fix": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Accept the suggested fix
-         * @description Creates a new version in which every flagged option's text is replaced by the verifier's suggestion. The answer key is unchanged.
-         */
-        post: operations["acceptFix"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Keep the question as it is
+     * @description Creates a new version with the same content and no flagged options, so a reviewer can overrule the verifier. The comment is required and kept in the history (ADR008).
+     */
+    post: operations['dismissFlags'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/questions/{questionId}/accept-fix': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/publish": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Publish the test
-         * @description Freezes the test: no review action can change its questions any more, and attempts can be started. Allowed only for GENERATED or REVIEWED tests with no question needing review.
-         */
-        post: operations["publish"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Accept the suggested fix
+     * @description Creates a new version in which every flagged option's text is replaced by the verifier's suggestion. The answer key is unchanged.
+     */
+    post: operations['acceptFix'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/publish': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/invitations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List invitations
-         * @description Invitations of the test, oldest first, with the attempt and score of used links.
-         */
-        get: operations["list"];
-        put?: never;
-        /**
-         * Invite by email
-         * @description Sends each address its own link. Already invited addresses get their link again unless it was used. A failed send does not fail the request: it is reported in sendError and can be resent.
-         */
-        post: operations["invite"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Publish the test
+     * @description Freezes the test: no review action can change its questions any more, and attempts can be started. Allowed only for GENERATED or REVIEWED tests with no question needing review.
+     */
+    post: operations['publish'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/invitations': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/invitations/{invitationId}/resend": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Resend an invitation
-         * @description Sends the same personal link again.
-         */
-        post: operations["resend"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List invitations
+     * @description Invitations of the test, oldest first, with the attempt and score of used links.
+     */
+    get: operations['list'];
+    put?: never;
+    /**
+     * Invite by email
+     * @description Sends each address its own link. Already invited addresses get their link again unless it was used. A failed send does not fail the request: it is reported in sendError and can be resent.
+     */
+    post: operations['invite'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/invitations/{invitationId}/resend': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/attempts": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Start an attempt
-         * @description Starts an attempt on a published test for the current user. Returns the questions without the answer key.
-         */
-        post: operations["start"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Resend an invitation
+     * @description Sends the same personal link again.
+     */
+    post: operations['resend'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/attempts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/public/tests/{testToken}/attempts": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Start from a shared link
-         * @description Starts an attempt for the participant. The shared link has no attempt limit.
-         */
-        post: operations["startFromLink"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Start an attempt
+     * @description Starts an attempt on a published test for the current user. Returns the questions without the answer key.
+     */
+    post: operations['start'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/public/tests/{testToken}/attempts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/public/invitations/{invitationToken}/attempt": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Start from a personal invitation
-         * @description Starts the one attempt of the invitation, with the invited address as its email. Returns the running attempt if it was already started.
-         */
-        post: operations["startFromInvitation"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Start from a shared link
+     * @description Starts an attempt for the participant. The shared link has no attempt limit.
+     */
+    post: operations['startFromLink'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/public/invitations/{invitationToken}/attempt': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/public/attempts/{attemptToken}/submit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Submit a participant's attempt
-         * @description Saves and scores the answers. Returns the score only.
-         */
-        post: operations["submit"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Start from a personal invitation
+     * @description Starts the one attempt of the invitation, with the invited address as its email. Returns the running attempt if it was already started.
+     */
+    post: operations['startFromInvitation'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/public/attempts/{attemptToken}/submit': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/content/topics": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create topic */
-        post: operations["createTopic"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Submit a participant's attempt
+     * @description Saves and scores the answers. Returns the score only.
+     */
+    post: operations['submit'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/me/workspace-invitations/{token}/accept': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/content/topics/tree": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create topic tree */
-        post: operations["createTopicTree"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Accept a workspace invitation
+     * @description Moves the signed-in user into the invited workspace with the invited role (an ADMIN stays one). A workspace the user had before keeps its content, but the user no longer sees it. The invitation must be for the user's verified email. Accepting again is a no-op.
+     */
+    post: operations['accept'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/content/topics': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/content/documents": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Upload document
-         * @description Multipart upload with meta JSON and file binary parts
-         */
-        post: operations["uploadDocument"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Create topic */
+    post: operations['createTopic'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/content/topics/tree': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/content/documents/ingestion/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Start ingestion for document */
-        post: operations["startIngestion"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Create topic tree */
+    post: operations['createTopicTree'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/content/documents': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/attempts/{attemptId}/submit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Submit and score an attempt
-         * @description Saves the answers and scores the attempt. A question is correct only if the chosen options exactly match the answer key; questions left out count as wrong.
-         */
-        post: operations["submit_1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Upload document
+     * @description Multipart upload with meta JSON and file binary parts
+     */
+    post: operations['uploadDocument'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/content/documents/ingestion/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/admin/settings/token-prices/suggestion": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Look up a model's prices in the price catalog
-         * @description Looks the model up in LiteLLM's public price catalog (exact name, else a provider-prefixed name such as openai/<model>). Nothing is saved. Third-party data: check it against the provider's price list.
-         */
-        post: operations["suggestTokenPrice"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Start ingestion for document */
+    post: operations['startIngestion'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/attempts/{attemptId}/submit': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/questions/{questionId}/versions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List question versions
-         * @description All versions of the question, oldest first (version 1 = as generated).
-         */
-        get: operations["getVersions"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Submit and score an attempt
+     * @description Saves the answers and scores the attempt. A question is correct only if the chosen options exactly match the answer key; questions left out count as wrong.
+     */
+    post: operations['submit_1'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/tenants': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/has-attempts": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Whether the test has attempts
-         * @description true once any attempt exists for the test. A published test can be unpublished only while this is false.
-         */
-        get: operations["hasAttempts"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List tenants (filtered, sorted, paged)
+     * @description Tenants (user workspaces and libraries) with their type, owner and content counts. search matches the name and the owner's name or email; type keeps one tenant type. Sort by name (default), type, owner, topics, documents, storage (bytes of documents), usage (this month's tokens) or createdAt. Each tenant comes with its storage and its LLM tokens this calendar month (UTC), each with its limit. An ADMIN reads any of them through the normal content API: send the tenant id in the X-KG-Tenant header on GET requests to the tenant APIs, which then return that tenant's data, read-only (ADR013).
+     */
+    get: operations['tenants'];
+    put?: never;
+    /**
+     * Create a workspace
+     * @description Creates a workspace (tenant) of any type and emails its invitations: a PERSONAL one needs exactly one address (its owner once they accept), an ORGANIZATION at least one, a LIBRARY none (it has no members and no limits; every user reads it). Invitees become TENANT_ADMIN of the workspace when they accept; a failed send is kept on the invitation and can be resent.
+     */
+    post: operations['create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/tenants/{id}/invitations': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/generation-runs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * LLM calls of the test
-         * @description Every generation, regeneration and verification call with model, tokens and raw response, oldest first.
-         */
-        get: operations["getGenerationRuns"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List a workspace's invitations
+     * @description Oldest first, with whether each was delivered and accepted.
+     */
+    get: operations['invitations'];
+    put?: never;
+    /**
+     * Invite more people to a workspace
+     * @description An ORGANIZATION takes any number; a PERSONAL workspace one, while it has no owner and no invitation to someone else; a LIBRARY none. An address invited before gets its link again; one that already joined is returned unchanged.
+     */
+    post: operations['invite_1'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/tenants/{id}/invitations/{invitationId}/resend': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{testId}/events": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Test history trail
-         * @description Every generation, flag, review action and status change of the test, oldest first.
-         */
-        get: operations["getEvents"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Send a workspace invitation again
+     * @description Same link as before.
+     */
+    post: operations['resend_1'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/settings/token-prices/suggestion': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get test by id
-         * @description Returns a previously generated test for the current tenant.
-         */
-        get: operations["getTestById"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete test
-         * @description Deletes a test and associated generated questions for the current tenant.
-         */
-        delete: operations["deleteTestById"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Look up a model's prices in the price catalog
+     * @description Looks the model up in LiteLLM's public price catalog (exact name, else a provider-prefixed name such as openai/<model>). Nothing is saved. Third-party data: check it against the provider's price list.
+     */
+    post: operations['suggestTokenPrice'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/questions/{questionId}/versions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/tests/{id}/questions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List questions by test id
-         * @description Returns the questions of a test (current version of each) for the current tenant. Questions with status NEEDS_REVIEW have flagged options with suggested fixes.
-         */
-        get: operations["getTestQuestionsByTestId"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List question versions
+     * @description All versions of the question, oldest first (version 1 = as generated).
+     */
+    get: operations['getVersions'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/has-attempts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/public/tests/{testToken}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Open a shared link
-         * @description The test behind a shared link. The link works only while the test is published.
-         */
-        get: operations["getTest"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Whether the test has attempts
+     * @description true once any attempt exists for the test. A published test can be unpublished only while this is false.
+     */
+    get: operations['hasAttempts'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/generation-runs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/public/invitations/{invitationToken}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Open a personal invitation
-         * @description The invited address and the test, and whether the link was already used.
-         */
-        get: operations["getInvitation"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * LLM calls of the test
+     * @description Every generation, regeneration and verification call with model, tokens and raw response, oldest first.
+     */
+    get: operations['getGenerationRuns'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{testId}/events': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/public/attempts/{attemptToken}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get a participant's attempt
-         * @description The questions while it runs (without the answer key); only the score once it is submitted.
-         */
-        get: operations["getAttempt"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Test history trail
+     * @description Every generation, flag, review action and status change of the test, oldest first.
+     */
+    get: operations['getEvents'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get the current user
-         * @description The signed-in user, their tenant and roles. The first call with a new user's token creates the user and a personal tenant. With sign-in off, the fixed tenant and user.
-         */
-        get: operations["me"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get test by id
+     * @description Returns a previously generated test for the current tenant.
+     */
+    get: operations['getTestById'];
+    put?: never;
+    post?: never;
+    /**
+     * Delete test
+     * @description Deletes a test and associated generated questions for the current tenant.
+     */
+    delete: operations['deleteTestById'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/tests/{id}/questions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/me/usage": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get the current workspace's usage
-         * @description What the user's own workspace holds (topics, documents, storage) and what it used this calendar month (UTC): tests, AI-written questions, submitted attempts and LLM tokens. The shared library is not counted.
-         */
-        get: operations["usage"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List questions by test id
+     * @description Returns the questions of a test (current version of each) for the current tenant. Questions with status NEEDS_REVIEW have flagged options with suggested fixes.
+     */
+    get: operations['getTestQuestionsByTestId'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/public/workspace-invitations/{token}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/dev/focus-suggestions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Focus suggestions for the demo topics
-         * @description Topic id to example focus texts for FOCUSED tests. The client offers the suggestions of the selected topics, their parents and their sub-topics. Only available when the dev seed is enabled.
-         */
-        get: operations["getFocusSuggestions"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Look at a workspace invitation
+     * @description Public: the workspace's name and type and the invited address, so the join page can show them before signing in.
+     */
+    get: operations['preview'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/public/tests/{testToken}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/content/topics/roots": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List root topics */
-        get: operations["getRoots"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Open a shared link
+     * @description The test behind a shared link. The link works only while the test is published.
+     */
+    get: operations['getTest'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/public/invitations/{invitationToken}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/content/topics/ingested-document-counts": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Count ingested documents per topic
-         * @description For each topic that directly holds ingested documents, how many it holds. Topics without any are left out; add up a subtree to know whether a parent topic can be used for test generation.
-         */
-        get: operations["getIngestedDocumentCounts"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Open a personal invitation
+     * @description The invited address and the test, and whether the link was already used.
+     */
+    get: operations['getInvitation'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/public/attempts/{attemptToken}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/content/topics/descendants/{parentId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List all descendant topics */
-        get: operations["getDescendants"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get a participant's attempt
+     * @description The questions while it runs (without the answer key); only the score once it is submitted.
+     */
+    get: operations['getAttempt'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/me': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/content/topics/children/{parentId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List children topics */
-        get: operations["getChildren"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get the current user
+     * @description The signed-in user, their tenant and roles. The first call with a new user's token creates the user and a personal tenant. With sign-in off, the fixed tenant and user.
+     */
+    get: operations['me'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/me/usage': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/content/documents/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get document metadata by id */
-        get: operations["getDocument"];
-        put?: never;
-        post?: never;
-        /** Delete document */
-        delete: operations["deleteDocument"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get the current workspace's usage
+     * @description What the user's own workspace holds (topics, documents, storage) and what it used this calendar month (UTC): tests, AI-written questions, submitted attempts and LLM tokens. The shared library is not counted.
+     */
+    get: operations['usage'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/content/topics/roots': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/content/documents/{id}/content": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Download document content
-         * @description With inline=true the browser shows the file (for example in a PDF preview) instead of saving it.
-         */
-        get: operations["downloadDocument"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** List root topics */
+    get: operations['getRoots'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/content/topics/ingested-document-counts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/content/documents/all/{topicId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List documents for topic (paged)
-         * @description In upload order (by id) unless a sort is given.
-         */
-        get: operations["getAllDocuments"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Count ingested documents per topic
+     * @description For each topic that directly holds ingested documents, how many it holds. Topics without any are left out; add up a subtree to know whether a parent topic can be used for test generation.
+     */
+    get: operations['getIngestedDocumentCounts'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/content/topics/descendants/{parentId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/attempts": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List attempts
-         * @description Attempts of the tenant, newest first, optionally filtered by test, user and participant email.
-         */
-        get: operations["list_1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** List all descendant topics */
+    get: operations['getDescendants'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/content/topics/children/{parentId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/attempts/{attemptId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get an attempt
-         * @description Questions without the answer key while the attempt is running; with the chosen and correct options and explanations once it is scored.
-         */
-        get: operations["get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** List children topics */
+    get: operations['getChildren'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/content/documents/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/admin/tenants": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List tenants (filtered, sorted, paged)
-         * @description Tenants (user workspaces and libraries) with their type, owner and content counts. search matches the name and the owner's name or email; type keeps one tenant type. Sort by name (default), type, owner, topics, documents, storage (bytes of documents), usage (this month's tokens) or createdAt. Each tenant comes with its storage and its LLM tokens this calendar month (UTC), each with its limit. An ADMIN reads any of them through the normal content API: send the tenant id in the X-KG-Tenant header on GET requests to the tenant APIs, which then return that tenant's data, read-only (ADR013).
-         */
-        get: operations["tenants"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Get document metadata by id */
+    get: operations['getDocument'];
+    put?: never;
+    post?: never;
+    /** Delete document */
+    delete: operations['deleteDocument'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/content/documents/{id}/content': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/admin/tenants/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get one tenant
-         * @description A tenant with its type, owner, content counts and limits in effect (ADR013, ADR014).
-         */
-        get: operations["tenant"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Download document content
+     * @description With inline=true the browser shows the file (for example in a PDF preview) instead of saving it.
+     */
+    get: operations['downloadDocument'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/content/documents/all/{topicId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/admin/settings/token-prices": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List the token prices
-         * @description Every model's price in US dollars per million tokens, used to show what the LLM tokens on the usage page cost, and the model names to offer when adding one.
-         */
-        get: operations["tokenPrices"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List documents for topic (paged)
+     * @description In upload order (by id) unless a sort is given.
+     */
+    get: operations['getAllDocuments'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/attempts': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/admin/settings/embedding": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get the embedding model
-         * @description Read-only: the embedding model, its vector size, its price in the price catalog and the stored embeddings per model. Changing the model means re-ingesting every document, so it is set in the properties files (kg.embedding.openai.model).
-         */
-        get: operations["embedding"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List attempts
+     * @description Attempts of the tenant, newest first, optionally filtered by test, user and participant email.
+     */
+    get: operations['list_1'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/attempts/{attemptId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    /**
+     * Get an attempt
+     * @description Questions without the answer key while the attempt is running; with the chosen and correct options and explanations once it is scored.
+     */
+    get: operations['get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/tenants/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get one tenant
+     * @description A tenant with its type, owner, content counts and limits in effect (ADR013, ADR014).
+     */
+    get: operations['tenant'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/settings/token-prices': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List the token prices
+     * @description Every model's price in US dollars per million tokens, used to show what the LLM tokens on the usage page cost, and the model names to offer when adding one.
+     */
+    get: operations['tokenPrices'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/settings/embedding': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get the embedding model
+     * @description Read-only: the embedding model, its vector size, its price in the price catalog and the stored embeddings per model. Changing the model means re-ingesting every document, so it is set in the properties files (kg.embedding.openai.model).
+     */
+    get: operations['embedding'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/admin/tenants/{id}/invitations/{invitationId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Revoke a workspace invitation
+     * @description Deletes an invitation nobody accepted yet; its link stops working.
+     */
+    delete: operations['revoke'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        /** @description The editable details of a test (allowed until it is published) */
-        TestDetailsInput: {
-            /**
-             * @description Test name (required, max 200 characters)
-             * @example Fire safety at the Corvane offices
-             */
-            name: string;
-            /**
-             * @description Optional description (max 2000 characters); blank removes it
-             * @example Short test for new employees
-             */
-            description?: string;
-        };
-        /** @description Generated test details returned by API */
-        TestDto: {
-            /**
-             * Format: int64
-             * @description Test identifier
-             * @example 5001
-             */
-            id?: number;
-            /**
-             * Format: int64
-             * @description Owning tenant identifier
-             * @example 1
-             */
-            tenantId?: number;
-            /**
-             * @description Test name
-             * @example Java Concurrency – Medium (10 questions)
-             */
-            name?: string;
-            /**
-             * @description Optional free-text description
-             * @example Practice test for the threads and executors chapters
-             */
-            description?: string;
-            /**
-             * @description Topics used for generation
-             * @example [
-             *       101,
-             *       102
-             *     ]
-             */
-            topicIds?: number[];
-            /**
-             * @description Documents used for generation
-             * @example [
-             *       2001,
-             *       2002
-             *     ]
-             */
-            documentIds?: number[];
-            /**
-             * @description Configured difficulty
-             * @example MEDIUM
-             */
-            difficulty?: string;
-            /**
-             * @description Whether repeats were avoided
-             * @example true
-             */
-            avoidRepeats?: boolean;
-            /**
-             * @description Coverage strategy
-             * @example BALANCED_PER_DOC_CHUNKS
-             */
-            coverageMode?: string;
-            /**
-             * @description Text the chunks were matched against, for FOCUSED coverage
-             * @example Thread pools and how to shut down an ExecutorService
-             */
-            focusQuery?: string;
-            /**
-             * Format: int32
-             * @description Requested number of questions
-             * @example 10
-             */
-            questionCount?: number;
-            /**
-             * @description Answer cardinality mode
-             * @example SINGLE_CORRECT
-             */
-            answerCardinality?: string;
-            /**
-             * @description Generation status
-             * @example COMPLETED
-             */
-            status?: string;
-            /**
-             * @description Generation model used
-             * @example gpt-4o-mini
-             */
-            generationModel?: string;
-            /**
-             * @description Prompt template id
-             * @example mcq-default
-             */
-            promptTemplateId?: string;
-            /**
-             * @description Generation parameters used
-             * @example {
-             *       "temperature": 0.2,
-             *       "topP": 1
-             *     }
-             */
-            generationParams?: {
-                [key: string]: unknown;
-            };
-            /**
-             * Format: date-time
-             * @description Generation start time (UTC)
-             * @example 2026-02-18T10:15:30Z
-             */
-            generationStartedAt?: string;
-            /**
-             * Format: date-time
-             * @description Generation finish time (UTC)
-             * @example 2026-02-18T10:15:45Z
-             */
-            generationFinishedAt?: string;
-            /**
-             * Format: date-time
-             * @description Generation failure time (UTC)
-             * @example 2026-02-18T10:15:45Z
-             */
-            generationFailedAt?: string;
-            /**
-             * @description Failure reason when status is FAILED
-             * @example Model request timed out
-             */
-            generationErrorMessage?: string;
-            /**
-             * @description Token of the shared link (/t/{token}); the link works while the test is PUBLISHED
-             * @example dGhpcy1pcy1hLXRva2Vu
-             */
-            publicToken?: string;
-        };
-        /** @description Settings the user chose for the app. A null field was never chosen: the app uses its default. */
-        UserPreferencesDto: {
-            /**
-             * @description Colour scheme; SYSTEM follows the device
-             * @example SYSTEM
-             * @enum {string}
-             */
-            theme?: "LIGHT" | "DARK" | "SYSTEM";
-        };
-        TopicUpdateInput: {
-            /** Format: int64 */
-            id?: number;
-            name: string;
-            description?: string;
-        };
-        /** @description Topic details */
-        TopicDto: {
-            /**
-             * Format: int64
-             * @description Topic id
-             * @example 101
-             */
-            id?: number;
-            /**
-             * @description Topic name
-             * @example Spring Boot
-             */
-            name?: string;
-            /**
-             * @description Topic description
-             * @example Core concepts and practical usage
-             */
-            description?: string;
-            /**
-             * Format: int64
-             * @description Parent topic id
-             * @example 10
-             */
-            parentId?: number;
-            /**
-             * @description Materialized topic path
-             * @example /Backend/Spring Boot
-             */
-            path?: string;
-            /**
-             * Format: int32
-             * @description Display order among sibling topics (lowest first); empty sorts after positioned topics, by name
-             * @example 1
-             */
-            position?: number;
-            /** @description True when the caller may read but not change the topic (shared library content): hide edit actions, keep test generation */
-            readOnly?: boolean;
-            /** @description True when the topic belongs to the shared library (a LIBRARY tenant), whoever is asking */
-            shared?: boolean;
-            /** @description Direct child topics */
-            children?: components["schemas"]["TopicDto"][];
-        };
-        /** @description A tenant's own setting values (the Limits dialog's Save) */
-        TenantSettingsInput: {
-            /** @description Values as text by setting key; an empty value removes the tenant's own value, so the system value applies. For a limit, 0 means no limit */
-            values: {
-                [key: string]: string;
-            };
-        };
-        /** @description A tenant-level setting of one tenant (ADR014): the system value, the tenant's own value, and the value in effect for it */
-        TenantSettingDto: {
-            /** @description The property name, e.g. kg.settings.tenant.monthly-token-limit */
-            key?: string;
-            label?: string;
-            description?: string;
-            /** @description INTEGER, TEXT or CHOICE */
-            type?: string;
-            /**
-             * Format: int64
-             * @description Smallest allowed INTEGER
-             */
-            min?: number;
-            /**
-             * Format: int64
-             * @description Largest allowed INTEGER
-             */
-            max?: number;
-            /** @description The system value in effect; null when empty */
-            systemValue?: string;
-            /** @description The tenant's own value; null when it uses the system value */
-            ownValue?: string;
-            /** @description The value in effect for the tenant */
-            value?: string;
-        };
-        /** @description New values for system settings (the page's Save) */
-        SystemSettingInput: {
-            /** @description Values as text by setting key; an empty value means empty for an optional setting (e.g. no limit) */
-            values: {
-                [key: string]: string;
-            };
-        };
-        /** @description A system setting: its properties-file default, the override saved on the System settings page, and the value in effect */
-        SystemSettingDto: {
-            /** @description The property name, e.g. kg.testgen.defaults.generation-model */
-            key?: string;
-            /** @description Section of the page, e.g. Workspace limits */
-            group?: string;
-            label?: string;
-            description?: string;
-            /** @description INTEGER, TEXT or CHOICE */
-            type?: string;
-            /** @description Allowed values of a CHOICE */
-            options?: string[];
-            /**
-             * Format: int64
-             * @description Smallest allowed INTEGER
-             */
-            min?: number;
-            /**
-             * Format: int64
-             * @description Largest allowed INTEGER
-             */
-            max?: number;
-            /** @description Whether the setting may be empty (e.g. no limit) */
-            optional?: boolean;
-            /** @description Value from the properties files; null when empty */
-            defaultValue?: string;
-            /** @description Whether a value saved on the page overrides the default */
-            overridden?: boolean;
-            /** @description Value saved on the page; null when not overridden or saved empty */
-            overrideValue?: string;
-            /** @description Value in effect; null when empty */
-            value?: string;
-            /** @description Values to offer for a TEXT setting, e.g. model names from the price catalog; other text is allowed */
-            suggestions?: string[];
-            /** @description Whether a tenant may have a value of its own, overriding this one (ADR014) */
-            tenantLevel?: boolean;
-        };
-        /** @description The price of a model, in US dollars per million tokens */
-        TokenPriceInput: {
-            inputUsdPerMillion: number;
-            outputUsdPerMillion: number;
-        };
-        /** @description What one LLM model costs (system setting). The model name matches recorded calls exactly or as a prefix; the longest match wins. */
-        TokenPriceDto: {
-            /** @description Model name or prefix, e.g. gpt-4.1 */
-            model?: string;
-            /** @description US dollars per million input tokens */
-            inputUsdPerMillion?: number;
-            /** @description US dollars per million output tokens */
-            outputUsdPerMillion?: number;
-            /**
-             * Format: date-time
-             * @description Last change
-             */
-            updatedAt?: string;
-        };
-        /** @description Input used to generate a new test */
-        TestInput: {
-            /**
-             * @description Test name (required, max 200 characters). Clients supply a default when the user leaves it empty
-             * @example Java Concurrency – Medium (10 questions)
-             */
-            name: string;
-            /**
-             * @description Optional free-text description (max 2000 characters)
-             * @example Practice test for the threads and executors chapters
-             */
-            description?: string;
-            /**
-             * @description Topics to scope retrieval and generation
-             * @example [
-             *       101,
-             *       102
-             *     ]
-             */
-            topicIds?: number[];
-            /**
-             * @description Optional explicit document scope
-             * @example [
-             *       2001,
-             *       2002
-             *     ]
-             */
-            documentIds?: number[];
-            /**
-             * @description Desired difficulty
-             * @example MEDIUM
-             */
-            difficulty?: string;
-            /**
-             * @description Avoid repeating already-used questions
-             * @example true
-             */
-            avoidRepeats?: boolean;
-            /**
-             * @description Coverage strategy: BALANCED_PER_DOC_CHUNKS (default), BALANCED_PER_DOCS or FOCUSED
-             * @example BALANCED_PER_DOC_CHUNKS
-             */
-            coverageMode?: string;
-            /**
-             * @description Required for FOCUSED (max 2000 characters): what the questions should be about. The chunks most similar to it are used; ignored for the other modes
-             * @example Thread pools and how to shut down an ExecutorService
-             */
-            focusQuery?: string;
-            /**
-             * Format: int32
-             * @description Requested number of questions
-             * @example 10
-             */
-            questionCount?: number;
-            /**
-             * @description Answer cardinality mode
-             * @example SINGLE_CORRECT
-             */
-            answerCardinality?: string;
-            /**
-             * @description Output language
-             * @example en
-             */
-            language?: string;
-            /**
-             * @description Model override for this test
-             * @example gpt-4o-mini
-             */
-            generationModel?: string;
-            /**
-             * @description Prompt template id
-             * @example mcq-default
-             */
-            promptTemplateId?: string;
-            /**
-             * @description Provider-specific generation parameters
-             * @example {
-             *       "temperature": 0.2,
-             *       "topP": 1
-             *     }
-             */
-            generationParams?: {
-                [key: string]: unknown;
-            };
-        };
-        /** @description Optional body of the publish and unpublish actions */
-        PublishTestInput: {
-            /**
-             * @description Optional comment, kept in the history
-             * @example Reviewed and approved for the Q1 onboarding cohort
-             */
-            comment?: string;
-        };
-        /** @description Body of the accept-fix and regenerate review actions */
-        ReviewActionInput: {
-            /**
-             * Format: int64
-             * @description Version the reviewer looked at. The action fails with 409 if the question changed since
-             * @example 12001
-             */
-            expectedCurrentVersionId: number;
-            /** @description Optional review comment, kept in the history */
-            comment?: string;
-        };
-        /** @description A question of a test, showing its current version */
-        TestQuestionDto: {
-            /**
-             * Format: int64
-             * @description Question (slot) identifier
-             * @example 9001
-             */
-            id?: number;
-            /**
-             * Format: int64
-             * @description Owning test identifier
-             * @example 5001
-             */
-            testId?: number;
-            /**
-             * Format: int32
-             * @description Question order within test
-             * @example 0
-             */
-            questionIndex?: number;
-            /**
-             * @description Review status: OK or NEEDS_REVIEW
-             * @example NEEDS_REVIEW
-             */
-            status?: string;
-            /**
-             * Format: int64
-             * @description Id of the current version. Send it as expectedCurrentVersionId in review actions
-             * @example 12001
-             */
-            currentVersionId?: number;
-            /**
-             * Format: int32
-             * @description Number of the current version (1 = as generated)
-             * @example 1
-             */
-            versionNo?: number;
-            /**
-             * @description How the current version was created: GENERATED, REGENERATED, FIX_ACCEPTED, MANUAL
-             * @example GENERATED
-             */
-            origin?: string;
-            /** @description Question text */
-            questionText?: string;
-            /** @description Options mapped by letter (A, B, C, D) */
-            options?: {
-                [key: string]: components["schemas"]["TestQuestionOptionDto"];
-            };
-            /**
-             * @description Answer key
-             * @example [
-             *       "A",
-             *       "C"
-             *     ]
-             */
-            correctOptions?: string[];
-            /**
-             * @description Letters of options flagged by the verifier
-             * @example [
-             *       "B"
-             *     ]
-             */
-            flaggedOptions?: string[];
-            /** @description Short explanation for the correct answer */
-            explanation?: string;
-            /**
-             * @description Chunk ids used as grounding sources
-             * @example [
-             *       10101,
-             *       10102
-             *     ]
-             */
-            sourceChunkIds?: number[];
-        };
-        /** @description One answer option of a question version */
-        TestQuestionOptionDto: {
-            /**
-             * @description Option letter (A, B, C, or D)
-             * @example A
-             */
-            letter?: string;
-            /** @description Option text */
-            text?: string;
-            /**
-             * @description Whether the option is part of the answer key
-             * @example false
-             */
-            correct?: boolean;
-            /**
-             * @description Whether the verifier flagged this distractor as possibly true
-             * @example true
-             */
-            flagged?: boolean;
-            /** @description Verifier's clearly false replacement (only when flagged) */
-            suggestedText?: string;
-            /** @description Verifier's reason for the flag (only when flagged) */
-            flagReason?: string;
-        };
-        /** @description One option of a manually written question */
-        ManualOptionInput: {
-            /** @description Option text */
-            text: string;
-            /** @description Whether the option is correct */
-            correct: boolean;
-        };
-        /** @description A question written by the reviewer to replace the current one */
-        ManualQuestionInput: {
-            /**
-             * Format: int64
-             * @description Version the reviewer looked at. The action fails with 409 if the question changed since
-             * @example 12001
-             */
-            expectedCurrentVersionId: number;
-            /**
-             * @description Question text
-             * @example Which statement about the JVM heap is correct?
-             */
-            questionText: string;
-            /** @description Options A-D */
-            options: {
-                [key: string]: components["schemas"]["ManualOptionInput"];
-            };
-            /** @description Optional explanation */
-            explanation?: string;
-            /** @description Optional review comment, kept in the history */
-            comment?: string;
-        };
-        /** @description Body of the dismiss-flags review action (keep the question as it is) */
-        DismissFlagsInput: {
-            /**
-             * Format: int64
-             * @description Version the reviewer looked at. The action fails with 409 if the question changed since
-             * @example 12001
-             */
-            expectedCurrentVersionId: number;
-            /**
-             * @description Why the flags are dismissed, kept in the history
-             * @example The flagged answer is not a disadvantage of setter injection
-             */
-            comment: string;
-        };
-        /** @description Addresses to send personal links to; each gets its own link, usable once */
-        InviteInput: {
-            /**
-             * @description Email addresses; duplicates are merged
-             * @example [
-             *       "ana@example.com",
-             *       "marko@example.com"
-             *     ]
-             */
-            emails: string[];
-            /** @description Optional note added to the email */
-            message?: string;
-        };
-        /** @description A personal invitation and what came of it */
-        TestInvitationDto: {
-            /**
-             * Format: int64
-             * @description Invitation id
-             * @example 12
-             */
-            id?: number;
-            /**
-             * Format: int64
-             * @description Test
-             * @example 5001
-             */
-            testId?: number;
-            /**
-             * @description Invited address (lower-cased)
-             * @example ana@example.com
-             */
-            email?: string;
-            /** @description The personal link */
-            link?: string;
-            /**
-             * Format: date-time
-             * @description When it was invited (UTC)
-             */
-            createdAt?: string;
-            /**
-             * Format: date-time
-             * @description Last successful send (UTC); empty if never delivered
-             */
-            sentAt?: string;
-            /**
-             * Format: int32
-             * @description How often a send was attempted
-             * @example 1
-             */
-            sendCount?: number;
-            /** @description Error of the last send; empty after a successful one */
-            sendError?: string;
-            /**
-             * Format: int64
-             * @description Attempt started from the link; empty while unused
-             * @example 42
-             */
-            attemptId?: number;
-            /**
-             * @description STARTED or SCORED; empty while unused
-             * @example SCORED
-             */
-            attemptStatus?: string;
-            /**
-             * @description Name the participant entered
-             * @example Ana Petrovic
-             */
-            participantName?: string;
-            /**
-             * Format: double
-             * @description Score in percent once scored
-             * @example 80
-             */
-            scorePercent?: number;
-        };
-        /** @description An attempt with its test and questions */
-        AttemptDetailDto: {
-            /** @description The attempt and its score */
-            attempt?: components["schemas"]["AttemptDto"];
-            /**
-             * @description Name of the test
-             * @example Java Concurrency – Medium (10 questions)
-             */
-            testName?: string;
-            /**
-             * @description SINGLE_CORRECT or MULTIPLE_CORRECT: how many options may be chosen
-             * @example SINGLE_CORRECT
-             */
-            answerCardinality?: string;
-            /** @description Questions in order */
-            questions?: components["schemas"]["AttemptQuestionDto"][];
-        };
-        /** @description An attempt at a published test, with its score once submitted */
-        AttemptDto: {
-            /**
-             * Format: int64
-             * @description Attempt id
-             * @example 42
-             */
-            id?: number;
-            /**
-             * Format: int64
-             * @description Test that was taken
-             * @example 5001
-             */
-            testId?: number;
-            /**
-             * Format: int64
-             * @description Administrator who took the test; empty for participants
-             * @example 1
-             */
-            userId?: number;
-            /**
-             * @description Full name the participant entered
-             * @example Ana Petrovic
-             */
-            participantName?: string;
-            /**
-             * @description Participant email (lower-cased); from the invitation for personal links
-             * @example ana@example.com
-             */
-            participantEmail?: string;
-            /**
-             * Format: int64
-             * @description Personal invitation the attempt was started from, if any
-             * @example 12
-             */
-            invitationId?: number;
-            /**
-             * @description STARTED, SUBMITTED or SCORED
-             * @example SCORED
-             */
-            status?: string;
-            /**
-             * Format: int32
-             * @description Number of questions in the test
-             * @example 10
-             */
-            totalQuestions?: number;
-            /**
-             * Format: int32
-             * @description Correctly answered questions (0 until scored)
-             * @example 8
-             */
-            correctCount?: number;
-            /**
-             * Format: int32
-             * @description Wrong or unanswered questions (0 until scored)
-             * @example 2
-             */
-            wrongCount?: number;
-            /**
-             * Format: double
-             * @description Score in percent, one decimal (0 until scored)
-             * @example 80
-             */
-            scorePercent?: number;
-            /**
-             * Format: date-time
-             * @description When the attempt was started (UTC)
-             */
-            startedAt?: string;
-            /**
-             * Format: date-time
-             * @description When the answers were submitted (UTC)
-             */
-            submittedAt?: string;
-            /**
-             * Format: date-time
-             * @description When the attempt was scored (UTC)
-             */
-            scoredAt?: string;
-        };
-        /** @description A question as shown in an attempt. The answer key and explanation are only included once the attempt is scored */
-        AttemptQuestionDto: {
-            /**
-             * Format: int64
-             * @description Question slot id; use it when submitting answers
-             * @example 7001
-             */
-            questionId?: number;
-            /**
-             * Format: int64
-             * @description Question version shown in this attempt
-             * @example 9001
-             */
-            questionVersionId?: number;
-            /**
-             * Format: int32
-             * @description 0-based position in the test
-             * @example 0
-             */
-            questionIndex?: number;
-            /** @description Question text */
-            questionText?: string;
-            /** @description Option texts by letter (A-D) */
-            options?: {
-                [key: string]: string;
-            };
-            /**
-             * @description Options the user chose (after scoring)
-             * @example [
-             *       "A"
-             *     ]
-             */
-            chosenOptions?: string[];
-            /**
-             * @description Correct options (after scoring)
-             * @example [
-             *       "A"
-             *     ]
-             */
-            correctOptions?: string[];
-            /** @description Whether the answer was correct (after scoring) */
-            correct?: boolean;
-            /** @description Why the answer is correct (after scoring) */
-            explanation?: string;
-        };
-        /** @description Who takes the test through the shared link */
-        StartPublicAttemptInput: {
-            /**
-             * @description Full name
-             * @example Ana Petrovic
-             */
-            participantName: string;
-            /**
-             * Format: email
-             * @description Email; identifies the same person across attempts
-             * @example ana@example.com
-             */
-            participantEmail: string;
-        };
-        /** @description A participant's attempt. Once scored it has the score and the participant's own answers marked right or wrong; the correct options and explanations are never included */
-        PublicAttemptDto: {
-            /** @description Token that addresses this attempt */
-            attemptToken?: string;
-            /**
-             * @description Test name
-             * @example Health & Safety basics
-             */
-            testName?: string;
-            /**
-             * @description SINGLE_CORRECT or MULTIPLE_CORRECT
-             * @example SINGLE_CORRECT
-             */
-            answerCardinality?: string;
-            /**
-             * @description Full name of the participant
-             * @example Ana Petrovic
-             */
-            participantName?: string;
-            /**
-             * @description STARTED or SCORED
-             * @example STARTED
-             */
-            status?: string;
-            /**
-             * Format: int32
-             * @description Number of questions
-             * @example 10
-             */
-            totalQuestions?: number;
-            /**
-             * Format: int32
-             * @description Correct answers (after scoring)
-             * @example 8
-             */
-            correctCount?: number;
-            /**
-             * Format: double
-             * @description Score in percent (after scoring)
-             * @example 80
-             */
-            scorePercent?: number;
-            /** @description Questions to answer; once scored, with chosenOptions and correct (correctOptions and explanation stay empty) */
-            questions?: components["schemas"]["AttemptQuestionDto"][];
-        };
-        /** @description Starts the attempt of a personal invitation. The email is the invited address and cannot be changed */
-        StartInvitationAttemptInput: {
-            /**
-             * @description Full name
-             * @example Ana Petrovic
-             */
-            participantName: string;
-        };
-        /** @description The options chosen for one question */
-        Answer: {
-            /**
-             * Format: int64
-             * @description Question id from the attempt
-             * @example 7001
-             */
-            questionId: number;
-            /**
-             * @description Chosen option letters; empty for no answer
-             * @example [
-             *       "A"
-             *     ]
-             */
-            chosenOptions: string[];
-        };
-        /** @description Answers of an attempt. Questions left out count as unanswered (wrong) */
-        SubmitAttemptInput: {
-            /** @description Chosen options per question */
-            answers: components["schemas"]["Answer"][];
-        };
-        /** @description Payload used to create a topic */
-        TopicCreateInput: {
-            /**
-             * @description Topic display name
-             * @example Databases
-             */
-            name: string;
-            /**
-             * @description Optional topic description
-             * @example Relational and non-relational database concepts
-             */
-            description?: string;
-            /**
-             * Format: int64
-             * @description Parent topic id for nested topics
-             * @example 10
-             */
-            parentId?: number;
-        };
-        /** @description Recursive node used to create a topic tree */
-        TopicTreeNodeInput: {
-            /**
-             * @description Node name
-             * @example Backend
-             */
-            name: string;
-            /**
-             * @description Optional node description
-             * @example Service-side implementation topics
-             */
-            description?: string;
-            /**
-             * @description Child nodes
-             * @example [
-             *       {
-             *         "name": "Spring",
-             *         "description": "Core Spring modules",
-             *         "children": [
-             *           {
-             *             "name": "Spring Boot",
-             *             "description": "Auto-configuration and starters",
-             *             "children": []
-             *           }
-             *         ]
-             *       }
-             *     ]
-             */
-            children: components["schemas"]["TopicTreeNodeInput"][];
-        };
-        /** @description Document metadata */
-        DocumentDto: {
-            /**
-             * Format: int64
-             * @description Document id
-             * @example 2001
-             */
-            id?: number;
-            /**
-             * Format: int64
-             * @description Owning topic id
-             * @example 101
-             */
-            topicId?: number;
-            /**
-             * @description Document title
-             * @example Spring Boot Fundamentals
-             */
-            title?: string;
-            /**
-             * @description Original uploaded file name
-             * @example spring-boot-fundamentals.pdf
-             */
-            originalFileName?: string;
-            /**
-             * @description MIME type
-             * @example application/pdf
-             */
-            contentType?: string;
-            /**
-             * Format: int64
-             * @description File size in bytes
-             * @example 245760
-             */
-            fileSizeBytes?: number;
-            /**
-             * @description Object storage key
-             * @example docs/2026/02/18/2001.pdf
-             */
-            storageKey?: string;
-            /**
-             * @description Storage ETag
-             * @example a1b2c3d4
-             */
-            etag?: string;
-            /**
-             * @description Object version id, if versioning is enabled
-             * @example 3Lgk9J
-             */
-            version?: string;
-            /**
-             * Format: date-time
-             * @description Creation time (UTC)
-             * @example 2026-02-18T10:15:30Z
-             */
-            createdAt?: string;
-            /**
-             * @description Ingestion status
-             * @example INGESTED
-             * @enum {string}
-             */
-            status?: "UPLOADED" | "INGESTING" | "INGESTED" | "FAILED";
-            /**
-             * @description Last ingestion error, if status is FAILED
-             * @example Embedding provider unavailable
-             */
-            errorMessage?: string;
-            /**
-             * Format: date-time
-             * @description Time the document was last ingested successfully (UTC)
-             * @example 2026-02-18T10:16:05Z
-             */
-            ingestedAt?: string;
-            /** @description True when the caller may read but not change the document (shared library content): hide edit actions, keep download, preview and test generation */
-            readOnly?: boolean;
-            /** @description True when the document belongs to the shared library (a LIBRARY tenant), whoever is asking */
-            shared?: boolean;
-        };
-        /** @description A model's prices as a price catalog lists them, not saved. Third-party data: check before saving. */
-        TokenPriceSuggestionDto: {
-            model?: string;
-            /** @description False when the catalog does not list the model; the prices are then null */
-            known?: boolean;
-            /** @description US dollars per million input tokens */
-            inputUsdPerMillion?: number;
-            /** @description US dollars per million output tokens */
-            outputUsdPerMillion?: number;
-            /** @description The catalog entry the prices come from, e.g. openai/gpt-4.1 */
-            catalogModel?: string;
-            /** @description The provider the catalog names for the entry, e.g. openai */
-            provider?: string;
-            /** @description The catalog, e.g. LiteLLM price catalog */
-            source?: string;
-        };
-        /** @description Immutable snapshot of a question's content */
-        TestQuestionVersionDto: {
-            /**
-             * Format: int64
-             * @description Version identifier
-             * @example 12001
-             */
-            id?: number;
-            /**
-             * Format: int64
-             * @description Question (slot) identifier
-             * @example 9001
-             */
-            questionId?: number;
-            /**
-             * Format: int32
-             * @description Version number, 1 = as generated
-             * @example 2
-             */
-            versionNo?: number;
-            /**
-             * @description GENERATED, REGENERATED, FIX_ACCEPTED or MANUAL
-             * @example FIX_ACCEPTED
-             */
-            origin?: string;
-            /**
-             * Format: int64
-             * @description Version this one replaced
-             */
-            parentVersionId?: number;
-            /**
-             * Format: int64
-             * @description LLM call that produced the content (null for FIX_ACCEPTED and MANUAL)
-             */
-            generationRunId?: number;
-            /**
-             * Format: int64
-             * @description Verification call that checked the content
-             */
-            verificationRunId?: number;
-            /** @description Question text */
-            questionText?: string;
-            /** @description Options mapped by letter (A, B, C, D) */
-            options?: {
-                [key: string]: components["schemas"]["TestQuestionOptionDto"];
-            };
-            /**
-             * @description Answer key
-             * @example [
-             *       "A"
-             *     ]
-             */
-            correctOptions?: string[];
-            /**
-             * @description Letters of flagged options
-             * @example []
-             */
-            flaggedOptions?: string[];
-            /** @description Explanation */
-            explanation?: string;
-            /** @description Grounding chunk ids */
-            sourceChunkIds?: number[];
-            /**
-             * Format: date-time
-             * @description Creation time (UTC)
-             */
-            createdAt?: string;
-            /**
-             * Format: int64
-             * @description Author user id; null = system (LLM generation)
-             */
-            createdBy?: number;
-        };
-        /** @description One LLM call made for a test */
-        GenerationRunDto: {
-            /**
-             * Format: int64
-             * @description Run identifier
-             */
-            id?: number;
-            /**
-             * Format: int64
-             * @description Test identifier
-             */
-            testId?: number;
-            /**
-             * Format: int64
-             * @description Question identifier (regeneration only)
-             */
-            questionId?: number;
-            /** @description TEST_GENERATION, REGENERATION or VERIFICATION */
-            purpose?: string;
-            /**
-             * Format: int32
-             * @description Batch number within the generation
-             */
-            batchIndex?: number;
-            /**
-             * @description Model used
-             * @example gpt-4.1
-             */
-            model?: string;
-            /**
-             * @description Prompt template id
-             * @example mcq-default
-             */
-            promptTemplateId?: string;
-            /** @description Context chunk ids */
-            retrievedChunkIds?: number[];
-            /** @description Full prompt text sent to the model */
-            prompt?: string;
-            /** @description Request settings: temperature, max output tokens, response format, JSON schema */
-            requestParams?: {
-                [key: string]: unknown;
-            };
-            /** @description Raw model output */
-            rawResponse?: string;
-            /**
-             * Format: int32
-             * @description Prompt tokens
-             */
-            inputTokens?: number;
-            /**
-             * Format: int32
-             * @description Completion tokens
-             */
-            outputTokens?: number;
-            /**
-             * @description Provider finish reason
-             * @example STOP
-             */
-            finishReason?: string;
-            /** @description SUCCESS or FAILED */
-            status?: string;
-            /** @description Error when FAILED */
-            errorMessage?: string;
-            /**
-             * Format: date-time
-             * @description When the call was recorded (UTC)
-             */
-            createdAt?: string;
-        };
-        /** @description Entry of a test's history trail */
-        TestEventDto: {
-            /**
-             * Format: int64
-             * @description Event identifier
-             */
-            id?: number;
-            /**
-             * Format: int64
-             * @description Test identifier
-             */
-            testId?: number;
-            /**
-             * Format: int64
-             * @description Question identifier; null for test-level events
-             */
-            questionId?: number;
-            /**
-             * @description Event type
-             * @example FIX_ACCEPTED
-             */
-            eventType?: string;
-            /**
-             * Format: int64
-             * @description Version before the change
-             */
-            fromVersionId?: number;
-            /**
-             * Format: int64
-             * @description Version after the change
-             */
-            toVersionId?: number;
-            /**
-             * Format: int64
-             * @description Acting user id; null = system
-             */
-            actorUserId?: number;
-            /** @description Reviewer comment */
-            comment?: string;
-            /** @description Event details (e.g. flagged option, reason, suggestion, run ids) */
-            payload?: {
-                [key: string]: unknown;
-            };
-            /**
-             * Format: date-time
-             * @description When it happened (UTC)
-             */
-            createdAt?: string;
-        };
-        /** @description What a participant sees before starting a test from a link */
-        PublicTestDto: {
-            /**
-             * @description Test name
-             * @example Health & Safety basics
-             */
-            name?: string;
-            /** @description Optional description */
-            description?: string;
-            /**
-             * Format: int32
-             * @description Number of questions
-             * @example 10
-             */
-            questionCount?: number;
-            /**
-             * @description SINGLE_CORRECT or MULTIPLE_CORRECT
-             * @example SINGLE_CORRECT
-             */
-            answerCardinality?: string;
-        };
-        /** @description What a personal invitation link shows before the participant starts */
-        PublicInvitationDto: {
-            /**
-             * @description The invited address; it becomes the attempt's email
-             * @example ana@example.com
-             */
-            email?: string;
-            /** @description The test */
-            test?: components["schemas"]["PublicTestDto"];
-            /**
-             * @description Empty while unused; STARTED while the attempt runs; SCORED once the link was used
-             * @example STARTED
-             */
-            attemptStatus?: string;
-            /** @description Token of the running attempt, to continue it; only while STARTED */
-            attemptToken?: string;
-        };
-        /** @description The signed-in user and the tenant they work in */
-        CurrentUserDto: {
-            /**
-             * Format: int64
-             * @description Local user id; null when sign-in is off and kg.context.user-id is empty
-             */
-            userId?: number;
-            /**
-             * Format: int64
-             * @description The one tenant the user belongs to
-             */
-            tenantId?: number;
-            tenantName?: string;
-            email?: string;
-            displayName?: string;
-            /** @description The user's roles from user_roles, e.g. ADMIN and TENANT_ADMIN (ADR012) */
-            roles?: string[];
-            /** @description fixed (no sign-in, one tenant per deployment) or oidc (Keycloak) */
-            securityMode?: string;
-            /**
-             * Format: date-time
-             * @description When the user first signed in; null when sign-in is off
-             */
-            createdAt?: string;
-        };
-        /** @description What the user's tenant holds, and what it used in the current calendar month (UTC). The shared library is not counted. */
-        UsageSummaryDto: {
-            /**
-             * Format: date-time
-             * @description Start of the month, inclusive
-             */
-            periodStart?: string;
-            /**
-             * Format: date-time
-             * @description Start of the next month, exclusive
-             */
-            periodEnd?: string;
-            /** Format: int64 */
-            topics?: number;
-            /** Format: int64 */
-            documents?: number;
-            /**
-             * Format: int64
-             * @description Documents ready for test generation
-             */
-            ingestedDocuments?: number;
-            /**
-             * Format: int64
-             * @description Total size of the uploaded PDFs in bytes
-             */
-            storageBytes?: number;
-            /**
-             * Format: int64
-             * @description Tests created this month
-             */
-            tests?: number;
-            /**
-             * Format: int64
-             * @description Questions the AI wrote this month: new tests and regenerations
-             */
-            questions?: number;
-            /**
-             * Format: int64
-             * @description Attempts participants submitted this month
-             */
-            submittedAttempts?: number;
-            /**
-             * Format: int64
-             * @description LLM input tokens of question writing and checking this month
-             */
-            llmInputTokens?: number;
-            /**
-             * Format: int64
-             * @description LLM output tokens of question writing and checking this month
-             */
-            llmOutputTokens?: number;
-            /** @description What this month's LLM tokens cost in US dollars, with the token prices an admin set; models in unpricedModels not included */
-            llmCostUsd?: number;
-            /** @description Models used this month that have no token price yet */
-            unpricedModels?: string[];
-            /**
-             * Format: int64
-             * @description LLM tokens (input + output) the tenant may use per month; null for no limit
-             */
-            llmTokenLimit?: number;
-            /**
-             * Format: int64
-             * @description Bytes of documents the tenant may keep; null for no limit. An upload over it is refused
-             */
-            storageLimitBytes?: number;
-        };
-        /** @description How many ingested documents a topic holds directly (sub-topics are counted separately) */
-        TopicDocumentCountDto: {
-            /**
-             * Format: int64
-             * @description Topic id
-             * @example 9100
-             */
-            topicId?: number;
-            /**
-             * Format: int64
-             * @description Ingested documents directly in this topic
-             * @example 3
-             */
-            ingestedDocuments?: number;
-        };
-        Pageable: {
-            /** Format: int32 */
-            page?: number;
-            /** Format: int32 */
-            size?: number;
-            sort?: string[];
-        };
-        PageMetadata: {
-            /** Format: int64 */
-            size?: number;
-            /** Format: int64 */
-            number?: number;
-            /** Format: int64 */
-            totalElements?: number;
-            /** Format: int64 */
-            totalPages?: number;
-        };
-        PagedModelDocumentDto: {
-            content?: components["schemas"]["DocumentDto"][];
-            page?: components["schemas"]["PageMetadata"];
-        };
-        PagedModelTenantSummaryDto: {
-            content?: components["schemas"]["TenantSummaryDto"][];
-            page?: components["schemas"]["PageMetadata"];
-        };
-        /** @description A tenant for admins: type, owner and how much content it holds (ADR013) */
-        TenantSummaryDto: {
-            /**
-             * Format: int64
-             * @description Tenant id; send it in the X-KG-Tenant header to read this tenant's content
-             */
-            tenantId?: number;
-            name?: string;
-            /** @enum {string} */
-            type?: "PERSONAL" | "ORGANIZATION" | "LIBRARY";
-            /** Format: int64 */
-            ownerUserId?: number;
-            ownerName?: string;
-            ownerEmail?: string;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: int64 */
-            topics?: number;
-            /** Format: int64 */
-            documents?: number;
-            /**
-             * Format: int64
-             * @description Total size of the tenant's documents in bytes
-             */
-            storageBytes?: number;
-            /**
-             * Format: int64
-             * @description Bytes of documents the tenant may keep (its own limit, else the system one); null when there is none (always for the library). Over it uploads are refused
-             */
-            storageLimitBytes?: number;
-            /**
-             * Format: int64
-             * @description LLM tokens (input + output) of the tenant this calendar month (UTC)
-             */
-            tokensThisMonth?: number;
-            /**
-             * Format: int64
-             * @description LLM tokens the tenant may use per month (its own limit, else the system one); null when there is none. At the limit new tests and regenerations are refused
-             */
-            tokenLimit?: number;
-            /**
-             * Format: int32
-             * @description Tests one user of the tenant may generate at once; null when there is no limit
-             */
-            concurrentGenerationsLimit?: number;
-            /** @description Whether the tenant has limits of its own, overriding the system settings (ADR014) */
-            ownLimits?: boolean;
-        };
-        /** @description The token prices, and the model names to offer when adding one */
-        TokenPricesDto: {
-            /** @description Every price, by model */
-            prices?: components["schemas"]["TokenPriceDto"][];
-            /** @description Configured models and every model recorded for an LLM call */
-            knownModels?: string[];
-            /** @description OpenAI chat models listed in the price catalog */
-            catalogModels?: string[];
-        };
-        /** @description The embedding model (read-only: changing it means re-ingesting every document) */
-        EmbeddingInfoDto: {
-            /** @description kg.embedding.openai.model */
-            model?: string;
-            /**
-             * Format: int32
-             * @description kg.embedding.dimension, also the vector column size
-             */
-            dimension?: number;
-            /** @description The price catalog entry, if listed */
-            catalogModel?: string;
-            /** @description US dollars per million tokens, from the price catalog; null when unknown */
-            inputUsdPerMillion?: number;
-            /**
-             * Format: int32
-             * @description Vector size the price catalog gives; null when unknown
-             */
-            catalogVectorSize?: number;
-            /** @description Stored embeddings per model; only those of the current model are used */
-            byModel?: components["schemas"]["EmbeddingModelCountDto"][];
-        };
-        EmbeddingModelCountDto: {
-            model?: string;
-            /** Format: int64 */
-            embeddings?: number;
-            /** Format: int64 */
-            documents?: number;
-        };
+  schemas: {
+    /** @description The editable details of a test (allowed until it is published) */
+    TestDetailsInput: {
+      /**
+       * @description Test name (required, max 200 characters)
+       * @example Fire safety at the Corvane offices
+       */
+      name: string;
+      /**
+       * @description Optional description (max 2000 characters); blank removes it
+       * @example Short test for new employees
+       */
+      description?: string;
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    /** @description Generated test details returned by API */
+    TestDto: {
+      /**
+       * Format: int64
+       * @description Test identifier
+       * @example 5001
+       */
+      id?: number;
+      /**
+       * Format: int64
+       * @description Owning tenant identifier
+       * @example 1
+       */
+      tenantId?: number;
+      /**
+       * @description Test name
+       * @example Java Concurrency – Medium (10 questions)
+       */
+      name?: string;
+      /**
+       * @description Optional free-text description
+       * @example Practice test for the threads and executors chapters
+       */
+      description?: string;
+      /**
+       * @description Topics used for generation
+       * @example [
+       *       101,
+       *       102
+       *     ]
+       */
+      topicIds?: number[];
+      /**
+       * @description Documents used for generation
+       * @example [
+       *       2001,
+       *       2002
+       *     ]
+       */
+      documentIds?: number[];
+      /**
+       * @description Configured difficulty
+       * @example MEDIUM
+       */
+      difficulty?: string;
+      /**
+       * @description Whether repeats were avoided
+       * @example true
+       */
+      avoidRepeats?: boolean;
+      /**
+       * @description Coverage strategy
+       * @example BALANCED_PER_DOC_CHUNKS
+       */
+      coverageMode?: string;
+      /**
+       * @description Text the chunks were matched against, for FOCUSED coverage
+       * @example Thread pools and how to shut down an ExecutorService
+       */
+      focusQuery?: string;
+      /**
+       * Format: int32
+       * @description Requested number of questions
+       * @example 10
+       */
+      questionCount?: number;
+      /**
+       * @description Answer cardinality mode
+       * @example SINGLE_CORRECT
+       */
+      answerCardinality?: string;
+      /**
+       * @description Generation status
+       * @example COMPLETED
+       */
+      status?: string;
+      /**
+       * @description Generation model used
+       * @example gpt-4o-mini
+       */
+      generationModel?: string;
+      /**
+       * @description Prompt template id
+       * @example mcq-default
+       */
+      promptTemplateId?: string;
+      /**
+       * @description Generation parameters used
+       * @example {
+       *       "temperature": 0.2,
+       *       "topP": 1
+       *     }
+       */
+      generationParams?: {
+        [key: string]: unknown;
+      };
+      /**
+       * Format: date-time
+       * @description Generation start time (UTC)
+       * @example 2026-02-18T10:15:30Z
+       */
+      generationStartedAt?: string;
+      /**
+       * Format: date-time
+       * @description Generation finish time (UTC)
+       * @example 2026-02-18T10:15:45Z
+       */
+      generationFinishedAt?: string;
+      /**
+       * Format: date-time
+       * @description Generation failure time (UTC)
+       * @example 2026-02-18T10:15:45Z
+       */
+      generationFailedAt?: string;
+      /**
+       * @description Failure reason when status is FAILED
+       * @example Model request timed out
+       */
+      generationErrorMessage?: string;
+      /**
+       * @description Token of the shared link (/t/{token}); the link works while the test is PUBLISHED
+       * @example dGhpcy1pcy1hLXRva2Vu
+       */
+      publicToken?: string;
+    };
+    /** @description Settings the user chose for the app. A null field was never chosen: the app uses its default. */
+    UserPreferencesDto: {
+      /**
+       * @description Colour scheme; SYSTEM follows the device
+       * @example SYSTEM
+       * @enum {string}
+       */
+      theme?: 'LIGHT' | 'DARK' | 'SYSTEM';
+    };
+    TopicUpdateInput: {
+      /** Format: int64 */
+      id?: number;
+      name: string;
+      description?: string;
+    };
+    /** @description Topic details */
+    TopicDto: {
+      /**
+       * Format: int64
+       * @description Topic id
+       * @example 101
+       */
+      id?: number;
+      /**
+       * @description Topic name
+       * @example Spring Boot
+       */
+      name?: string;
+      /**
+       * @description Topic description
+       * @example Core concepts and practical usage
+       */
+      description?: string;
+      /**
+       * Format: int64
+       * @description Parent topic id
+       * @example 10
+       */
+      parentId?: number;
+      /**
+       * @description Materialized topic path
+       * @example /Backend/Spring Boot
+       */
+      path?: string;
+      /**
+       * Format: int32
+       * @description Display order among sibling topics (lowest first); empty sorts after positioned topics, by name
+       * @example 1
+       */
+      position?: number;
+      /** @description True when the caller may read but not change the topic (shared library content): hide edit actions, keep test generation */
+      readOnly?: boolean;
+      /** @description True when the topic belongs to the shared library (a LIBRARY tenant), whoever is asking */
+      shared?: boolean;
+      /** @description Direct child topics */
+      children?: components['schemas']['TopicDto'][];
+    };
+    /** @description A tenant's own setting values (the Limits dialog's Save) */
+    TenantSettingsInput: {
+      /** @description Values as text by setting key; an empty value removes the tenant's own value, so the system value applies. For a limit, 0 means no limit */
+      values: {
+        [key: string]: string;
+      };
+    };
+    /** @description A tenant-level setting of one tenant (ADR014): the system value, the tenant's own value, and the value in effect for it */
+    TenantSettingDto: {
+      /** @description The property name, e.g. kg.settings.tenant.monthly-token-limit */
+      key?: string;
+      label?: string;
+      description?: string;
+      /** @description INTEGER, TEXT or CHOICE */
+      type?: string;
+      /**
+       * Format: int64
+       * @description Smallest allowed INTEGER
+       */
+      min?: number;
+      /**
+       * Format: int64
+       * @description Largest allowed INTEGER
+       */
+      max?: number;
+      /** @description The system value in effect; null when empty */
+      systemValue?: string;
+      /** @description The tenant's own value; null when it uses the system value */
+      ownValue?: string;
+      /** @description The value in effect for the tenant */
+      value?: string;
+    };
+    /** @description New values for system settings (the page's Save) */
+    SystemSettingInput: {
+      /** @description Values as text by setting key; an empty value means empty for an optional setting (e.g. no limit) */
+      values: {
+        [key: string]: string;
+      };
+    };
+    /** @description A system setting: its properties-file default, the override saved on the System settings page, and the value in effect */
+    SystemSettingDto: {
+      /** @description The property name, e.g. kg.testgen.defaults.generation-model */
+      key?: string;
+      /** @description Section of the page, e.g. Workspace limits */
+      group?: string;
+      label?: string;
+      description?: string;
+      /** @description INTEGER, TEXT or CHOICE */
+      type?: string;
+      /** @description Allowed values of a CHOICE */
+      options?: string[];
+      /**
+       * Format: int64
+       * @description Smallest allowed INTEGER
+       */
+      min?: number;
+      /**
+       * Format: int64
+       * @description Largest allowed INTEGER
+       */
+      max?: number;
+      /** @description Whether the setting may be empty (e.g. no limit) */
+      optional?: boolean;
+      /** @description Value from the properties files; null when empty */
+      defaultValue?: string;
+      /** @description Whether a value saved on the page overrides the default */
+      overridden?: boolean;
+      /** @description Value saved on the page; null when not overridden or saved empty */
+      overrideValue?: string;
+      /** @description Value in effect; null when empty */
+      value?: string;
+      /** @description Values to offer for a TEXT setting, e.g. model names from the price catalog; other text is allowed */
+      suggestions?: string[];
+      /** @description Whether a tenant may have a value of its own, overriding this one (ADR014) */
+      tenantLevel?: boolean;
+      /** @description CONFIG (a configuration value) or LIMIT (a limit on what a workspace or user may use); the page shows each on a tab of its own */
+      settingType?: string;
+    };
+    /** @description The price of a model, in US dollars per million tokens */
+    TokenPriceInput: {
+      inputUsdPerMillion: number;
+      outputUsdPerMillion: number;
+    };
+    /** @description What one LLM model costs (system setting). The model name matches recorded calls exactly or as a prefix; the longest match wins. */
+    TokenPriceDto: {
+      /** @description Model name or prefix, e.g. gpt-4.1 */
+      model?: string;
+      /** @description US dollars per million input tokens */
+      inputUsdPerMillion?: number;
+      /** @description US dollars per million output tokens */
+      outputUsdPerMillion?: number;
+      /**
+       * Format: date-time
+       * @description Last change
+       */
+      updatedAt?: string;
+    };
+    /** @description Input used to generate a new test */
+    TestInput: {
+      /**
+       * @description Test name (required, max 200 characters). Clients supply a default when the user leaves it empty
+       * @example Java Concurrency – Medium (10 questions)
+       */
+      name: string;
+      /**
+       * @description Optional free-text description (max 2000 characters)
+       * @example Practice test for the threads and executors chapters
+       */
+      description?: string;
+      /**
+       * @description Topics to scope retrieval and generation
+       * @example [
+       *       101,
+       *       102
+       *     ]
+       */
+      topicIds?: number[];
+      /**
+       * @description Optional explicit document scope
+       * @example [
+       *       2001,
+       *       2002
+       *     ]
+       */
+      documentIds?: number[];
+      /**
+       * @description Desired difficulty
+       * @example MEDIUM
+       */
+      difficulty?: string;
+      /**
+       * @description Avoid repeating already-used questions
+       * @example true
+       */
+      avoidRepeats?: boolean;
+      /**
+       * @description Coverage strategy: BALANCED_PER_DOC_CHUNKS (default), BALANCED_PER_DOCS or FOCUSED
+       * @example BALANCED_PER_DOC_CHUNKS
+       */
+      coverageMode?: string;
+      /**
+       * @description Required for FOCUSED (max 2000 characters): what the questions should be about. The chunks most similar to it are used; ignored for the other modes
+       * @example Thread pools and how to shut down an ExecutorService
+       */
+      focusQuery?: string;
+      /**
+       * Format: int32
+       * @description Requested number of questions
+       * @example 10
+       */
+      questionCount?: number;
+      /**
+       * @description Answer cardinality mode
+       * @example SINGLE_CORRECT
+       */
+      answerCardinality?: string;
+      /**
+       * @description Output language
+       * @example en
+       */
+      language?: string;
+      /**
+       * @description Model override for this test
+       * @example gpt-4o-mini
+       */
+      generationModel?: string;
+      /**
+       * @description Prompt template id
+       * @example mcq-default
+       */
+      promptTemplateId?: string;
+      /**
+       * @description Provider-specific generation parameters
+       * @example {
+       *       "temperature": 0.2,
+       *       "topP": 1
+       *     }
+       */
+      generationParams?: {
+        [key: string]: unknown;
+      };
+    };
+    /** @description Optional body of the publish and unpublish actions */
+    PublishTestInput: {
+      /**
+       * @description Optional comment, kept in the history
+       * @example Reviewed and approved for the Q1 onboarding cohort
+       */
+      comment?: string;
+    };
+    /** @description Body of the accept-fix and regenerate review actions */
+    ReviewActionInput: {
+      /**
+       * Format: int64
+       * @description Version the reviewer looked at. The action fails with 409 if the question changed since
+       * @example 12001
+       */
+      expectedCurrentVersionId: number;
+      /** @description Optional review comment, kept in the history */
+      comment?: string;
+    };
+    /** @description A question of a test, showing its current version */
+    TestQuestionDto: {
+      /**
+       * Format: int64
+       * @description Question (slot) identifier
+       * @example 9001
+       */
+      id?: number;
+      /**
+       * Format: int64
+       * @description Owning test identifier
+       * @example 5001
+       */
+      testId?: number;
+      /**
+       * Format: int32
+       * @description Question order within test
+       * @example 0
+       */
+      questionIndex?: number;
+      /**
+       * @description Review status: OK or NEEDS_REVIEW
+       * @example NEEDS_REVIEW
+       */
+      status?: string;
+      /**
+       * Format: int64
+       * @description Id of the current version. Send it as expectedCurrentVersionId in review actions
+       * @example 12001
+       */
+      currentVersionId?: number;
+      /**
+       * Format: int32
+       * @description Number of the current version (1 = as generated)
+       * @example 1
+       */
+      versionNo?: number;
+      /**
+       * @description How the current version was created: GENERATED, REGENERATED, FIX_ACCEPTED, MANUAL
+       * @example GENERATED
+       */
+      origin?: string;
+      /** @description Question text */
+      questionText?: string;
+      /** @description Options mapped by letter (A, B, C, D) */
+      options?: {
+        [key: string]: components['schemas']['TestQuestionOptionDto'];
+      };
+      /**
+       * @description Answer key
+       * @example [
+       *       "A",
+       *       "C"
+       *     ]
+       */
+      correctOptions?: string[];
+      /**
+       * @description Letters of options flagged by the verifier
+       * @example [
+       *       "B"
+       *     ]
+       */
+      flaggedOptions?: string[];
+      /** @description Short explanation for the correct answer */
+      explanation?: string;
+      /**
+       * @description Chunk ids used as grounding sources
+       * @example [
+       *       10101,
+       *       10102
+       *     ]
+       */
+      sourceChunkIds?: number[];
+    };
+    /** @description One answer option of a question version */
+    TestQuestionOptionDto: {
+      /**
+       * @description Option letter (A, B, C, or D)
+       * @example A
+       */
+      letter?: string;
+      /** @description Option text */
+      text?: string;
+      /**
+       * @description Whether the option is part of the answer key
+       * @example false
+       */
+      correct?: boolean;
+      /**
+       * @description Whether the verifier flagged this distractor as possibly true
+       * @example true
+       */
+      flagged?: boolean;
+      /** @description Verifier's clearly false replacement (only when flagged) */
+      suggestedText?: string;
+      /** @description Verifier's reason for the flag (only when flagged) */
+      flagReason?: string;
+    };
+    /** @description One option of a manually written question */
+    ManualOptionInput: {
+      /** @description Option text */
+      text: string;
+      /** @description Whether the option is correct */
+      correct: boolean;
+    };
+    /** @description A question written by the reviewer to replace the current one */
+    ManualQuestionInput: {
+      /**
+       * Format: int64
+       * @description Version the reviewer looked at. The action fails with 409 if the question changed since
+       * @example 12001
+       */
+      expectedCurrentVersionId: number;
+      /**
+       * @description Question text
+       * @example Which statement about the JVM heap is correct?
+       */
+      questionText: string;
+      /** @description Options A-D */
+      options: {
+        [key: string]: components['schemas']['ManualOptionInput'];
+      };
+      /** @description Optional explanation */
+      explanation?: string;
+      /** @description Optional review comment, kept in the history */
+      comment?: string;
+    };
+    /** @description Body of the dismiss-flags review action (keep the question as it is) */
+    DismissFlagsInput: {
+      /**
+       * Format: int64
+       * @description Version the reviewer looked at. The action fails with 409 if the question changed since
+       * @example 12001
+       */
+      expectedCurrentVersionId: number;
+      /**
+       * @description Why the flags are dismissed, kept in the history
+       * @example The flagged answer is not a disadvantage of setter injection
+       */
+      comment: string;
+    };
+    /** @description Addresses to send personal links to; each gets its own link, usable once */
+    InviteInput: {
+      /**
+       * @description Email addresses; duplicates are merged
+       * @example [
+       *       "ana@example.com",
+       *       "marko@example.com"
+       *     ]
+       */
+      emails: string[];
+      /** @description Optional note added to the email */
+      message?: string;
+    };
+    /** @description A personal invitation and what came of it */
+    TestInvitationDto: {
+      /**
+       * Format: int64
+       * @description Invitation id
+       * @example 12
+       */
+      id?: number;
+      /**
+       * Format: int64
+       * @description Test
+       * @example 5001
+       */
+      testId?: number;
+      /**
+       * @description Invited address (lower-cased)
+       * @example ana@example.com
+       */
+      email?: string;
+      /** @description The personal link */
+      link?: string;
+      /**
+       * Format: date-time
+       * @description When it was invited (UTC)
+       */
+      createdAt?: string;
+      /**
+       * Format: date-time
+       * @description Last successful send (UTC); empty if never delivered
+       */
+      sentAt?: string;
+      /**
+       * Format: int32
+       * @description How often a send was attempted
+       * @example 1
+       */
+      sendCount?: number;
+      /** @description Error of the last send; empty after a successful one */
+      sendError?: string;
+      /**
+       * Format: int64
+       * @description Attempt started from the link; empty while unused
+       * @example 42
+       */
+      attemptId?: number;
+      /**
+       * @description STARTED or SCORED; empty while unused
+       * @example SCORED
+       */
+      attemptStatus?: string;
+      /**
+       * @description Name the participant entered
+       * @example Ana Petrovic
+       */
+      participantName?: string;
+      /**
+       * Format: double
+       * @description Score in percent once scored
+       * @example 80
+       */
+      scorePercent?: number;
+    };
+    /** @description An attempt with its test and questions */
+    AttemptDetailDto: {
+      /** @description The attempt and its score */
+      attempt?: components['schemas']['AttemptDto'];
+      /**
+       * @description Name of the test
+       * @example Java Concurrency – Medium (10 questions)
+       */
+      testName?: string;
+      /**
+       * @description SINGLE_CORRECT or MULTIPLE_CORRECT: how many options may be chosen
+       * @example SINGLE_CORRECT
+       */
+      answerCardinality?: string;
+      /** @description Questions in order */
+      questions?: components['schemas']['AttemptQuestionDto'][];
+    };
+    /** @description An attempt at a published test, with its score once submitted */
+    AttemptDto: {
+      /**
+       * Format: int64
+       * @description Attempt id
+       * @example 42
+       */
+      id?: number;
+      /**
+       * Format: int64
+       * @description Test that was taken
+       * @example 5001
+       */
+      testId?: number;
+      /**
+       * Format: int64
+       * @description Administrator who took the test; empty for participants
+       * @example 1
+       */
+      userId?: number;
+      /**
+       * @description Full name the participant entered
+       * @example Ana Petrovic
+       */
+      participantName?: string;
+      /**
+       * @description Participant email (lower-cased); from the invitation for personal links
+       * @example ana@example.com
+       */
+      participantEmail?: string;
+      /**
+       * Format: int64
+       * @description Personal invitation the attempt was started from, if any
+       * @example 12
+       */
+      invitationId?: number;
+      /**
+       * @description STARTED, SUBMITTED or SCORED
+       * @example SCORED
+       */
+      status?: string;
+      /**
+       * Format: int32
+       * @description Number of questions in the test
+       * @example 10
+       */
+      totalQuestions?: number;
+      /**
+       * Format: int32
+       * @description Correctly answered questions (0 until scored)
+       * @example 8
+       */
+      correctCount?: number;
+      /**
+       * Format: int32
+       * @description Wrong or unanswered questions (0 until scored)
+       * @example 2
+       */
+      wrongCount?: number;
+      /**
+       * Format: double
+       * @description Score in percent, one decimal (0 until scored)
+       * @example 80
+       */
+      scorePercent?: number;
+      /**
+       * Format: date-time
+       * @description When the attempt was started (UTC)
+       */
+      startedAt?: string;
+      /**
+       * Format: date-time
+       * @description When the answers were submitted (UTC)
+       */
+      submittedAt?: string;
+      /**
+       * Format: date-time
+       * @description When the attempt was scored (UTC)
+       */
+      scoredAt?: string;
+    };
+    /** @description A question as shown in an attempt. The answer key and explanation are only included once the attempt is scored */
+    AttemptQuestionDto: {
+      /**
+       * Format: int64
+       * @description Question slot id; use it when submitting answers
+       * @example 7001
+       */
+      questionId?: number;
+      /**
+       * Format: int64
+       * @description Question version shown in this attempt
+       * @example 9001
+       */
+      questionVersionId?: number;
+      /**
+       * Format: int32
+       * @description 0-based position in the test
+       * @example 0
+       */
+      questionIndex?: number;
+      /** @description Question text */
+      questionText?: string;
+      /** @description Option texts by letter (A-D) */
+      options?: {
+        [key: string]: string;
+      };
+      /**
+       * @description Options the user chose (after scoring)
+       * @example [
+       *       "A"
+       *     ]
+       */
+      chosenOptions?: string[];
+      /**
+       * @description Correct options (after scoring)
+       * @example [
+       *       "A"
+       *     ]
+       */
+      correctOptions?: string[];
+      /** @description Whether the answer was correct (after scoring) */
+      correct?: boolean;
+      /** @description Why the answer is correct (after scoring) */
+      explanation?: string;
+    };
+    /** @description Who takes the test through the shared link */
+    StartPublicAttemptInput: {
+      /**
+       * @description Full name
+       * @example Ana Petrovic
+       */
+      participantName: string;
+      /**
+       * Format: email
+       * @description Email; identifies the same person across attempts
+       * @example ana@example.com
+       */
+      participantEmail: string;
+    };
+    /** @description A participant's attempt. Once scored it has the score and the participant's own answers marked right or wrong; the correct options and explanations are never included */
+    PublicAttemptDto: {
+      /** @description Token that addresses this attempt */
+      attemptToken?: string;
+      /**
+       * @description Test name
+       * @example Health & Safety basics
+       */
+      testName?: string;
+      /**
+       * @description SINGLE_CORRECT or MULTIPLE_CORRECT
+       * @example SINGLE_CORRECT
+       */
+      answerCardinality?: string;
+      /**
+       * @description Full name of the participant
+       * @example Ana Petrovic
+       */
+      participantName?: string;
+      /**
+       * @description STARTED or SCORED
+       * @example STARTED
+       */
+      status?: string;
+      /**
+       * Format: int32
+       * @description Number of questions
+       * @example 10
+       */
+      totalQuestions?: number;
+      /**
+       * Format: int32
+       * @description Correct answers (after scoring)
+       * @example 8
+       */
+      correctCount?: number;
+      /**
+       * Format: double
+       * @description Score in percent (after scoring)
+       * @example 80
+       */
+      scorePercent?: number;
+      /** @description Questions to answer; once scored, with chosenOptions and correct (correctOptions and explanation stay empty) */
+      questions?: components['schemas']['AttemptQuestionDto'][];
+    };
+    /** @description Starts the attempt of a personal invitation. The email is the invited address and cannot be changed */
+    StartInvitationAttemptInput: {
+      /**
+       * @description Full name
+       * @example Ana Petrovic
+       */
+      participantName: string;
+    };
+    /** @description The options chosen for one question */
+    Answer: {
+      /**
+       * Format: int64
+       * @description Question id from the attempt
+       * @example 7001
+       */
+      questionId: number;
+      /**
+       * @description Chosen option letters; empty for no answer
+       * @example [
+       *       "A"
+       *     ]
+       */
+      chosenOptions: string[];
+    };
+    /** @description Answers of an attempt. Questions left out count as unanswered (wrong) */
+    SubmitAttemptInput: {
+      /** @description Chosen options per question */
+      answers: components['schemas']['Answer'][];
+    };
+    /** @description The workspace the user joined by accepting an invitation */
+    WorkspaceJoinedDto: {
+      /**
+       * Format: int64
+       * @description The workspace (tenant) the user now works in
+       * @example 12
+       */
+      tenantId?: number;
+      /**
+       * @description Its name
+       * @example Acme Training
+       */
+      workspaceName?: string;
+      /**
+       * Format: int64
+       * @description The workspace the user left; empty if none
+       */
+      previousTenantId?: number;
+    };
+    /** @description Payload used to create a topic */
+    TopicCreateInput: {
+      /**
+       * @description Topic display name
+       * @example Databases
+       */
+      name: string;
+      /**
+       * @description Optional topic description
+       * @example Relational and non-relational database concepts
+       */
+      description?: string;
+      /**
+       * Format: int64
+       * @description Parent topic id for nested topics
+       * @example 10
+       */
+      parentId?: number;
+      /**
+       * Format: int64
+       * @description For a root topic (no parent): the shared library to create it in instead of the own one. ADMIN only (ADR015).
+       * @example 1
+       */
+      libraryTenantId?: number;
+    };
+    /** @description Recursive node used to create a topic tree */
+    TopicTreeNodeInput: {
+      /**
+       * @description Node name
+       * @example Backend
+       */
+      name: string;
+      /**
+       * @description Optional node description
+       * @example Service-side implementation topics
+       */
+      description?: string;
+      /**
+       * @description Child nodes
+       * @example [
+       *       {
+       *         "name": "Spring",
+       *         "description": "Core Spring modules",
+       *         "children": [
+       *           {
+       *             "name": "Spring Boot",
+       *             "description": "Auto-configuration and starters",
+       *             "children": []
+       *           }
+       *         ]
+       *       }
+       *     ]
+       */
+      children: components['schemas']['TopicTreeNodeInput'][];
+      /**
+       * Format: int64
+       * @description On the root node only: the shared library to create the tree in instead of the own one. ADMIN only (ADR015).
+       * @example 1
+       */
+      libraryTenantId?: number;
+    };
+    /** @description Document metadata */
+    DocumentDto: {
+      /**
+       * Format: int64
+       * @description Document id
+       * @example 2001
+       */
+      id?: number;
+      /**
+       * Format: int64
+       * @description Owning topic id
+       * @example 101
+       */
+      topicId?: number;
+      /**
+       * @description Document title
+       * @example Spring Boot Fundamentals
+       */
+      title?: string;
+      /**
+       * @description Original uploaded file name
+       * @example spring-boot-fundamentals.pdf
+       */
+      originalFileName?: string;
+      /**
+       * @description MIME type
+       * @example application/pdf
+       */
+      contentType?: string;
+      /**
+       * Format: int64
+       * @description File size in bytes
+       * @example 245760
+       */
+      fileSizeBytes?: number;
+      /**
+       * @description Object storage key
+       * @example docs/2026/02/18/2001.pdf
+       */
+      storageKey?: string;
+      /**
+       * @description Storage ETag
+       * @example a1b2c3d4
+       */
+      etag?: string;
+      /**
+       * @description Object version id, if versioning is enabled
+       * @example 3Lgk9J
+       */
+      version?: string;
+      /**
+       * Format: date-time
+       * @description Creation time (UTC)
+       * @example 2026-02-18T10:15:30Z
+       */
+      createdAt?: string;
+      /**
+       * @description Ingestion status
+       * @example INGESTED
+       * @enum {string}
+       */
+      status?: 'UPLOADED' | 'INGESTING' | 'INGESTED' | 'FAILED';
+      /**
+       * @description Last ingestion error, if status is FAILED
+       * @example Embedding provider unavailable
+       */
+      errorMessage?: string;
+      /**
+       * Format: date-time
+       * @description Time the document was last ingested successfully (UTC)
+       * @example 2026-02-18T10:16:05Z
+       */
+      ingestedAt?: string;
+      /** @description True when the caller may read but not change the document (shared library content): hide edit actions, keep download, preview and test generation */
+      readOnly?: boolean;
+      /** @description True when the document belongs to the shared library (a LIBRARY tenant), whoever is asking */
+      shared?: boolean;
+    };
+    /** @description A workspace an ADMIN creates (ADR015): a personal one with exactly one invitee, an organization with at least one, a shared library with none */
+    TenantCreateInput: {
+      /**
+       * @description PERSONAL, ORGANIZATION or LIBRARY
+       * @example ORGANIZATION
+       */
+      type: string;
+      /**
+       * @description Shown in the app
+       * @example Acme Training
+       */
+      name: string;
+      /**
+       * @description Email addresses to invite; each becomes a TENANT_ADMIN of the workspace on accepting
+       * @example [
+       *       "ana@example.com"
+       *     ]
+       */
+      emails?: string[];
+      /** @description Optional note added to the invitation email */
+      message?: string;
+    };
+    /** @description A new workspace and the invitations sent for it */
+    TenantCreatedDto: {
+      tenant?: components['schemas']['TenantSummaryDto'];
+      /** @description One per invitee; a failed send has its error */
+      invitations?: components['schemas']['WorkspaceInvitationDto'][];
+    };
+    /** @description A tenant for admins: type, owner and how much content it holds (ADR013) */
+    TenantSummaryDto: {
+      /**
+       * Format: int64
+       * @description Tenant id; send it in the X-KG-Tenant header to read this tenant's content
+       */
+      tenantId?: number;
+      name?: string;
+      /** @enum {string} */
+      type?: 'PERSONAL' | 'ORGANIZATION' | 'LIBRARY';
+      /** Format: int64 */
+      ownerUserId?: number;
+      ownerName?: string;
+      ownerEmail?: string;
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: int64 */
+      topics?: number;
+      /** Format: int64 */
+      documents?: number;
+      /**
+       * Format: int64
+       * @description Total size of the tenant's documents in bytes
+       */
+      storageBytes?: number;
+      /**
+       * Format: int64
+       * @description Bytes of documents the tenant may keep (its own limit, else the system one); null when there is none (always for the library). Over it uploads are refused
+       */
+      storageLimitBytes?: number;
+      /**
+       * Format: int64
+       * @description LLM tokens (input + output) of the tenant this calendar month (UTC)
+       */
+      tokensThisMonth?: number;
+      /**
+       * Format: int64
+       * @description LLM tokens the tenant may use per month (its own limit, else the system one); null when there is none. At the limit new tests and regenerations are refused
+       */
+      tokenLimit?: number;
+      /**
+       * Format: int32
+       * @description Tests one user of the tenant may generate at once; null when there is no limit
+       */
+      concurrentGenerationsLimit?: number;
+      /** @description Whether the tenant has limits of its own, overriding the system settings (ADR014) */
+      ownLimits?: boolean;
+    };
+    /** @description An invitation to join a workspace (ADR015) */
+    WorkspaceInvitationDto: {
+      /**
+       * Format: int64
+       * @description Invitation id
+       * @example 7
+       */
+      id?: number;
+      /**
+       * Format: int64
+       * @description Workspace (tenant)
+       * @example 12
+       */
+      tenantId?: number;
+      /**
+       * @description Invited address (lower-cased)
+       * @example ana@example.com
+       */
+      email?: string;
+      /**
+       * @description Role the invitee gets on accepting
+       * @example TENANT_ADMIN
+       */
+      role?: string;
+      /** @description The link to accept */
+      link?: string;
+      /**
+       * Format: date-time
+       * @description When it was invited (UTC)
+       */
+      createdAt?: string;
+      /**
+       * Format: date-time
+       * @description Last successful send (UTC); empty if never delivered
+       */
+      sentAt?: string;
+      /**
+       * Format: int32
+       * @description How often a send was attempted
+       * @example 1
+       */
+      sendCount?: number;
+      /** @description Error of the last send; empty after a successful one */
+      sendError?: string;
+      /**
+       * Format: date-time
+       * @description When it was accepted (UTC); empty while pending
+       */
+      acceptedAt?: string;
+    };
+    /** @description People to invite to a workspace (ADR015); an address invited before gets its link again */
+    WorkspaceInviteInput: {
+      /**
+       * @description Email addresses; duplicates are merged
+       * @example [
+       *       "ana@example.com"
+       *     ]
+       */
+      emails: string[];
+      /** @description Optional note added to the email */
+      message?: string;
+    };
+    /** @description A model's prices as a price catalog lists them, not saved. Third-party data: check before saving. */
+    TokenPriceSuggestionDto: {
+      model?: string;
+      /** @description False when the catalog does not list the model; the prices are then null */
+      known?: boolean;
+      /** @description US dollars per million input tokens */
+      inputUsdPerMillion?: number;
+      /** @description US dollars per million output tokens */
+      outputUsdPerMillion?: number;
+      /** @description The catalog entry the prices come from, e.g. openai/gpt-4.1 */
+      catalogModel?: string;
+      /** @description The provider the catalog names for the entry, e.g. openai */
+      provider?: string;
+      /** @description The catalog, e.g. LiteLLM price catalog */
+      source?: string;
+    };
+    /** @description Immutable snapshot of a question's content */
+    TestQuestionVersionDto: {
+      /**
+       * Format: int64
+       * @description Version identifier
+       * @example 12001
+       */
+      id?: number;
+      /**
+       * Format: int64
+       * @description Question (slot) identifier
+       * @example 9001
+       */
+      questionId?: number;
+      /**
+       * Format: int32
+       * @description Version number, 1 = as generated
+       * @example 2
+       */
+      versionNo?: number;
+      /**
+       * @description GENERATED, REGENERATED, FIX_ACCEPTED or MANUAL
+       * @example FIX_ACCEPTED
+       */
+      origin?: string;
+      /**
+       * Format: int64
+       * @description Version this one replaced
+       */
+      parentVersionId?: number;
+      /**
+       * Format: int64
+       * @description LLM call that produced the content (null for FIX_ACCEPTED and MANUAL)
+       */
+      generationRunId?: number;
+      /**
+       * Format: int64
+       * @description Verification call that checked the content
+       */
+      verificationRunId?: number;
+      /** @description Question text */
+      questionText?: string;
+      /** @description Options mapped by letter (A, B, C, D) */
+      options?: {
+        [key: string]: components['schemas']['TestQuestionOptionDto'];
+      };
+      /**
+       * @description Answer key
+       * @example [
+       *       "A"
+       *     ]
+       */
+      correctOptions?: string[];
+      /**
+       * @description Letters of flagged options
+       * @example []
+       */
+      flaggedOptions?: string[];
+      /** @description Explanation */
+      explanation?: string;
+      /** @description Grounding chunk ids */
+      sourceChunkIds?: number[];
+      /**
+       * Format: date-time
+       * @description Creation time (UTC)
+       */
+      createdAt?: string;
+      /**
+       * Format: int64
+       * @description Author user id; null = system (LLM generation)
+       */
+      createdBy?: number;
+    };
+    /** @description One LLM call made for a test */
+    GenerationRunDto: {
+      /**
+       * Format: int64
+       * @description Run identifier
+       */
+      id?: number;
+      /**
+       * Format: int64
+       * @description Test identifier
+       */
+      testId?: number;
+      /**
+       * Format: int64
+       * @description Question identifier (regeneration only)
+       */
+      questionId?: number;
+      /** @description TEST_GENERATION, REGENERATION or VERIFICATION */
+      purpose?: string;
+      /**
+       * Format: int32
+       * @description Batch number within the generation
+       */
+      batchIndex?: number;
+      /**
+       * @description Model used
+       * @example gpt-4.1
+       */
+      model?: string;
+      /**
+       * @description Prompt template id
+       * @example mcq-default
+       */
+      promptTemplateId?: string;
+      /** @description Context chunk ids */
+      retrievedChunkIds?: number[];
+      /** @description Full prompt text sent to the model */
+      prompt?: string;
+      /** @description Request settings: temperature, max output tokens, response format, JSON schema */
+      requestParams?: {
+        [key: string]: unknown;
+      };
+      /** @description Raw model output */
+      rawResponse?: string;
+      /**
+       * Format: int32
+       * @description Prompt tokens
+       */
+      inputTokens?: number;
+      /**
+       * Format: int32
+       * @description Completion tokens
+       */
+      outputTokens?: number;
+      /**
+       * @description Provider finish reason
+       * @example STOP
+       */
+      finishReason?: string;
+      /** @description SUCCESS or FAILED */
+      status?: string;
+      /** @description Error when FAILED */
+      errorMessage?: string;
+      /**
+       * Format: date-time
+       * @description When the call was recorded (UTC)
+       */
+      createdAt?: string;
+    };
+    /** @description Entry of a test's history trail */
+    TestEventDto: {
+      /**
+       * Format: int64
+       * @description Event identifier
+       */
+      id?: number;
+      /**
+       * Format: int64
+       * @description Test identifier
+       */
+      testId?: number;
+      /**
+       * Format: int64
+       * @description Question identifier; null for test-level events
+       */
+      questionId?: number;
+      /**
+       * @description Event type
+       * @example FIX_ACCEPTED
+       */
+      eventType?: string;
+      /**
+       * Format: int64
+       * @description Version before the change
+       */
+      fromVersionId?: number;
+      /**
+       * Format: int64
+       * @description Version after the change
+       */
+      toVersionId?: number;
+      /**
+       * Format: int64
+       * @description Acting user id; null = system
+       */
+      actorUserId?: number;
+      /** @description Reviewer comment */
+      comment?: string;
+      /** @description Event details (e.g. flagged option, reason, suggestion, run ids) */
+      payload?: {
+        [key: string]: unknown;
+      };
+      /**
+       * Format: date-time
+       * @description When it happened (UTC)
+       */
+      createdAt?: string;
+    };
+    /** @description What a workspace invitation link leads to (public, no ids) */
+    WorkspaceInvitationPreviewDto: {
+      /**
+       * @description Name of the workspace
+       * @example Acme Training
+       */
+      workspaceName?: string;
+      /**
+       * @description PERSONAL or ORGANIZATION
+       * @example ORGANIZATION
+       */
+      workspaceType?: string;
+      /**
+       * @description The invited address
+       * @example ana@example.com
+       */
+      email?: string;
+      /** @description Whether it has been accepted */
+      accepted?: boolean;
+    };
+    /** @description What a participant sees before starting a test from a link */
+    PublicTestDto: {
+      /**
+       * @description Test name
+       * @example Health & Safety basics
+       */
+      name?: string;
+      /** @description Optional description */
+      description?: string;
+      /**
+       * Format: int32
+       * @description Number of questions
+       * @example 10
+       */
+      questionCount?: number;
+      /**
+       * @description SINGLE_CORRECT or MULTIPLE_CORRECT
+       * @example SINGLE_CORRECT
+       */
+      answerCardinality?: string;
+    };
+    /** @description What a personal invitation link shows before the participant starts */
+    PublicInvitationDto: {
+      /**
+       * @description The invited address; it becomes the attempt's email
+       * @example ana@example.com
+       */
+      email?: string;
+      /** @description The test */
+      test?: components['schemas']['PublicTestDto'];
+      /**
+       * @description Empty while unused; STARTED while the attempt runs; SCORED once the link was used
+       * @example STARTED
+       */
+      attemptStatus?: string;
+      /** @description Token of the running attempt, to continue it; only while STARTED */
+      attemptToken?: string;
+    };
+    /** @description The signed-in user and the tenant they work in */
+    CurrentUserDto: {
+      /**
+       * Format: int64
+       * @description Local user id; null when sign-in is off and kg.context.user-id is empty
+       */
+      userId?: number;
+      /**
+       * Format: int64
+       * @description The one tenant the user belongs to
+       */
+      tenantId?: number;
+      tenantName?: string;
+      /**
+       * @description PERSONAL, ORGANIZATION or LIBRARY
+       * @example PERSONAL
+       */
+      tenantType?: string;
+      email?: string;
+      displayName?: string;
+      /** @description The user's roles from user_roles, e.g. ADMIN and TENANT_ADMIN (ADR012) */
+      roles?: string[];
+      /** @description fixed (no sign-in, one tenant per deployment) or oidc (Keycloak) */
+      securityMode?: string;
+      /**
+       * Format: date-time
+       * @description When the user first signed in; null when sign-in is off
+       */
+      createdAt?: string;
+    };
+    /** @description What the user's tenant holds, and what it used in the current calendar month (UTC). The shared library is not counted. */
+    UsageSummaryDto: {
+      /**
+       * Format: date-time
+       * @description Start of the month, inclusive
+       */
+      periodStart?: string;
+      /**
+       * Format: date-time
+       * @description Start of the next month, exclusive
+       */
+      periodEnd?: string;
+      /** Format: int64 */
+      topics?: number;
+      /** Format: int64 */
+      documents?: number;
+      /**
+       * Format: int64
+       * @description Documents ready for test generation
+       */
+      ingestedDocuments?: number;
+      /**
+       * Format: int64
+       * @description Total size of the uploaded PDFs in bytes
+       */
+      storageBytes?: number;
+      /**
+       * Format: int64
+       * @description Tests created this month
+       */
+      tests?: number;
+      /**
+       * Format: int64
+       * @description Questions the AI wrote this month: new tests and regenerations
+       */
+      questions?: number;
+      /**
+       * Format: int64
+       * @description Attempts participants submitted this month
+       */
+      submittedAttempts?: number;
+      /**
+       * Format: int64
+       * @description LLM input tokens of question writing and checking this month
+       */
+      llmInputTokens?: number;
+      /**
+       * Format: int64
+       * @description LLM output tokens of question writing and checking this month
+       */
+      llmOutputTokens?: number;
+      /** @description What this month's LLM tokens cost in US dollars, with the token prices an admin set; models in unpricedModels not included */
+      llmCostUsd?: number;
+      /** @description Models used this month that have no token price yet */
+      unpricedModels?: string[];
+      /**
+       * Format: int64
+       * @description LLM tokens (input + output) the tenant may use per month; null for no limit
+       */
+      llmTokenLimit?: number;
+      /**
+       * Format: int64
+       * @description Bytes of documents the tenant may keep; null for no limit. An upload over it is refused
+       */
+      storageLimitBytes?: number;
+    };
+    /** @description How many ingested documents a topic holds directly (sub-topics are counted separately) */
+    TopicDocumentCountDto: {
+      /**
+       * Format: int64
+       * @description Topic id
+       * @example 9100
+       */
+      topicId?: number;
+      /**
+       * Format: int64
+       * @description Ingested documents directly in this topic
+       * @example 3
+       */
+      ingestedDocuments?: number;
+    };
+    Pageable: {
+      /** Format: int32 */
+      page?: number;
+      /** Format: int32 */
+      size?: number;
+      sort?: string[];
+    };
+    PageMetadata: {
+      /** Format: int64 */
+      size?: number;
+      /** Format: int64 */
+      number?: number;
+      /** Format: int64 */
+      totalElements?: number;
+      /** Format: int64 */
+      totalPages?: number;
+    };
+    PagedModelDocumentDto: {
+      content?: components['schemas']['DocumentDto'][];
+      page?: components['schemas']['PageMetadata'];
+    };
+    PagedModelTenantSummaryDto: {
+      content?: components['schemas']['TenantSummaryDto'][];
+      page?: components['schemas']['PageMetadata'];
+    };
+    /** @description The token prices, and the model names to offer when adding one */
+    TokenPricesDto: {
+      /** @description Every price, by model */
+      prices?: components['schemas']['TokenPriceDto'][];
+      /** @description Configured models and every model recorded for an LLM call */
+      knownModels?: string[];
+      /** @description OpenAI chat models listed in the price catalog */
+      catalogModels?: string[];
+    };
+    /** @description The embedding model (read-only: changing it means re-ingesting every document) */
+    EmbeddingInfoDto: {
+      /** @description kg.embedding.openai.model */
+      model?: string;
+      /**
+       * Format: int32
+       * @description kg.embedding.dimension, also the vector column size
+       */
+      dimension?: number;
+      /** @description The price catalog entry, if listed */
+      catalogModel?: string;
+      /** @description US dollars per million tokens, from the price catalog; null when unknown */
+      inputUsdPerMillion?: number;
+      /**
+       * Format: int32
+       * @description Vector size the price catalog gives; null when unknown
+       */
+      catalogVectorSize?: number;
+      /** @description Stored embeddings per model; only those of the current model are used */
+      byModel?: components['schemas']['EmbeddingModelCountDto'][];
+    };
+    EmbeddingModelCountDto: {
+      model?: string;
+      /** Format: int64 */
+      embeddings?: number;
+      /** Format: int64 */
+      documents?: number;
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    updateDetails: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TestDetailsInput"];
-            };
-        };
-        responses: {
-            /** @description Details updated; returns the test */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-            /** @description Blank name, or a value that is too long */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-            /** @description Test not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-            /** @description Test is published */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-        };
+  updateDetails: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+      };
+      cookie?: never;
     };
-    preferences: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Settings returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UserPreferencesDto"];
-                };
-            };
-            /** @description Not signed in (security mode oidc) */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UserPreferencesDto"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TestDetailsInput'];
+      };
     };
-    updatePreferences: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description Details updated; returns the test */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UserPreferencesDto"];
-            };
+        content: {
+          '*/*': components['schemas']['TestDto'];
         };
-        responses: {
-            /** @description Settings stored */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UserPreferencesDto"];
-                };
-            };
-            /** @description Unknown value, for example an unknown theme */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UserPreferencesDto"];
-                };
-            };
-            /** @description Not signed in (security mode oidc) */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UserPreferencesDto"];
-                };
-            };
-            /** @description No stored user (sign-in off) */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UserPreferencesDto"];
-                };
-            };
+      };
+      /** @description Blank name, or a value that is too long */
+      400: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          '*/*': components['schemas']['TestDto'];
+        };
+      };
+      /** @description Test not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestDto'];
+        };
+      };
+      /** @description Test is published */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestDto'];
+        };
+      };
     };
-    getTopic: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Topic returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TopicDto"];
-                };
-            };
-            /** @description Topic not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TopicDto"];
-                };
-            };
-        };
+  };
+  preferences: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    updateTopic: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Settings returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TopicUpdateInput"];
-            };
+        content: {
+          '*/*': components['schemas']['UserPreferencesDto'];
         };
-        responses: {
-            /** @description Topic updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TopicDto"];
-                };
-            };
-            /** @description Invalid input or duplicate name under the same parent */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TopicDto"];
-                };
-            };
-            /** @description Topic not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TopicDto"];
-                };
-            };
+      };
+      /** @description Not signed in (security mode oidc) */
+      401: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          '*/*': components['schemas']['UserPreferencesDto'];
+        };
+      };
     };
-    deleteTopic: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  updatePreferences: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    tenantSettings: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Settings returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSettingDto"][];
-                };
-            };
-            /** @description Not an ADMIN */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSettingDto"][];
-                };
-            };
-            /** @description No such tenant */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSettingDto"][];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UserPreferencesDto'];
+      };
     };
-    saveTenantSettings: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
+    responses: {
+      /** @description Settings stored */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TenantSettingsInput"];
-            };
+        content: {
+          '*/*': components['schemas']['UserPreferencesDto'];
         };
-        responses: {
-            /** @description Settings saved; the tenant's settings returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSettingDto"][];
-                };
-            };
-            /** @description A value does not fit, or the setting applies to the whole system only */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSettingDto"][];
-                };
-            };
-            /** @description Not an ADMIN */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSettingDto"][];
-                };
-            };
-            /** @description No such tenant or setting */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSettingDto"][];
-                };
-            };
+      };
+      /** @description Unknown value, for example an unknown theme */
+      400: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          '*/*': components['schemas']['UserPreferencesDto'];
+        };
+      };
+      /** @description Not signed in (security mode oidc) */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['UserPreferencesDto'];
+        };
+      };
+      /** @description No stored user (sign-in off) */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['UserPreferencesDto'];
+        };
+      };
     };
-    resetTenantSettings: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Settings reset; the tenant's settings returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSettingDto"][];
-                };
-            };
-            /** @description Not an ADMIN */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSettingDto"][];
-                };
-            };
-            /** @description No such tenant */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSettingDto"][];
-                };
-            };
-        };
+  };
+  getTopic: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
     };
-    settings: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Topic returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Settings returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["SystemSettingDto"][];
-                };
-            };
-            /** @description Not an ADMIN */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["SystemSettingDto"][];
-                };
-            };
+        content: {
+          '*/*': components['schemas']['TopicDto'];
         };
+      };
+      /** @description Topic not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TopicDto'];
+        };
+      };
     };
-    saveSettings: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["SystemSettingInput"];
-            };
-        };
-        responses: {
-            /** @description Settings saved; every setting returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["SystemSettingDto"][];
-                };
-            };
-            /** @description A value does not fit its setting (all problems in the message) */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["SystemSettingDto"][];
-                };
-            };
-            /** @description Not an ADMIN */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["SystemSettingDto"][];
-                };
-            };
-            /** @description Unknown setting */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["SystemSettingDto"][];
-                };
-            };
-        };
+  };
+  updateTopic: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
     };
-    resetSettings: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Settings reset; every setting returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["SystemSettingDto"][];
-                };
-            };
-            /** @description Not an ADMIN */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["SystemSettingDto"][];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TopicUpdateInput'];
+      };
     };
-    setTokenPrice: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                model: string;
-            };
-            cookie?: never;
+    responses: {
+      /** @description Topic updated */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TokenPriceInput"];
-            };
+        content: {
+          '*/*': components['schemas']['TopicDto'];
         };
-        responses: {
-            /** @description Price saved */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TokenPriceDto"];
-                };
-            };
-            /** @description Missing or negative price, or an invalid model name */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TokenPriceDto"];
-                };
-            };
-            /** @description Not an ADMIN */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TokenPriceDto"];
-                };
-            };
+      };
+      /** @description Invalid input or duplicate name under the same parent */
+      400: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          '*/*': components['schemas']['TopicDto'];
+        };
+      };
+      /** @description Topic not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TopicDto'];
+        };
+      };
     };
-    deleteTokenPrice: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                model: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Price removed */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not an ADMIN */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description The model has no price */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  deleteTopic: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
     };
-    getAllTests: {
-        parameters: {
-            query?: {
-                /**
-                 * @description Optional status filter
-                 * @example GENERATED
-                 */
-                status?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Tests returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"][];
-                };
-            };
-        };
+        content?: never;
+      };
     };
-    generateTest: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Test generation input */
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TestInput"];
-            };
-        };
-        responses: {
-            /** @description Test generated successfully */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-            /** @description Invalid request payload */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-            /** @description Generation failed */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-        };
+  };
+  tenantSettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
     };
-    unpublish: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Settings returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["PublishTestInput"];
-            };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
         };
-        responses: {
-            /** @description Test unpublished; returns the test with its restored status */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-            /** @description Test not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-            /** @description Test is not published, or attempts exist for it */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
+      /** @description No such tenant */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
     };
-    createOrRegenerate: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The test with its new publicToken */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-            /** @description Test not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-            /** @description Test is not published */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-        };
+  };
+  saveTenantSettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
     };
-    regenerate: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-                questionId: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ReviewActionInput"];
-            };
-        };
-        responses: {
-            /** @description Question regenerated; returns the question with its new current version */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
-            /** @description Test or question not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
-            /** @description Question changed since expectedCurrentVersionId, or test not reviewable */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
-            /** @description The LLM could not produce a valid question; nothing was changed */
-            502: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TenantSettingsInput'];
+      };
     };
-    manualReplace: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-                questionId: number;
-            };
-            cookie?: never;
+    responses: {
+      /** @description Settings saved; the tenant's settings returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ManualQuestionInput"];
-            };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
         };
-        responses: {
-            /** @description Question replaced; returns the question with its new current version */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
-            /** @description Question failed validation; message lists every reason */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
-            /** @description Test or question not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
-            /** @description Question changed since expectedCurrentVersionId, or test not reviewable */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
+      };
+      /** @description A value does not fit, or the setting applies to the whole system only */
+      400: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
+      /** @description No such tenant or setting */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
     };
-    dismissFlags: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-                questionId: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DismissFlagsInput"];
-            };
-        };
-        responses: {
-            /** @description Flags dismissed; returns the question with its new current version */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
-            /** @description Comment missing or blank */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
-            /** @description Test or question not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
-            /** @description Question changed since expectedCurrentVersionId, test not reviewable, or no flagged options */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
-        };
+  };
+  resetTenantSettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
     };
-    acceptFix: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-                questionId: number;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Settings reset; the tenant's settings returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ReviewActionInput"];
-            };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
         };
-        responses: {
-            /** @description Fix applied; returns the question with its new current version */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
-            /** @description Test or question not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
-            /** @description Question changed since expectedCurrentVersionId, test not reviewable, or no fix to apply */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"];
-                };
-            };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
+      /** @description No such tenant */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSettingDto'][];
+        };
+      };
     };
-    publish: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["PublishTestInput"];
-            };
-        };
-        responses: {
-            /** @description Test published; returns the test with status PUBLISHED */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-            /** @description Test not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-            /** @description Test already published, not in GENERATED or REVIEWED, or has questions needing review */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-        };
+  };
+  settings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Settings returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestInvitationDto"][];
-                };
-            };
+        content: {
+          '*/*': components['schemas']['SystemSettingDto'][];
         };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['SystemSettingDto'][];
+        };
+      };
     };
-    invite: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["InviteInput"];
-            };
-        };
-        responses: {
-            /** @description Invitations of the given addresses */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestInvitationDto"][];
-                };
-            };
-            /** @description No, too many or invalid addresses */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestInvitationDto"][];
-                };
-            };
-            /** @description Test not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestInvitationDto"][];
-                };
-            };
-            /** @description Test is not published */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestInvitationDto"][];
-                };
-            };
-        };
+  };
+  saveSettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    resend: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-                invitationId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Sent, or the send error is reported in sendError */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestInvitationDto"];
-                };
-            };
-            /** @description Invitation not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestInvitationDto"];
-                };
-            };
-            /** @description Link already used or the test is not published */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestInvitationDto"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SystemSettingInput'];
+      };
     };
-    start: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-            };
-            cookie?: never;
+    responses: {
+      /** @description Settings saved; every setting returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Attempt started */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AttemptDetailDto"];
-                };
-            };
-            /** @description Test not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AttemptDetailDto"];
-                };
-            };
-            /** @description Test is not published or has no questions */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AttemptDetailDto"];
-                };
-            };
+        content: {
+          '*/*': components['schemas']['SystemSettingDto'][];
         };
+      };
+      /** @description A value does not fit its setting (all problems in the message) */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['SystemSettingDto'][];
+        };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['SystemSettingDto'][];
+        };
+      };
+      /** @description Unknown setting */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['SystemSettingDto'][];
+        };
+      };
     };
-    startFromLink: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testToken: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["StartPublicAttemptInput"];
-            };
-        };
-        responses: {
-            /** @description Attempt started; returns its token and the questions */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicAttemptDto"];
-                };
-            };
-            /** @description Missing or invalid name or email */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicAttemptDto"];
-                };
-            };
-            /** @description Unknown link or the test is closed */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicAttemptDto"];
-                };
-            };
-        };
+  };
+  resetSettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    startFromInvitation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                invitationToken: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Settings reset; every setting returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["StartInvitationAttemptInput"];
-            };
+        content: {
+          '*/*': components['schemas']['SystemSettingDto'][];
         };
-        responses: {
-            /** @description Attempt started or continued */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicAttemptDto"];
-                };
-            };
-            /** @description Missing or invalid name */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicAttemptDto"];
-                };
-            };
-            /** @description Unknown link or the test is closed */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicAttemptDto"];
-                };
-            };
-            /** @description The invitation was already used */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicAttemptDto"];
-                };
-            };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          '*/*': components['schemas']['SystemSettingDto'][];
+        };
+      };
     };
-    submit: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                attemptToken: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["SubmitAttemptInput"];
-            };
-        };
-        responses: {
-            /** @description Attempt scored */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicAttemptDto"];
-                };
-            };
-            /** @description Invalid answers */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicAttemptDto"];
-                };
-            };
-            /** @description Unknown attempt */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicAttemptDto"];
-                };
-            };
-            /** @description Attempt already submitted */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicAttemptDto"];
-                };
-            };
-        };
+  };
+  setTokenPrice: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        model: string;
+      };
+      cookie?: never;
     };
-    createTopic: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TopicCreateInput"];
-            };
-        };
-        responses: {
-            /** @description Topic created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TopicDto"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TokenPriceInput'];
+      };
     };
-    createTopicTree: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description Price saved */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TopicTreeNodeInput"];
-            };
+        content: {
+          '*/*': components['schemas']['TokenPriceDto'];
         };
-        responses: {
-            /** @description Topic tree created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TopicDto"];
-                };
-            };
+      };
+      /** @description Missing or negative price, or an invalid model name */
+      400: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          '*/*': components['schemas']['TokenPriceDto'];
+        };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TokenPriceDto'];
+        };
+      };
     };
-    uploadDocument: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "multipart/form-data": {
-                    meta: string;
-                    /** Format: binary */
-                    file: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Document uploaded */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["DocumentDto"];
-                };
-            };
-            /** @description Invalid upload payload */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["DocumentDto"];
-                };
-            };
-        };
+  };
+  deleteTokenPrice: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        model: string;
+      };
+      cookie?: never;
     };
-    startIngestion: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Price removed */
+      204: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+        content?: never;
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
         };
+        content?: never;
+      };
+      /** @description The model has no price */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
     };
-    submit_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                attemptId: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["SubmitAttemptInput"];
-            };
-        };
-        responses: {
-            /** @description Attempt scored; returns the full review */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AttemptDetailDto"];
-                };
-            };
-            /** @description Invalid option letter, question not in the test, or several options on a single-answer test */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AttemptDetailDto"];
-                };
-            };
-            /** @description Attempt not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AttemptDetailDto"];
-                };
-            };
-            /** @description Attempt already submitted */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AttemptDetailDto"];
-                };
-            };
-        };
+  };
+  getAllTests: {
+    parameters: {
+      query?: {
+        /**
+         * @description Optional status filter
+         * @example GENERATED
+         */
+        status?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    suggestTokenPrice: {
-        parameters: {
-            query: {
-                model: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Tests returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Suggestion returned (known=false when the catalog does not list the model) */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TokenPriceSuggestionDto"];
-                };
-            };
-            /** @description No model name */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TokenPriceSuggestionDto"];
-                };
-            };
-            /** @description Not an ADMIN */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TokenPriceSuggestionDto"];
-                };
-            };
-            /** @description The price catalog could not be downloaded or read */
-            502: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TokenPriceSuggestionDto"];
-                };
-            };
+        content: {
+          '*/*': components['schemas']['TestDto'][];
         };
+      };
     };
-    getVersions: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-                questionId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionVersionDto"][];
-                };
-            };
-        };
+  };
+  generateTest: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    hasAttempts: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description true if any attempt exists, otherwise false */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": boolean;
-                };
-            };
-        };
+    /** @description Test generation input */
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TestInput'];
+      };
     };
-    getGenerationRuns: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testId: number;
-            };
-            cookie?: never;
+    responses: {
+      /** @description Test generated successfully */
+      201: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["GenerationRunDto"][];
-                };
-            };
+        content: {
+          '*/*': components['schemas']['TestDto'];
         };
+      };
+      /** @description Invalid request payload */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestDto'];
+        };
+      };
+      /** @description Generation failed */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestDto'];
+        };
+      };
     };
-    getEvents: {
-        parameters: {
-            query?: {
-                /** @description Only events of this question */
-                questionId?: number;
-            };
-            header?: never;
-            path: {
-                testId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestEventDto"][];
-                };
-            };
-        };
+  };
+  unpublish: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+      };
+      cookie?: never;
     };
-    getTestById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /**
-                 * @description Test ID
-                 * @example 1
-                 */
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Test found */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-            /** @description Test not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestDto"];
-                };
-            };
-        };
+    requestBody?: {
+      content: {
+        'application/json': components['schemas']['PublishTestInput'];
+      };
     };
-    deleteTestById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /**
-                 * @description Test ID
-                 * @example 1
-                 */
-                id: number;
-            };
-            cookie?: never;
+    responses: {
+      /** @description Test unpublished; returns the test with its restored status */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Test deleted */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+        content: {
+          '*/*': components['schemas']['TestDto'];
         };
+      };
+      /** @description Test not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestDto'];
+        };
+      };
+      /** @description Test is not published, or attempts exist for it */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestDto'];
+        };
+      };
     };
-    getTestQuestionsByTestId: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /**
-                 * @description Test ID
-                 * @example 1
-                 */
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Questions returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TestQuestionDto"][];
-                };
-            };
-            /** @description Test not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TestQuestionDto"][];
-                };
-            };
-        };
+  };
+  createOrRegenerate: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+      };
+      cookie?: never;
     };
-    getTest: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                testToken: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description The test with its new publicToken */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Test returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicTestDto"];
-                };
-            };
-            /** @description Unknown link or the test is closed */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicTestDto"];
-                };
-            };
+        content: {
+          '*/*': components['schemas']['TestDto'];
         };
+      };
+      /** @description Test not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestDto'];
+        };
+      };
+      /** @description Test is not published */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestDto'];
+        };
+      };
     };
-    getInvitation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                invitationToken: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Invitation returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicInvitationDto"];
-                };
-            };
-            /** @description Unknown link or the test is closed */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicInvitationDto"];
-                };
-            };
-        };
+  };
+  regenerate: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+        questionId: number;
+      };
+      cookie?: never;
     };
-    getAttempt: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                attemptToken: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Attempt returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicAttemptDto"];
-                };
-            };
-            /** @description Unknown attempt */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PublicAttemptDto"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ReviewActionInput'];
+      };
     };
-    me: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description Question regenerated; returns the question with its new current version */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Current user returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["CurrentUserDto"];
-                };
-            };
-            /** @description Not signed in (security mode oidc) */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["CurrentUserDto"];
-                };
-            };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
         };
+      };
+      /** @description Test or question not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
+        };
+      };
+      /** @description Question changed since expectedCurrentVersionId, or test not reviewable */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
+        };
+      };
+      /** @description The LLM could not produce a valid question; nothing was changed */
+      502: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
+        };
+      };
     };
-    usage: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Usage returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UsageSummaryDto"];
-                };
-            };
-            /** @description Not signed in (security mode oidc) */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["UsageSummaryDto"];
-                };
-            };
-        };
+  };
+  manualReplace: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+        questionId: number;
+      };
+      cookie?: never;
     };
-    getFocusSuggestions: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": {
-                        [key: string]: string[];
-                    };
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ManualQuestionInput'];
+      };
     };
-    getRoots: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description Question replaced; returns the question with its new current version */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TopicDto"][];
-                };
-            };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
         };
+      };
+      /** @description Question failed validation; message lists every reason */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
+        };
+      };
+      /** @description Test or question not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
+        };
+      };
+      /** @description Question changed since expectedCurrentVersionId, or test not reviewable */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
+        };
+      };
     };
-    getIngestedDocumentCounts: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TopicDocumentCountDto"][];
-                };
-            };
-        };
+  };
+  dismissFlags: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+        questionId: number;
+      };
+      cookie?: never;
     };
-    getDescendants: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                parentId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TopicDto"][];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DismissFlagsInput'];
+      };
     };
-    getChildren: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                parentId: number;
-            };
-            cookie?: never;
+    responses: {
+      /** @description Flags dismissed; returns the question with its new current version */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TopicDto"][];
-                };
-            };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
         };
+      };
+      /** @description Comment missing or blank */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
+        };
+      };
+      /** @description Test or question not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
+        };
+      };
+      /** @description Question changed since expectedCurrentVersionId, test not reviewable, or no flagged options */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
+        };
+      };
     };
-    getDocument: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Document returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["DocumentDto"];
-                };
-            };
-            /** @description Document not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["DocumentDto"];
-                };
-            };
-        };
+  };
+  acceptFix: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+        questionId: number;
+      };
+      cookie?: never;
     };
-    deleteDocument: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ReviewActionInput'];
+      };
     };
-    downloadDocument: {
-        parameters: {
-            query?: {
-                inline?: boolean;
-            };
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
+    responses: {
+      /** @description Fix applied; returns the question with its new current version */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
         };
+      };
+      /** @description Test or question not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
+        };
+      };
+      /** @description Question changed since expectedCurrentVersionId, test not reviewable, or no fix to apply */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'];
+        };
+      };
     };
-    getAllDocuments: {
-        parameters: {
-            query: {
-                pageable: components["schemas"]["Pageable"];
-            };
-            header?: never;
-            path: {
-                topicId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagedModelDocumentDto"];
-                };
-            };
-        };
+  };
+  publish: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+      };
+      cookie?: never;
     };
-    list_1: {
-        parameters: {
-            query?: {
-                /** @description Only attempts at this test */
-                testId?: number;
-                /** @description Only attempts by this user */
-                userId?: number;
-                /** @description Only attempts by this participant email (case-insensitive) */
-                participantEmail?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AttemptDto"][];
-                };
-            };
-        };
+    requestBody?: {
+      content: {
+        'application/json': components['schemas']['PublishTestInput'];
+      };
     };
-    get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                attemptId: number;
-            };
-            cookie?: never;
+    responses: {
+      /** @description Test published; returns the test with status PUBLISHED */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Attempt returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AttemptDetailDto"];
-                };
-            };
-            /** @description Attempt not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AttemptDetailDto"];
-                };
-            };
+        content: {
+          '*/*': components['schemas']['TestDto'];
         };
+      };
+      /** @description Test not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestDto'];
+        };
+      };
+      /** @description Test already published, not in GENERATED or REVIEWED, or has questions needing review */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestDto'];
+        };
+      };
     };
-    tenants: {
-        parameters: {
-            query: {
-                search?: string;
-                type?: string;
-                pageable: components["schemas"]["Pageable"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Tenants returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagedModelTenantSummaryDto"];
-                };
-            };
-            /** @description Unknown type or sort property */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagedModelTenantSummaryDto"];
-                };
-            };
-            /** @description Not signed in */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagedModelTenantSummaryDto"];
-                };
-            };
-            /** @description Not an ADMIN */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagedModelTenantSummaryDto"];
-                };
-            };
-        };
+  };
+  list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+      };
+      cookie?: never;
     };
-    tenant: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Tenant returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSummaryDto"];
-                };
-            };
-            /** @description Not an ADMIN */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSummaryDto"];
-                };
-            };
-            /** @description No such tenant */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TenantSummaryDto"];
-                };
-            };
+        content: {
+          '*/*': components['schemas']['TestInvitationDto'][];
         };
+      };
     };
-    tokenPrices: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Prices returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TokenPricesDto"];
-                };
-            };
-            /** @description Not an ADMIN */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["TokenPricesDto"];
-                };
-            };
-        };
+  };
+  invite: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+      };
+      cookie?: never;
     };
-    embedding: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Embedding model returned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["EmbeddingInfoDto"];
-                };
-            };
-            /** @description Not an ADMIN */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["EmbeddingInfoDto"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['InviteInput'];
+      };
     };
+    responses: {
+      /** @description Invitations of the given addresses */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestInvitationDto'][];
+        };
+      };
+      /** @description No, too many or invalid addresses */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestInvitationDto'][];
+        };
+      };
+      /** @description Test not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestInvitationDto'][];
+        };
+      };
+      /** @description Test is not published */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestInvitationDto'][];
+        };
+      };
+    };
+  };
+  resend: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+        invitationId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Sent, or the send error is reported in sendError */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestInvitationDto'];
+        };
+      };
+      /** @description Invitation not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestInvitationDto'];
+        };
+      };
+      /** @description Link already used or the test is not published */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestInvitationDto'];
+        };
+      };
+    };
+  };
+  start: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Attempt started */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['AttemptDetailDto'];
+        };
+      };
+      /** @description Test not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['AttemptDetailDto'];
+        };
+      };
+      /** @description Test is not published or has no questions */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['AttemptDetailDto'];
+        };
+      };
+    };
+  };
+  startFromLink: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testToken: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['StartPublicAttemptInput'];
+      };
+    };
+    responses: {
+      /** @description Attempt started; returns its token and the questions */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicAttemptDto'];
+        };
+      };
+      /** @description Missing or invalid name or email */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicAttemptDto'];
+        };
+      };
+      /** @description Unknown link or the test is closed */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicAttemptDto'];
+        };
+      };
+    };
+  };
+  startFromInvitation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        invitationToken: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['StartInvitationAttemptInput'];
+      };
+    };
+    responses: {
+      /** @description Attempt started or continued */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicAttemptDto'];
+        };
+      };
+      /** @description Missing or invalid name */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicAttemptDto'];
+        };
+      };
+      /** @description Unknown link or the test is closed */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicAttemptDto'];
+        };
+      };
+      /** @description The invitation was already used */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicAttemptDto'];
+        };
+      };
+    };
+  };
+  submit: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        attemptToken: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SubmitAttemptInput'];
+      };
+    };
+    responses: {
+      /** @description Attempt scored */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicAttemptDto'];
+        };
+      };
+      /** @description Invalid answers */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicAttemptDto'];
+        };
+      };
+      /** @description Unknown attempt */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicAttemptDto'];
+        };
+      };
+      /** @description Attempt already submitted */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicAttemptDto'];
+        };
+      };
+    };
+  };
+  accept: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        token: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Joined */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceJoinedDto'];
+        };
+      };
+      /** @description Not signed in */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceJoinedDto'];
+        };
+      };
+      /** @description Another or an unverified email */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceJoinedDto'];
+        };
+      };
+      /** @description Unknown or revoked link */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceJoinedDto'];
+        };
+      };
+      /** @description Accepted by someone else, or the personal workspace has another owner */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceJoinedDto'];
+        };
+      };
+    };
+  };
+  createTopic: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TopicCreateInput'];
+      };
+    };
+    responses: {
+      /** @description Topic created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TopicDto'];
+        };
+      };
+    };
+  };
+  createTopicTree: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TopicTreeNodeInput'];
+      };
+    };
+    responses: {
+      /** @description Topic tree created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TopicDto'];
+        };
+      };
+    };
+  };
+  uploadDocument: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'multipart/form-data': {
+          meta: string;
+          /** Format: binary */
+          file: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Document uploaded */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['DocumentDto'];
+        };
+      };
+      /** @description Invalid upload payload */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['DocumentDto'];
+        };
+      };
+    };
+  };
+  startIngestion: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  submit_1: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        attemptId: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SubmitAttemptInput'];
+      };
+    };
+    responses: {
+      /** @description Attempt scored; returns the full review */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['AttemptDetailDto'];
+        };
+      };
+      /** @description Invalid option letter, question not in the test, or several options on a single-answer test */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['AttemptDetailDto'];
+        };
+      };
+      /** @description Attempt not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['AttemptDetailDto'];
+        };
+      };
+      /** @description Attempt already submitted */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['AttemptDetailDto'];
+        };
+      };
+    };
+  };
+  tenants: {
+    parameters: {
+      query: {
+        search?: string;
+        type?: string;
+        pageable: components['schemas']['Pageable'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Tenants returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PagedModelTenantSummaryDto'];
+        };
+      };
+      /** @description Unknown type or sort property */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PagedModelTenantSummaryDto'];
+        };
+      };
+      /** @description Not signed in */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PagedModelTenantSummaryDto'];
+        };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PagedModelTenantSummaryDto'];
+        };
+      };
+    };
+  };
+  create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TenantCreateInput'];
+      };
+    };
+    responses: {
+      /** @description Workspace created, invitations sent */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantCreatedDto'];
+        };
+      };
+      /** @description Missing name or type, invalid address, or the wrong number of invitees for the type */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantCreatedDto'];
+        };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantCreatedDto'];
+        };
+      };
+    };
+  };
+  invitations: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Invitations returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+        };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+        };
+      };
+      /** @description No such workspace */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+        };
+      };
+    };
+  };
+  invite_1: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['WorkspaceInviteInput'];
+      };
+    };
+    responses: {
+      /** @description Invitations sent; one per address */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+        };
+      };
+      /** @description Invalid address, or the wrong number for the type */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+        };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+        };
+      };
+      /** @description No such workspace */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+        };
+      };
+      /** @description The personal workspace already has its owner or an invitation to someone else */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationDto'][];
+        };
+      };
+    };
+  };
+  resend_1: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+        invitationId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Sent, or the send error is on the invitation */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationDto'];
+        };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationDto'];
+        };
+      };
+      /** @description No such workspace or invitation */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationDto'];
+        };
+      };
+      /** @description Already accepted */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationDto'];
+        };
+      };
+    };
+  };
+  suggestTokenPrice: {
+    parameters: {
+      query: {
+        model: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Suggestion returned (known=false when the catalog does not list the model) */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TokenPriceSuggestionDto'];
+        };
+      };
+      /** @description No model name */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TokenPriceSuggestionDto'];
+        };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TokenPriceSuggestionDto'];
+        };
+      };
+      /** @description The price catalog could not be downloaded or read */
+      502: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TokenPriceSuggestionDto'];
+        };
+      };
+    };
+  };
+  getVersions: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+        questionId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestQuestionVersionDto'][];
+        };
+      };
+    };
+  };
+  hasAttempts: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description true if any attempt exists, otherwise false */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': boolean;
+        };
+      };
+    };
+  };
+  getGenerationRuns: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['GenerationRunDto'][];
+        };
+      };
+    };
+  };
+  getEvents: {
+    parameters: {
+      query?: {
+        /** @description Only events of this question */
+        questionId?: number;
+      };
+      header?: never;
+      path: {
+        testId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestEventDto'][];
+        };
+      };
+    };
+  };
+  getTestById: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description Test ID
+         * @example 1
+         */
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Test found */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestDto'];
+        };
+      };
+      /** @description Test not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestDto'];
+        };
+      };
+    };
+  };
+  deleteTestById: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description Test ID
+         * @example 1
+         */
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Test deleted */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  getTestQuestionsByTestId: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /**
+         * @description Test ID
+         * @example 1
+         */
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Questions returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TestQuestionDto'][];
+        };
+      };
+      /** @description Test not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TestQuestionDto'][];
+        };
+      };
+    };
+  };
+  preview: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        token: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Invitation returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationPreviewDto'];
+        };
+      };
+      /** @description Unknown or revoked link */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['WorkspaceInvitationPreviewDto'];
+        };
+      };
+    };
+  };
+  getTest: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        testToken: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Test returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicTestDto'];
+        };
+      };
+      /** @description Unknown link or the test is closed */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicTestDto'];
+        };
+      };
+    };
+  };
+  getInvitation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        invitationToken: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Invitation returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicInvitationDto'];
+        };
+      };
+      /** @description Unknown link or the test is closed */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicInvitationDto'];
+        };
+      };
+    };
+  };
+  getAttempt: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        attemptToken: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Attempt returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicAttemptDto'];
+        };
+      };
+      /** @description Unknown attempt */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PublicAttemptDto'];
+        };
+      };
+    };
+  };
+  me: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Current user returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CurrentUserDto'];
+        };
+      };
+      /** @description Not signed in (security mode oidc) */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['CurrentUserDto'];
+        };
+      };
+    };
+  };
+  usage: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Usage returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['UsageSummaryDto'];
+        };
+      };
+      /** @description Not signed in (security mode oidc) */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['UsageSummaryDto'];
+        };
+      };
+    };
+  };
+  getRoots: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TopicDto'][];
+        };
+      };
+    };
+  };
+  getIngestedDocumentCounts: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TopicDocumentCountDto'][];
+        };
+      };
+    };
+  };
+  getDescendants: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        parentId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TopicDto'][];
+        };
+      };
+    };
+  };
+  getChildren: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        parentId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TopicDto'][];
+        };
+      };
+    };
+  };
+  getDocument: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Document returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['DocumentDto'];
+        };
+      };
+      /** @description Document not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['DocumentDto'];
+        };
+      };
+    };
+  };
+  deleteDocument: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  downloadDocument: {
+    parameters: {
+      query?: {
+        inline?: boolean;
+      };
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  getAllDocuments: {
+    parameters: {
+      query: {
+        pageable: components['schemas']['Pageable'];
+      };
+      header?: never;
+      path: {
+        topicId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['PagedModelDocumentDto'];
+        };
+      };
+    };
+  };
+  list_1: {
+    parameters: {
+      query?: {
+        /** @description Only attempts at this test */
+        testId?: number;
+        /** @description Only attempts by this user */
+        userId?: number;
+        /** @description Only attempts by this participant email (case-insensitive) */
+        participantEmail?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['AttemptDto'][];
+        };
+      };
+    };
+  };
+  get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        attemptId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Attempt returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['AttemptDetailDto'];
+        };
+      };
+      /** @description Attempt not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['AttemptDetailDto'];
+        };
+      };
+    };
+  };
+  tenant: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Tenant returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSummaryDto'];
+        };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSummaryDto'];
+        };
+      };
+      /** @description No such tenant */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TenantSummaryDto'];
+        };
+      };
+    };
+  };
+  tokenPrices: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Prices returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TokenPricesDto'];
+        };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['TokenPricesDto'];
+        };
+      };
+    };
+  };
+  embedding: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Embedding model returned */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['EmbeddingInfoDto'];
+        };
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          '*/*': components['schemas']['EmbeddingInfoDto'];
+        };
+      };
+    };
+  };
+  revoke: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: number;
+        invitationId: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Revoked */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Not an ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description No such workspace or invitation */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Already accepted */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
 }

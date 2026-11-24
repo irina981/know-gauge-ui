@@ -131,7 +131,7 @@ function UserBox({ onNavigate, active }: { onNavigate: () => void; active: boole
   );
 }
 
-/** Small uppercase heading of a group of sidebar links. */
+/** Small uppercase heading of a group of sidebar links; a long one is cut off with "…" (full text on hover). */
 function NavHeading({ children }: { children: string }) {
   return (
     <Text
@@ -140,11 +140,21 @@ function NavHeading({ children }: { children: string }) {
       c="rgba(219,225,255,0.45)"
       tt="uppercase"
       px="xs"
+      truncate
+      title={children}
       style={{ letterSpacing: '0.1em' }}
     >
       {children}
     </Text>
   );
+}
+
+/**
+ * The heading of the user's own section: "My workspace", or for a member of an organization (ADR015) the
+ * organization's, e.g. "Acme Training workspace", so they always see which organization they work in.
+ */
+function WorkspaceHeading({ type, name }: { type?: string; name?: string }) {
+  return <NavHeading>{type === 'ORGANIZATION' && name ? `${name} workspace` : 'My workspace'}</NavHeading>;
 }
 
 /** Small links at the bottom of the sidebar. */
@@ -216,7 +226,7 @@ export function Layout() {
 
           {/* The user's own workspace; Generate test belongs to it, so it sits under the heading. */}
           <Stack gap={4}>
-            <NavHeading>My workspace</NavHeading>
+            <WorkspaceHeading type={me?.tenantType} name={me?.tenantName} />
             <Button
               component={Link}
               to="/tests/new"
